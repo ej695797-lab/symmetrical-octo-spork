@@ -43,7 +43,7 @@ SEED_DB = os.getenv("SEED_WORLD", "1") == "1"
 
 
 # Version the 1.31.0-blaze client reports; other versions are told to update.
-REQUIRED_CLIENT_VERSION = os.getenv("REQUIRED_CLIENT_VERSION", "2.32.0-buddy" if IS_BUDDY else "1.31.0-blaze")
+REQUIRED_CLIENT_VERSION = os.getenv("REQUIRED_CLIENT_VERSION", "2.32.0-yeeper920" if IS_BUDDY else "1.31.0-blaze")
 try:
     IS_V2 = int(REQUIRED_CLIENT_VERSION.split(".")[0]) >= 2
 except ValueError:
