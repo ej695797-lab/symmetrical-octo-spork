@@ -4,10 +4,10 @@ import re
 import struct
 from urllib.parse import urlsplit
 
-VERSION = "2.32.0-buddy"
+VERSION = "2.32.0-yeeper"
 OLD_PACKAGE = 'com.TrassGames.Yeeps'
-PACKAGE = 'com.BuddyGames.Buddy'
-APP_LABEL = 'Yeeps Buddy'
+PACKAGE = 'com.TrashGames.Yeeps'
+APP_LABEL = 'Yeeps'
 SOURCE_APK_SHA256 = "21e203194d07a20a68f37b4d34d74ab2c34e94077f38ae26d9caf90c8e37a905"
 SOURCE_NATIVE_SHA256 = "235da516efbb5ce7327d68477426eccccefb418717ad064c5c5fbaa5b3d65fe2"
 GUID = re.compile(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\Z")
