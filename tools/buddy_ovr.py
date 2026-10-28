@@ -119,7 +119,7 @@ def build_profile(elf, image: bytearray, locations: dict) -> bytes:
         installer += address('x8', slots + i * 8) + ['str x9, [x8]']
         installer += address('x8', replacement) + ['stlr x8, [x21]', 'add w20, w20, #1', f'skip{i}:']
     installer += address('x8', locations['flag']) + ['mov x9, #2', 'stlr x9, [x8]']
-    installer += address('x0', text(f'Buddy: local profile slot hooks installed %d/{len(GETTERS)}'))
+    installer += address('x0', text(f'yeeper: local profile slot hooks installed %d/{len(GETTERS)}'))
     installer += ['mov w1, w20', f'bl {elf.symbols["_Z19BNM_FileCheckpointFPKcz"][0]:#x}',
                   'finish:', 'ldr x21, [sp, #32]', 'ldp x19, x20, [sp, #16]', 'ldp x29, x30, [sp], #48', 'ret']
     emit(base, installer, 2048)
@@ -154,7 +154,7 @@ def build_profile(elf, image: bytearray, locations: dict) -> bytes:
         elif kind == 'null':
             instructions += ['mov x0, xzr', 'ret']
         else:
-            instructions += address('x0', text('BuddyPlayer' if kind == 'name' else '')) + ['ret']
+            instructions += address('x0', text('Yeeper920s Modded Yeeps!' if kind == 'name' else '')) + ['ret']
         instructions += ['real:'] + original + ['br x8']
         emit(target, instructions, 192)
 
