@@ -1,0 +1,966 @@
+{
+  "il2cpp_add_internal_call": {
+    "export": "fFUFCNIRDxK",
+    "rva": "0x4b963cc"
+  },
+  "il2cpp_alloc": {
+    "export": "YjfIhOsTLeL",
+    "rva": "0x4b963d4"
+  },
+  "il2cpp_allocation_granularity": {
+    "export": "vWvzzyMHvKP",
+    "rva": "0x4b96c14"
+  },
+  "il2cpp_array_class_get": {
+    "export": "qwUGdBcNHtN",
+    "rva": "0x4b963dc"
+  },
+  "il2cpp_array_element_size": {
+    "export": "ADVJHsmRfeg",
+    "rva": "0x4b963f8"
+  },
+  "il2cpp_array_get_byte_length": {
+    "export": "Au_kbyKSgZp",
+    "rva": "0x4b963e4"
+  },
+  "il2cpp_array_length": {
+    "export": "wdyraEYYIwJ",
+    "rva": "0x4b963e0"
+  },
+  "il2cpp_array_new": {
+    "export": "iEtdlrryraG",
+    "rva": "0x4b963e8"
+  },
+  "il2cpp_array_new_full": {
+    "export": "MYoiiVKDDwu",
+    "rva": "0x4b963f0"
+  },
+  "il2cpp_array_new_specific": {
+    "export": "RyDjbBDWHma",
+    "rva": "0x4b963ec"
+  },
+  "il2cpp_array_object_header_size": {
+    "export": "_RtyYkfxxrP",
+    "rva": "0x4b96bfc"
+  },
+  "il2cpp_assembly_get_image": {
+    "export": "uDSialgoDtP",
+    "rva": "0x4b963fc"
+  },
+  "il2cpp_bounded_array_class_get": {
+    "export": "fhuhqCPhATo",
+    "rva": "0x4b963f4"
+  },
+  "il2cpp_capture_memory_snapshot": {
+    "export": "OQtoBiroPlm",
+    "rva": "0x4b96ff4"
+  },
+  "il2cpp_class_array_element_size": {
+    "export": "cCOLqRTwrXq",
+    "rva": "0x4b964d0"
+  },
+  "il2cpp_class_enum_basetype": {
+    "export": "UkTbIEHADAA",
+    "rva": "0x4b96400"
+  },
+  "il2cpp_class_for_each": {
+    "export": "lbkEmsqxUph",
+    "rva": "0x4b97084"
+  },
+  "il2cpp_class_from_il2cpp_type": {
+    "export": "vphjJuugtxc",
+    "rva": "0x4b9642c"
+  },
+  "il2cpp_class_from_name": {
+    "export": "xoUPYEohgR_",
+    "rva": "0x4b96434"
+  },
+  "il2cpp_class_from_system_type": {
+    "export": "CPngEGoAzud",
+    "rva": "0x4b96404"
+  },
+  "il2cpp_class_from_type": {
+    "export": "QUlLGiMZHNY",
+    "rva": "0x4b964d4"
+  },
+  "il2cpp_class_get_assemblyname": {
+    "export": "QegA_Fihiqc",
+    "rva": "0x4b96508"
+  },
+  "il2cpp_class_get_data_size": {
+    "export": "qIgohnYNcjk",
+    "rva": "0x4b96514"
+  },
+  "il2cpp_class_get_declaring_type": {
+    "export": "GYcmsdvyvLj",
+    "rva": "0x4b9646c"
+  },
+  "il2cpp_class_get_element_class": {
+    "export": "xLOTHqYNZmr",
+    "rva": "0x4b96438"
+  },
+  "il2cpp_class_get_events": {
+    "export": "MZXjfTJoDvE",
+    "rva": "0x4b9643c"
+  },
+  "il2cpp_class_get_field_from_name": {
+    "export": "HErVwxsHAIN",
+    "rva": "0x4b96454"
+  },
+  "il2cpp_class_get_fields": {
+    "export": "ihJCAoFmRRq",
+    "rva": "0x4b96440"
+  },
+  "il2cpp_class_get_flags": {
+    "export": "zeHmQUvMaLe",
+    "rva": "0x4b96498"
+  },
+  "il2cpp_class_get_image": {
+    "export": "tCuGYApWsUy",
+    "rva": "0x4b96504"
+  },
+  "il2cpp_class_get_interfaces": {
+    "export": "D_igmcKtRRb",
+    "rva": "0x4b96448"
+  },
+  "il2cpp_class_get_method_from_name": {
+    "export": "QlopWpEtekl",
+    "rva": "0x4b9645c"
+  },
+  "il2cpp_class_get_methods": {
+    "export": "lQlAMcszvYI",
+    "rva": "0x4b96458"
+  },
+  "il2cpp_class_get_name": {
+    "export": "MBUUBTwTTsh",
+    "rva": "0x4b96460"
+  },
+  "il2cpp_class_get_namespace": {
+    "export": "tVgOMpTNUOJ",
+    "rva": "0x4b96464"
+  },
+  "il2cpp_class_get_nested_types": {
+    "export": "wFdZOl_VZ_D",
+    "rva": "0x4b96444"
+  },
+  "il2cpp_class_get_parent": {
+    "export": "wHxnbUGzjvP",
+    "rva": "0x4b96468"
+  },
+  "il2cpp_class_get_properties": {
+    "export": "ReOGnekDiiH",
+    "rva": "0x4b9644c"
+  },
+  "il2cpp_class_get_property_from_name": {
+    "export": "UOVHFLcNlIB",
+    "rva": "0x4b96450"
+  },
+  "il2cpp_class_get_rank": {
+    "export": "TQvWcdjuBAz",
+    "rva": "0x4b9650c"
+  },
+  "il2cpp_class_get_static_field_data": {
+    "export": "QpxMvBFYXNy",
+    "rva": "0x4b9651c"
+  },
+  "il2cpp_class_get_type": {
+    "export": "YeOKQoqDwpx",
+    "rva": "0x4b964dc"
+  },
+  "il2cpp_class_get_type_token": {
+    "export": "jIkGcTSEuOB",
+    "rva": "0x4b964e4"
+  },
+  "il2cpp_class_get_userdata_offset": {
+    "export": "jlJkbVRzGHB",
+    "rva": "0x4b9707c"
+  },
+  "il2cpp_class_has_attribute": {
+    "export": "PyInwIIzMGa",
+    "rva": "0x4b964ec"
+  },
+  "il2cpp_class_has_parent": {
+    "export": "XnOdRsDarjL",
+    "rva": "0x4b96428"
+  },
+  "il2cpp_class_has_references": {
+    "export": "WGXxkBcpphN",
+    "rva": "0x4b964f0"
+  },
+  "il2cpp_class_instance_size": {
+    "export": "kzLquNBFbBb",
+    "rva": "0x4b96470"
+  },
+  "il2cpp_class_is_abstract": {
+    "export": "ziuWyzfTfcP",
+    "rva": "0x4b964a0"
+  },
+  "il2cpp_class_is_assignable_from": {
+    "export": "MCqrhClROkN",
+    "rva": "0x4b96420"
+  },
+  "il2cpp_class_is_blittable": {
+    "export": "WuMBpkjSnna",
+    "rva": "0x4b96484"
+  },
+  "il2cpp_class_is_enum": {
+    "export": "adrPotriluS",
+    "rva": "0x4b964f4"
+  },
+  "il2cpp_class_is_generic": {
+    "export": "rQnzNHTCUam",
+    "rva": "0x4b96418"
+  },
+  "il2cpp_class_is_inflated": {
+    "export": "NHyoHBcoKZq",
+    "rva": "0x4b9641c"
+  },
+  "il2cpp_class_is_inited": {
+    "export": "eDTsfQCqWLH",
+    "rva": "0x4b96408"
+  },
+  "il2cpp_class_is_interface": {
+    "export": "iodndEqTEmV",
+    "rva": "0x4b964ac"
+  },
+  "il2cpp_class_is_subclass_of": {
+    "export": "jhltRJSHHi_",
+    "rva": "0x4b96424"
+  },
+  "il2cpp_class_is_valuetype": {
+    "export": "sYDkJXLvtAg",
+    "rva": "0x4b96478"
+  },
+  "il2cpp_class_num_fields": {
+    "export": "REbOVZrIsD_",
+    "rva": "0x4b96474"
+  },
+  "il2cpp_class_set_userdata": {
+    "export": "VvqEuPVuSLs",
+    "rva": "0x4b97074"
+  },
+  "il2cpp_class_value_size": {
+    "export": "pTQfcoCYeUG",
+    "rva": "0x4b96494"
+  },
+  "il2cpp_current_thread_get_frame_at": {
+    "export": "tKziGpSkAtD",
+    "rva": "0x4b96d78"
+  },
+  "il2cpp_current_thread_get_stack_depth": {
+    "export": "JYDudhxKOsw",
+    "rva": "0x4b96d80"
+  },
+  "il2cpp_current_thread_get_top_frame": {
+    "export": "ZUEebgKsUA_",
+    "rva": "0x4b96d68"
+  },
+  "il2cpp_current_thread_walk_frame_stack": {
+    "export": "TcfVTynGiqz",
+    "rva": "0x4b96d60"
+  },
+  "il2cpp_custom_attrs_construct": {
+    "export": "eGdgcDdGFBX",
+    "rva": "0x4b9705c"
+  },
+  "il2cpp_custom_attrs_free": {
+    "export": "mCNQZeiEdvW",
+    "rva": "0x4b97060"
+  },
+  "il2cpp_custom_attrs_from_class": {
+    "export": "sDhflDsTDPq",
+    "rva": "0x4b9701c"
+  },
+  "il2cpp_custom_attrs_from_field": {
+    "export": "ZYMFVjAAzrj",
+    "rva": "0x4b97040"
+  },
+  "il2cpp_custom_attrs_from_method": {
+    "export": "wHaNvclfcVe",
+    "rva": "0x4b9702c"
+  },
+  "il2cpp_custom_attrs_get_attr": {
+    "export": "cvuyPJCQqdP",
+    "rva": "0x4b97058"
+  },
+  "il2cpp_custom_attrs_has_attr": {
+    "export": "rzpUNIJpqkb",
+    "rva": "0x4b97054"
+  },
+  "il2cpp_debug_foreach_method": {
+    "export": "PvAxDcaYlgu",
+    "rva": "0x4b97010"
+  },
+  "il2cpp_debug_get_method_info": {
+    "export": "DtjttGbXVXu",
+    "rva": "0x4b97014"
+  },
+  "il2cpp_debugger_set_agent_options": {
+    "export": "UieQcEbNeel",
+    "rva": "0x4b97004"
+  },
+  "il2cpp_domain_assembly_open": {
+    "export": "CCnnJeilkxj",
+    "rva": "0x4b968fc"
+  },
+  "il2cpp_domain_get": {
+    "export": "qHYzgqSkosU",
+    "rva": "0x4b968f8"
+  },
+  "il2cpp_domain_get_assemblies": {
+    "export": "bWCfcIbbIpn",
+    "rva": "0x4b96904"
+  },
+  "il2cpp_exception_from_name_msg": {
+    "export": "zjxBXYoFFMV",
+    "rva": "0x4b96934"
+  },
+  "il2cpp_field_get_flags": {
+    "export": "ipXlCmDqdCE",
+    "rva": "0x4b96ab4"
+  },
+  "il2cpp_field_get_from_reflection": {
+    "export": "EGdhGevjMlf",
+    "rva": "0x4b96ab8"
+  },
+  "il2cpp_field_get_name": {
+    "export": "FRSOipfuyES",
+    "rva": "0x4b96ab0"
+  },
+  "il2cpp_field_get_object": {
+    "export": "YvlPIFwaHqr",
+    "rva": "0x4b96ac0"
+  },
+  "il2cpp_field_get_offset": {
+    "export": "rMStKxWLecy",
+    "rva": "0x4b96ad0"
+  },
+  "il2cpp_field_get_parent": {
+    "export": "FzmWvHCOsbu",
+    "rva": "0x4b96abc"
+  },
+  "il2cpp_field_get_type": {
+    "export": "hUBaSSyDXEA",
+    "rva": "0x4b96ad4"
+  },
+  "il2cpp_field_get_value": {
+    "export": "tYRlzaMzIyP",
+    "rva": "0x4b96ad8"
+  },
+  "il2cpp_field_get_value_object": {
+    "export": "BFiYNDMzyHx",
+    "rva": "0x4b96adc"
+  },
+  "il2cpp_field_has_attribute": {
+    "export": "dipiUGWjUZM",
+    "rva": "0x4b96ae0"
+  },
+  "il2cpp_field_is_literal": {
+    "export": "kdOJRhIKymX",
+    "rva": "0x4b96af4"
+  },
+  "il2cpp_field_set_value": {
+    "export": "iZG_AoKIuXB",
+    "rva": "0x4b96ae4"
+  },
+  "il2cpp_field_set_value_object": {
+    "export": "dsoNdjzdJAN",
+    "rva": "0x4b96ae8"
+  },
+  "il2cpp_field_static_get_value": {
+    "export": "doWoUQraeVc",
+    "rva": "0x4b96aec"
+  },
+  "il2cpp_field_static_set_value": {
+    "export": "FeDdLMQnGGD",
+    "rva": "0x4b96af0"
+  },
+  "il2cpp_format_exception": {
+    "export": "pgNkngIyXSm",
+    "rva": "0x4b9693c"
+  },
+  "il2cpp_format_stack_trace": {
+    "export": "kggZhRqkryG",
+    "rva": "0x4b969a0"
+  },
+  "il2cpp_free": {
+    "export": "VROmwSIEzCF",
+    "rva": "0x4b963d8"
+  },
+  "il2cpp_free_captured_memory_snapshot": {
+    "export": "UjMVRvsOdFn",
+    "rva": "0x4b96ff8"
+  },
+  "il2cpp_gc_alloc_fixed": {
+    "export": "ZwJidQUAJJp",
+    "rva": "0x4b96b64"
+  },
+  "il2cpp_gc_collect": {
+    "export": "Qcn_s_QQQJU",
+    "rva": "0x4b96b04"
+  },
+  "il2cpp_gc_collect_a_little": {
+    "export": "k_iPcJMVaRZ",
+    "rva": "0x4b96b08"
+  },
+  "il2cpp_gc_disable": {
+    "export": "EdwqhRILMSL",
+    "rva": "0x4b96b14"
+  },
+  "il2cpp_gc_enable": {
+    "export": "Dtt_KMeMTwM",
+    "rva": "0x4b96b10"
+  },
+  "il2cpp_gc_foreach_heap": {
+    "export": "AuRsDVJXpH_",
+    "rva": "0x4b96b34"
+  },
+  "il2cpp_gc_free_fixed": {
+    "export": "IvHjbcdjEIn",
+    "rva": "0x4b96b6c"
+  },
+  "il2cpp_gc_get_heap_size": {
+    "export": "QvMFtXVYQfs",
+    "rva": "0x4b96b30"
+  },
+  "il2cpp_gc_get_max_time_slice_ns": {
+    "export": "bMbZvynFZlK",
+    "rva": "0x4b96b24"
+  },
+  "il2cpp_gc_get_used_size": {
+    "export": "qpaYeTa_XKj",
+    "rva": "0x4b96b2c"
+  },
+  "il2cpp_gc_has_strict_wbarriers": {
+    "export": "VTeskHrFZkb",
+    "rva": "0x4b96be0"
+  },
+  "il2cpp_gc_is_disabled": {
+    "export": "nJFnFkaJEPV",
+    "rva": "0x4b96b18"
+  },
+  "il2cpp_gc_is_incremental": {
+    "export": "QLZV_pekHBh",
+    "rva": "0x4b96b20"
+  },
+  "il2cpp_gc_set_external_allocation_tracker": {
+    "export": "WUGaFDDSL_M",
+    "rva": "0x4b96be8"
+  },
+  "il2cpp_gc_set_external_wbarrier_tracker": {
+    "export": "YrvRLUcodcc",
+    "rva": "0x4b96bec"
+  },
+  "il2cpp_gc_set_max_time_slice_ns": {
+    "export": "iEuDx_lKAox",
+    "rva": "0x4b96b28"
+  },
+  "il2cpp_gc_set_mode": {
+    "export": "BuZLtzwsriO",
+    "rva": "0x4b96b1c"
+  },
+  "il2cpp_gc_start_incremental_collection": {
+    "export": "FIJmIDMooSu",
+    "rva": "0x4b96b0c"
+  },
+  "il2cpp_gc_wbarrier_set_field": {
+    "export": "gvSPXdJYWhD",
+    "rva": "0x4b96bd4"
+  },
+  "il2cpp_gchandle_foreach_get_target": {
+    "export": "gMKmCgYgABn",
+    "rva": "0x4b96bac"
+  },
+  "il2cpp_gchandle_free": {
+    "export": "yWeRpByIAI_",
+    "rva": "0x4b96bf0"
+  },
+  "il2cpp_gchandle_get_target": {
+    "export": "pKYcBQsZpoV",
+    "rva": "0x4b96ba8"
+  },
+  "il2cpp_gchandle_new": {
+    "export": "cYTubEaV_Sp",
+    "rva": "0x4b96b70"
+  },
+  "il2cpp_gchandle_new_weakref": {
+    "export": "jWpbUpmfPGP",
+    "rva": "0x4b96b74"
+  },
+  "il2cpp_get_corlib": {
+    "export": "CqFIPPFTBKq",
+    "rva": "0x4b963c8"
+  },
+  "il2cpp_get_exception_argument_null": {
+    "export": "cVDhOnIUCZn",
+    "rva": "0x4b96938"
+  },
+  "il2cpp_image_get_assembly": {
+    "export": "LZiGMMLhxND",
+    "rva": "0x4b96fcc"
+  },
+  "il2cpp_image_get_class": {
+    "export": "MQmwYucehTD",
+    "rva": "0x4b96ff0"
+  },
+  "il2cpp_image_get_class_count": {
+    "export": "_JNazot_Nyp",
+    "rva": "0x4b96fdc"
+  },
+  "il2cpp_image_get_entry_point": {
+    "export": "TPimpgBzybm",
+    "rva": "0x4b96fd8"
+  },
+  "il2cpp_image_get_filename": {
+    "export": "ulGwBpifAku",
+    "rva": "0x4b96fd4"
+  },
+  "il2cpp_image_get_name": {
+    "export": "dmHwRfTYujy",
+    "rva": "0x4b96fd0"
+  },
+  "il2cpp_init": {
+    "export": "OTNznPGLsJO",
+    "rva": "0x4b962d4"
+  },
+  "il2cpp_init_utf16": {
+    "export": "yPdTPETwuYk",
+    "rva": "0x4b96300"
+  },
+  "il2cpp_is_debugger_attached": {
+    "export": "HsvtQYSbrAP",
+    "rva": "0x4b97008"
+  },
+  "il2cpp_is_vm_thread": {
+    "export": "kxMoDzbPDtE",
+    "rva": "0x4b96d5c"
+  },
+  "il2cpp_memory_pool_get_region_size": {
+    "export": "fLpKTrjKkQH",
+    "rva": "0x4b963c4"
+  },
+  "il2cpp_memory_pool_set_region_size": {
+    "export": "nOodohbMXMK",
+    "rva": "0x4b963c0"
+  },
+  "il2cpp_method_get_class": {
+    "export": "dgwFcWfAqyL",
+    "rva": "0x4b96c54"
+  },
+  "il2cpp_method_get_declaring_type": {
+    "export": "PYYikTtpsjf",
+    "rva": "0x4b96c5c"
+  },
+  "il2cpp_method_get_flags": {
+    "export": "VDJCuFQRkFm",
+    "rva": "0x4b96c60"
+  },
+  "il2cpp_method_get_from_reflection": {
+    "export": "TTFEzeRFCaV",
+    "rva": "0x4b96c34"
+  },
+  "il2cpp_method_get_name": {
+    "export": "OLaXukQLtZO",
+    "rva": "0x4b96c3c"
+  },
+  "il2cpp_method_get_object": {
+    "export": "QbMGtanFwtj",
+    "rva": "0x4b96c38"
+  },
+  "il2cpp_method_get_param": {
+    "export": "t_DIsnFRWkc",
+    "rva": "0x4b96c50"
+  },
+  "il2cpp_method_get_param_count": {
+    "export": "bpJAmoZCQOh",
+    "rva": "0x4b96c4c"
+  },
+  "il2cpp_method_get_param_name": {
+    "export": "YDMqDBprwiP",
+    "rva": "0x4b96c94"
+  },
+  "il2cpp_method_get_return_type": {
+    "export": "sDUKAoBvnJH",
+    "rva": "0x4b96c30"
+  },
+  "il2cpp_method_get_token": {
+    "export": "_XqfHffxy_K",
+    "rva": "0x4b96c90"
+  },
+  "il2cpp_method_has_attribute": {
+    "export": "MzamYxOKDTK",
+    "rva": "0x4b96c58"
+  },
+  "il2cpp_method_is_generic": {
+    "export": "LWELwxJrxnO",
+    "rva": "0x4b96c40"
+  },
+  "il2cpp_method_is_inflated": {
+    "export": "MjditjvWhmX",
+    "rva": "0x4b96c44"
+  },
+  "il2cpp_method_is_instance": {
+    "export": "cMWaNUwHXnd",
+    "rva": "0x4b96c48"
+  },
+  "il2cpp_monitor_enter": {
+    "export": "VVgeyHuDHLL",
+    "rva": "0x4b96cfc"
+  },
+  "il2cpp_monitor_exit": {
+    "export": "HBGCSpeVKNV",
+    "rva": "0x4b96d04"
+  },
+  "il2cpp_monitor_pulse": {
+    "export": "SJjojaVSQQD",
+    "rva": "0x4b96d08"
+  },
+  "il2cpp_monitor_pulse_all": {
+    "export": "bcNwcUpkCrF",
+    "rva": "0x4b96d0c"
+  },
+  "il2cpp_monitor_try_enter": {
+    "export": "JVtDZCMkEFX",
+    "rva": "0x4b96d00"
+  },
+  "il2cpp_monitor_try_wait": {
+    "export": "lQTBKWsWCqC",
+    "rva": "0x4b96d14"
+  },
+  "il2cpp_monitor_wait": {
+    "export": "KhOOCybXGNk",
+    "rva": "0x4b96d10"
+  },
+  "il2cpp_native_stack_trace": {
+    "export": "CeWzBdwkqJR",
+    "rva": "0x4b96a08"
+  },
+  "il2cpp_object_get_class": {
+    "export": "ZQXxfWVuhEd",
+    "rva": "0x4b96cc8"
+  },
+  "il2cpp_object_get_size": {
+    "export": "VdEFRHPOLEn",
+    "rva": "0x4b96ccc"
+  },
+  "il2cpp_object_get_virtual_method": {
+    "export": "XxFFdWIYSak",
+    "rva": "0x4b96cd0"
+  },
+  "il2cpp_object_header_size": {
+    "export": "CnZlsEMc_mf",
+    "rva": "0x4b96bf4"
+  },
+  "il2cpp_object_new": {
+    "export": "wEAEYsEIzqg",
+    "rva": "0x4b96cd4"
+  },
+  "il2cpp_object_unbox": {
+    "export": "DRiwuoKfpso",
+    "rva": "0x4b96cf4"
+  },
+  "il2cpp_offset_of_array_bounds_in_array_object_header": {
+    "export": "srvZUqZZYRf",
+    "rva": "0x4b96c0c"
+  },
+  "il2cpp_offset_of_array_length_in_array_object_header": {
+    "export": "lNV_MtwJYRc",
+    "rva": "0x4b96c04"
+  },
+  "il2cpp_override_stack_backtrace": {
+    "export": "BrYADGMWfws",
+    "rva": "0x4b96da4"
+  },
+  "il2cpp_profiler_install": {
+    "export": "zTRYnYOVFUB",
+    "rva": "0x4b96c98"
+  },
+  "il2cpp_profiler_install_allocation": {
+    "export": "xU_DCEnVpJr",
+    "rva": "0x4b96ca4"
+  },
+  "il2cpp_profiler_install_enter_leave": {
+    "export": "WDVcxhJwW_d",
+    "rva": "0x4b96ca0"
+  },
+  "il2cpp_profiler_install_fileio": {
+    "export": "Def_ZfrvmbX",
+    "rva": "0x4b96cac"
+  },
+  "il2cpp_profiler_install_gc": {
+    "export": "hoqEsPEIphF",
+    "rva": "0x4b96ca8"
+  },
+  "il2cpp_profiler_install_thread": {
+    "export": "QkRyUromzRl",
+    "rva": "0x4b96cb0"
+  },
+  "il2cpp_profiler_set_events": {
+    "export": "bal__zSXLRV",
+    "rva": "0x4b96c9c"
+  },
+  "il2cpp_property_get_flags": {
+    "export": "OKVDuI_cIrt",
+    "rva": "0x4b96cc4"
+  },
+  "il2cpp_property_get_get_method": {
+    "export": "Q_WxmSDCNCL",
+    "rva": "0x4b96cb8"
+  },
+  "il2cpp_property_get_name": {
+    "export": "QNNjlSNdkSU",
+    "rva": "0x4b96cb4"
+  },
+  "il2cpp_property_get_parent": {
+    "export": "hEAyhtOwPGm",
+    "rva": "0x4b96cc0"
+  },
+  "il2cpp_property_get_set_method": {
+    "export": "KkRoiiwuqfn",
+    "rva": "0x4b96cbc"
+  },
+  "il2cpp_raise_exception": {
+    "export": "eiruJFYACFW",
+    "rva": "0x4b96928"
+  },
+  "il2cpp_register_debugger_agent_transport": {
+    "export": "kkjfXJklHuT",
+    "rva": "0x4b9700c"
+  },
+  "il2cpp_register_log_callback": {
+    "export": "nrEkcYyhlIn",
+    "rva": "0x4b97000"
+  },
+  "il2cpp_resolve_icall": {
+    "export": "wVmLzkkUZYQ",
+    "rva": "0x4b963d0"
+  },
+  "il2cpp_runtime_class_init": {
+    "export": "keKcHAWzSID",
+    "rva": "0x4b96d20"
+  },
+  "il2cpp_runtime_invoke": {
+    "export": "KQeifRVLVlh",
+    "rva": "0x4b96d1c"
+  },
+  "il2cpp_runtime_invoke_convert_args": {
+    "export": "oggkLcZSlSv",
+    "rva": "0x4b96d18"
+  },
+  "il2cpp_runtime_object_init": {
+    "export": "okOCIkvsrEE",
+    "rva": "0x4b96d24"
+  },
+  "il2cpp_runtime_object_init_exception": {
+    "export": "bvIXjNqZSSL",
+    "rva": "0x4b96d28"
+  },
+  "il2cpp_runtime_unhandled_exception_policy_set": {
+    "export": "Hyu_xEgFEQq",
+    "rva": "0x4b96d2c"
+  },
+  "il2cpp_set_commandline_arguments": {
+    "export": "pcdeORsdLFs",
+    "rva": "0x4b96394"
+  },
+  "il2cpp_set_commandline_arguments_utf16": {
+    "export": "TofIditSkzL",
+    "rva": "0x4b963a4"
+  },
+  "il2cpp_set_config": {
+    "export": "XcySBqokHfG",
+    "rva": "0x4b963b8"
+  },
+  "il2cpp_set_config_dir": {
+    "export": "EwiACiLNzYd",
+    "rva": "0x4b96388"
+  },
+  "il2cpp_set_config_utf16": {
+    "export": "IQalzAKEadf",
+    "rva": "0x4b963b4"
+  },
+  "il2cpp_set_data_dir": {
+    "export": "KfPxiyTnWCo",
+    "rva": "0x4b9638c"
+  },
+  "il2cpp_set_default_thread_affinity": {
+    "export": "ECcT_gGQazO",
+    "rva": "0x4b96da0"
+  },
+  "il2cpp_set_find_plugin_callback": {
+    "export": "jmESyqwjiru",
+    "rva": "0x4b96ffc"
+  },
+  "il2cpp_set_memory_callbacks": {
+    "export": "yyfSoTKkGYE",
+    "rva": "0x4b963bc"
+  },
+  "il2cpp_set_temp_dir": {
+    "export": "y_cRpcXUmYT",
+    "rva": "0x4b96390"
+  },
+  "il2cpp_shutdown": {
+    "export": "uGzEldbyAez",
+    "rva": "0x4b96384"
+  },
+  "il2cpp_start_gc_world": {
+    "export": "WinbSBiQWUK",
+    "rva": "0x4b96b60"
+  },
+  "il2cpp_stats_dump_to_file": {
+    "export": "vwmbQtcZwCa",
+    "rva": "0x4b96524"
+  },
+  "il2cpp_stats_get_value": {
+    "export": "LwbQTeSIavX",
+    "rva": "0x4b96878"
+  },
+  "il2cpp_stop_gc_world": {
+    "export": "VxiieEoyPqF",
+    "rva": "0x4b96b5c"
+  },
+  "il2cpp_string_chars": {
+    "export": "CIOMGSofIDs",
+    "rva": "0x4b96d34"
+  },
+  "il2cpp_string_intern": {
+    "export": "XxRZFmxiRYJ",
+    "rva": "0x4b96d48"
+  },
+  "il2cpp_string_is_interned": {
+    "export": "cN_nhXGBPDh",
+    "rva": "0x4b96d4c"
+  },
+  "il2cpp_string_length": {
+    "export": "GlVOoVrUDhW",
+    "rva": "0x4b96d30"
+  },
+  "il2cpp_string_new": {
+    "export": "PYMRXzDWFYa",
+    "rva": "0x4b96d38"
+  },
+  "il2cpp_string_new_len": {
+    "export": "zRqvfgbdrKJ",
+    "rva": "0x4b96d44"
+  },
+  "il2cpp_string_new_utf16": {
+    "export": "BlPtC_XgsOP",
+    "rva": "0x4b96d40"
+  },
+  "il2cpp_string_new_wrapper": {
+    "export": "klEJNqQgUKX",
+    "rva": "0x4b96d3c"
+  },
+  "il2cpp_thread_attach": {
+    "export": "uTzTUzyorGs",
+    "rva": "0x4b96d54"
+  },
+  "il2cpp_thread_current": {
+    "export": "EroMjSwVKtj",
+    "rva": "0x4b96d50"
+  },
+  "il2cpp_thread_detach": {
+    "export": "PpPLHuhltDe",
+    "rva": "0x4b96d58"
+  },
+  "il2cpp_thread_get_frame_at": {
+    "export": "QBYbddgTkfm",
+    "rva": "0x4b96d7c"
+  },
+  "il2cpp_thread_get_stack_depth": {
+    "export": "ifVAfQMxefS",
+    "rva": "0x4b96d9c"
+  },
+  "il2cpp_thread_get_top_frame": {
+    "export": "VSnACvGYvGB",
+    "rva": "0x4b96d74"
+  },
+  "il2cpp_thread_walk_frame_stack": {
+    "export": "dGEiQcJzgTw",
+    "rva": "0x4b96d64"
+  },
+  "il2cpp_type_equals": {
+    "export": "QBvEvNhSxSR",
+    "rva": "0x4b96fa8"
+  },
+  "il2cpp_type_get_assembly_qualified_name": {
+    "export": "ZPpuERtmOvW",
+    "rva": "0x4b96e54"
+  },
+  "il2cpp_type_get_attrs": {
+    "export": "fdyXslcnHYx",
+    "rva": "0x4b96fa0"
+  },
+  "il2cpp_type_get_class_or_element_class": {
+    "export": "gYRerYSEWlQ",
+    "rva": "0x4b96db0"
+  },
+  "il2cpp_type_get_name": {
+    "export": "CPeeFlruqy_",
+    "rva": "0x4b96db4"
+  },
+  "il2cpp_type_get_name_chunked": {
+    "export": "fyzsANi_xnB",
+    "rva": "0x4b97064"
+  },
+  "il2cpp_type_get_object": {
+    "export": "eB_EsluKWYr",
+    "rva": "0x4b96da8"
+  },
+  "il2cpp_type_get_reflection_name": {
+    "export": "KM_TTmGpQe_",
+    "rva": "0x4b96ef4"
+  },
+  "il2cpp_type_get_type": {
+    "export": "dJvkgTGdfXD",
+    "rva": "0x4b96dac"
+  },
+  "il2cpp_type_is_byref": {
+    "export": "WAMivpddllJ",
+    "rva": "0x4b96f94"
+  },
+  "il2cpp_type_is_pointer_type": {
+    "export": "CxYUrEt_wNa",
+    "rva": "0x4b96fb8"
+  },
+  "il2cpp_type_is_static": {
+    "export": "HLwYDLM_pey",
+    "rva": "0x4b96fac"
+  },
+  "il2cpp_unhandled_exception": {
+    "export": "IfAIeLNIKBg",
+    "rva": "0x4b96a04"
+  },
+  "il2cpp_unity_install_unitytls_interface": {
+    "export": "sbfONQAqEev",
+    "rva": "0x4b97018"
+  },
+  "il2cpp_unity_liveness_allocate_struct": {
+    "export": "YAaOcYXULNA",
+    "rva": "0x4b96c1c"
+  },
+  "il2cpp_unity_liveness_calculation_from_root": {
+    "export": "vXibfMRF_of",
+    "rva": "0x4b96c20"
+  },
+  "il2cpp_unity_liveness_calculation_from_statics": {
+    "export": "elmpHtPQXcg",
+    "rva": "0x4b96c24"
+  },
+  "il2cpp_unity_liveness_finalize": {
+    "export": "hTBwgXjTEgw",
+    "rva": "0x4b96c28"
+  },
+  "il2cpp_unity_liveness_free_struct": {
+    "export": "mNiULwHTQfS",
+    "rva": "0x4b96c2c"
+  },
+  "il2cpp_unity_set_android_network_up_state_func": {
+    "export": "NWAoamGdHLx",
+    "rva": "0x4b97088"
+  },
+  "il2cpp_value_box": {
+    "export": "dOQ_kNPApMo",
+    "rva": "0x4b96cf8"
+  }
+}

@@ -1,0 +1,4 @@
+-r ../server/requirements.txt
+-r ../tools/requirements-buddy-apk.txt
+mongomock-motor==0.0.36
+unicorn==2.1.4

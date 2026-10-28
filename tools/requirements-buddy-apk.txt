@@ -1,0 +1,2 @@
+UnityPy==1.25.4
+keystone-engine==0.9.2

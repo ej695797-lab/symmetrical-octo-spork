@@ -1,0 +1,13 @@
+{
+  "source": "/path/to/live79-blaze.apk",
+  "source_sha256": "21e203194d07a20a68f37b4d34d74ab2c34e94077f38ae26d9caf90c8e37a905",
+  "target_distribution": "2.32.0-buddy",
+  "android_version_name": "2.32.0",
+  "android_version_code": 957,
+  "unity_player_version": "2.32.0",
+  "unity_version": "6000.1.17f1",
+  "mod_build_id": "live79",
+  "native_sha256": "235da516efbb5ce7327d68477426eccccefb418717ad064c5c5fbaa5b3d65fe2",
+  "il2cpp_sha256": "46af40a6b85ce0c8f423c5dd0c33aeee172085060129a69edd666a3d2bf21a4a",
+  "runtime_verified": false
+}
