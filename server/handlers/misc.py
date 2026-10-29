@@ -64,7 +64,8 @@ async def handle_fetch_room_card_shards(body: dict) -> dict:
     """Trading card shards for a room. Returns an empty list until real card
     data is configured; keeps the client from erroring on missing data."""
     return {"cardShards": [], "cardShardIDs": [], "shards": [],
-            "roomCardShards": [], "data": {"cardShards": []}}
+            "roomCardShards": [], "data": {"cardShards": []},
+            "beanTradingCardPackRefStartTime": "2020 01/01 00:00:00"}
 
 
 async def handle_fetch_available_loot(body: dict) -> dict:
