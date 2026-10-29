@@ -6,5 +6,6 @@ starlette==1.6.0
 cryptography==48.0.1
 dnspython==2.8.0
 httpx==0.28.1
+python-multipart==0.0.32
 Pillow>=11.3
 imageio-ffmpeg==0.6.0
