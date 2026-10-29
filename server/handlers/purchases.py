@@ -118,6 +118,12 @@ async def handle_purchase(body: dict) -> dict:
             if acct is not None:
                 await accounts.update_one({"accountID": account_id},
                                           {"$addToSet": {"customizedItemDatas": entry}})
+        # Echo body fields back so the client finds whatever it reads.
+        for k, v in body.items():
+            if not str(k).startswith("_") and k not in resp:
+                resp[k] = v
+        resp["allowSharing"] = int(bool(body.get("allowSharing", 1)))
+        resp["customizedItemDatas"] = [entry] if isinstance(cik, str) and cik else []
 
     if acct is not None and (upd or add):
         op = {}
