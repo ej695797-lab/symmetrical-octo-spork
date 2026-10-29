@@ -143,23 +143,12 @@ async def handle_purchase(body: dict) -> dict:
         cik = body.get("customItemKey", "")
         cic = body.get("customItemConfig", "")
         allow = bool(body.get("allowSharing", 1))
-        # Echo back every body field the client might read, plus common variants.
-        for k, v in body.items():
-            if not str(k).startswith("_") and k not in resp:
-                resp[k] = v
-        resp["customizedItemKey"] = cik
-        resp["customizedItemConfig"] = cic
-        resp["customItemKey"] = cik
-        resp["customItemConfig"] = cic
-        resp["config"] = cic
-        resp["allowSharing"] = allow
-        resp["currencyAmount"] = 0
-        resp["centCost"] = 0
-        resp["items"] = []
-        resp["customizedItemData"] = {"customItemKey": cik, "customItemConfig": cic, "allowSharing": allow}
-        resp["customizedItem"] = {"customItemKey": cik, "customItemConfig": cic, "allowSharing": allow}
-        resp["ownedCustomizedItems"] = [cik]
-        resp["customizedItems"] = [cik]
+        # Store the customized item on the account so the client can load it.
+        if isinstance(cik, str) and cik and acct is not None:
+            entry = {"customItemKey": cik, "customItemConfig": cic if isinstance(cic, str) else "",
+                     "allowSharing": allow}
+            await accounts.update_one({"accountID": account_id},
+                                      {"$addToSet": {"customizedItemDatas": entry}})
     # The BUNDLE purchase coroutine (AccountManager.TryPurchaseBundle) parses a
     # DIFFERENT shape than item purchases: it ContainsKey/GetInt currencyAmount +
     # centCost and GetStringList("items"); missing any one -> INVALID_FORMAT ->
