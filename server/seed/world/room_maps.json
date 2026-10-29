@@ -1,200 +1,608 @@
 [
- {
-  "versionKey": "beta4",
-  "data": [
-   {
-    "roomKey": "tutorial",
-    "themeKey": "snow",
-    "gridPosition": [
-     1,
-     -3
+  {
+    "versionKey": "beta4",
+    "data": [
+      {
+        "roomKey": "anniversary_hub",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          -4
+        ]
+      },
+      {
+        "roomKey": "barnyard_brawl",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          -4
+        ]
+      },
+      {
+        "roomKey": "basement",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          -4
+        ]
+      },
+      {
+        "roomKey": "battle_arena",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          -4
+        ]
+      },
+      {
+        "roomKey": "battlecrafts",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          -4
+        ]
+      },
+      {
+        "roomKey": "battleplex",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          -4
+        ]
+      },
+      {
+        "roomKey": "boat_bombardment",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          -4
+        ]
+      },
+      {
+        "roomKey": "build_central",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          -4
+        ]
+      },
+      {
+        "roomKey": "bungos_basement",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          -4
+        ]
+      },
+      {
+        "roomKey": "capture_the_flag",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          -3
+        ]
+      },
+      {
+        "roomKey": "catacombs",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          -3
+        ]
+      },
+      {
+        "roomKey": "chaos_kitchen",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          -3
+        ]
+      },
+      {
+        "roomKey": "community_world_central",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          -3
+        ]
+      },
+      {
+        "roomKey": "desert_town",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          -3
+        ]
+      },
+      {
+        "roomKey": "facility_x",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          -3
+        ]
+      },
+      {
+        "roomKey": "fantasy_village",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          -3
+        ]
+      },
+      {
+        "roomKey": "frog_forest",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          -3
+        ]
+      },
+      {
+        "roomKey": "frost_vault",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          -3
+        ]
+      },
+      {
+        "roomKey": "gnokyo",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          -2
+        ]
+      },
+      {
+        "roomKey": "gnome_capital",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          -2
+        ]
+      },
+      {
+        "roomKey": "gnomeship_ii",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          -2
+        ]
+      },
+      {
+        "roomKey": "goblin_siege",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          -2
+        ]
+      },
+      {
+        "roomKey": "goblin_war",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          -2
+        ]
+      },
+      {
+        "roomKey": "hermit_peak",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          -2
+        ]
+      },
+      {
+        "roomKey": "hero_headquarters",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          -2
+        ]
+      },
+      {
+        "roomKey": "hill",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          -2
+        ]
+      },
+      {
+        "roomKey": "home",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          -2
+        ]
+      },
+      {
+        "roomKey": "infested_invasion",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          -1
+        ]
+      },
+      {
+        "roomKey": "island",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          -1
+        ]
+      },
+      {
+        "roomKey": "laser_tag",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          -1
+        ]
+      },
+      {
+        "roomKey": "lava_depths",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          -1
+        ]
+      },
+      {
+        "roomKey": "lost_frog_kingdom",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          -1
+        ]
+      },
+      {
+        "roomKey": "mineshaft",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          -1
+        ]
+      },
+      {
+        "roomKey": "monster_house",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          -1
+        ]
+      },
+      {
+        "roomKey": "moon_base",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          -1
+        ]
+      },
+      {
+        "roomKey": "mountain_pass",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          -1
+        ]
+      },
+      {
+        "roomKey": "mushroom_cavern",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          0
+        ]
+      },
+      {
+        "roomKey": "mushroom_village",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          0
+        ]
+      },
+      {
+        "roomKey": "neon_nightclub",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          0
+        ]
+      },
+      {
+        "roomKey": "ocean_village",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          0
+        ]
+      },
+      {
+        "roomKey": "old_mines",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          0
+        ]
+      },
+      {
+        "roomKey": "outlaw_oasis",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          0
+        ]
+      },
+      {
+        "roomKey": "outpost",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          0
+        ]
+      },
+      {
+        "roomKey": "paint_wars",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          0
+        ]
+      },
+      {
+        "roomKey": "pet_valley",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          0
+        ]
+      },
+      {
+        "roomKey": "pirate_cove",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          1
+        ]
+      },
+      {
+        "roomKey": "playground",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          1
+        ]
+      },
+      {
+        "roomKey": "plaza",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          1
+        ]
+      },
+      {
+        "roomKey": "portal",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          1
+        ]
+      },
+      {
+        "roomKey": "power_line",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          1
+        ]
+      },
+      {
+        "roomKey": "prop_town",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          1
+        ]
+      },
+      {
+        "roomKey": "purple_house",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          1
+        ]
+      },
+      {
+        "roomKey": "rainy_rooftops",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          1
+        ]
+      },
+      {
+        "roomKey": "retro_facility",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          1
+        ]
+      },
+      {
+        "roomKey": "sus_station",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          2
+        ]
+      },
+      {
+        "roomKey": "sinkhole",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          2
+        ]
+      },
+      {
+        "roomKey": "snow_village",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          2
+        ]
+      },
+      {
+        "roomKey": "spaceport",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          2
+        ]
+      },
+      {
+        "roomKey": "spider_city",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          2
+        ]
+      },
+      {
+        "roomKey": "spleef",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          2
+        ]
+      },
+      {
+        "roomKey": "spooky_town",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          2
+        ]
+      },
+      {
+        "roomKey": "starter_house",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          2
+        ]
+      },
+      {
+        "roomKey": "steampunk_station",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          2
+        ]
+      },
+      {
+        "roomKey": "studio",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          3
+        ]
+      },
+      {
+        "roomKey": "suburb_wilds_4",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          3
+        ]
+      },
+      {
+        "roomKey": "subway",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          3
+        ]
+      },
+      {
+        "roomKey": "tag_towers",
+        "themeKey": "suburb",
+        "gridPosition": [
+          8,
+          3
+        ]
+      },
+      {
+        "roomKey": "tan_house",
+        "themeKey": "suburb",
+        "gridPosition": [
+          9,
+          3
+        ]
+      },
+      {
+        "roomKey": "theater",
+        "themeKey": "suburb",
+        "gridPosition": [
+          10,
+          3
+        ]
+      },
+      {
+        "roomKey": "to_the_top",
+        "themeKey": "suburb",
+        "gridPosition": [
+          11,
+          3
+        ]
+      },
+      {
+        "roomKey": "trading_hall",
+        "themeKey": "suburb",
+        "gridPosition": [
+          12,
+          3
+        ]
+      },
+      {
+        "roomKey": "volcano",
+        "themeKey": "suburb",
+        "gridPosition": [
+          13,
+          3
+        ]
+      },
+      {
+        "roomKey": "watchtower",
+        "themeKey": "suburb",
+        "gridPosition": [
+          5,
+          4
+        ]
+      },
+      {
+        "roomKey": "weekly_throwback",
+        "themeKey": "suburb",
+        "gridPosition": [
+          6,
+          4
+        ]
+      },
+      {
+        "roomKey": "wolf_valley",
+        "themeKey": "suburb",
+        "gridPosition": [
+          7,
+          4
+        ]
+      }
     ],
-    "blockLeft": 1,
-    "blockRight": 1,
-    "blockDown": 1
-   },
-   {
-    "roomKey": "official_0",
-    "themeKey": "suburb",
-    "gridPosition": [
-     0,
-     -2
-    ]
-   },
-   {
-    "roomKey": "official_1",
-    "themeKey": "suburb",
-    "gridPosition": [
-     1,
-     -2
-    ]
-   },
-   {
-    "roomKey": "official_2",
-    "themeKey": "suburb",
-    "gridPosition": [
-     2,
-     -2
-    ]
-   },
-   {
-    "themeKey": "sandbox",
-    "gridPosition": [
-     2,
-     -1
-    ],
-    "blockLeft": 1,
-    "blockUp": 1,
-    "blockRight": 1,
-    "transitionKey": "private"
-   },
-   {
-    "themeKey": "sandbox",
-    "gridPosition": [
-     1,
-     -1
-    ],
-    "blockLeft": 1,
-    "blockUp": 1,
-    "blockRight": 1,
-    "transitionKey": "communityWorlds"
-   },
-   {
-    "roomKey": "researchFacility",
-    "themeKey": "suburb",
-    "gridPosition": [
-     2,
-     -3
-    ],
-    "blockUp": 0
-   },
-   {
-    "roomKey": "halloween_1",
-    "themeKey": "researchFacility",
-    "gridPosition": [
-     3,
-     -2
-    ]
-   },
-   {
-    "roomKey": "official_5",
-    "themeKey": "snow",
-    "gridPosition": [
-     3,
-     -1
-    ]
-   },
-   {
-    "roomKey": "official_4b",
-    "themeKey": "tutorial",
-    "gridPosition": [
-     4,
-     -1
-    ]
-   },
-   {
-    "roomKey": "bonus_6b",
-    "themeKey": "suburb",
-    "gridPosition": [
-     -1,
-     -2
-    ]
-   },
-   {
-    "roomKey": "official_9",
-    "themeKey": "suburb",
-    "gridPosition": [
-     -1,
-     -1
-    ]
-   },
-   {
-    "roomKey": "official_10",
-    "themeKey": "suburb",
-    "gridPosition": [
-     -2,
-     -1
-    ]
-   },
-   {
-    "roomKey": "official_8",
-    "themeKey": "suburb",
-    "gridPosition": [
-     -2,
-     -2
-    ]
-   },
-   {
-    "roomKey": "wild_0",
-    "themeKey": "suburb",
-    "gridPosition": [
-     0,
-     -3
-    ],
-    "blockDown": 1
-   },
-   {
-    "roomKey": "wild_1_beach",
-    "themeKey": "backrooms",
-    "gridPosition": [
-     -1,
-     -3
-    ],
-    "blockUp": 1
-   },
-   {
-    "roomKey": "wild_2_snow",
-    "themeKey": "snow",
-    "gridPosition": [
-     -2,
-     -3
-    ],
-    "blockUp": 1
-   },
-   {
-    "roomKey": "bam_winner",
-    "themeKey": "suburb",
-    "gridPosition": [
-     0,
-     -1
-    ],
-    "blockLeft": 1
-   },
-   {
-    "roomKey": "bam_1",
-    "themeKey": "beach",
-    "gridPosition": [
-     0,
-     1
-    ]
-   },
-   {
-    "roomKey": "bam_0",
-    "themeKey": "beach",
-    "gridPosition": [
-     -1,
-     0
-    ],
-    "blockDown": 1
-   },
-   {
-    "roomKey": "bam_2",
-    "themeKey": "suburb",
-    "gridPosition": [
-     1,
-     0
-    ],
-    "blockDown": 1
-   },
-   {
-    "roomKey": "bam_finalist_lobby",
-    "themeKey": "suburb",
-    "gridPosition": [
-     0,
-     0
-    ]
-   }
-  ],
-  "version": 1
- }
+    "version": 7
+  }
 ]
