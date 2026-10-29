@@ -65,7 +65,9 @@ async def handle_fetch_room_card_shards(body: dict) -> dict:
     data is configured; keeps the client from erroring on missing data."""
     return {"cardShards": [], "cardShardIDs": [], "shards": [],
             "roomCardShards": [], "data": {"cardShards": []},
-            "beanTradingCardPackRefStartTime": "2020 01/01 00:00:00"}
+            "beanTradingCardPackRefStartTime": "2020 01/01 00:00:00",
+            "tradingCardPackRefStartTime": "2020 01/01 00:00:00",
+            "cardPackRefStartTime": "2020 01/01 00:00:00"}
 
 
 async def handle_fetch_available_loot(body: dict) -> dict:

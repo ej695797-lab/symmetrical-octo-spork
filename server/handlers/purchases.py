@@ -158,6 +158,8 @@ async def handle_purchase(body: dict) -> dict:
         resp["items"] = []
         resp["customizedItemData"] = {"customItemKey": cik, "customItemConfig": cic, "allowSharing": allow}
         resp["customizedItem"] = {"customItemKey": cik, "customItemConfig": cic, "allowSharing": allow}
+        resp["ownedCustomizedItems"] = [cik]
+        resp["customizedItems"] = [cik]
     # The BUNDLE purchase coroutine (AccountManager.TryPurchaseBundle) parses a
     # DIFFERENT shape than item purchases: it ContainsKey/GetInt currencyAmount +
     # centCost and GetStringList("items"); missing any one -> INVALID_FORMAT ->
