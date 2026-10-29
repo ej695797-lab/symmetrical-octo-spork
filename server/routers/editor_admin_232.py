@@ -145,19 +145,84 @@ async def update_player(account_id: str, payload: Any = Body(default={}),
 async def ban_player(account_id: str, payload: dict = Body(default={}), x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
     _auth(x_editor_password, editor_pw)
-    result = await accounts.update_one({"accountID": account_id}, {"$set": {"adminBlocked": 1, "banReason": str(payload.get("reason", "Banned by editor"))[:500]}})
-    if not result.matched_count:
+    from datetime import datetime, timedelta, timezone
+    doc = await accounts.find_one({"accountID": account_id},
+                                  {"_id": 0, "displayName": 1, "lastIP": 1, "recentIPs": 1, "deviceKeys": 1})
+    if not doc:
         raise HTTPException(status_code=404, detail="Account not found")
-    return {"ok": True, "accountID": account_id, "adminBlocked": 1}
+    who = "host"
+    try:
+        dur_h = float(payload.get("durationHours") or 0)
+    except Exception:
+        dur_h = 0.0
+
+    if dur_h > 0:
+        expire = (datetime.now(timezone.utc) + timedelta(hours=dur_h)).strftime("%Y %m/%d %H:%M:%S")
+        reason = f"Banned by {who} via editor ({dur_h}h)"
+        await accounts.update_one({"accountID": account_id},
+                                  {"$set": {"adminBlocked": 1, "isPermabanned": 0,
+                                            "isMutebanned": 0, "isIsolated": 0,
+                                            "blockReason": reason, "banReason": reason,
+                                            "banCategory": "blocked",
+                                            "banExpireTimestamp": expire,
+                                            "shouldForceRefresh": 1}})
+        ips = []
+    else:
+        expire = ""
+        reason = f"Banned by {who} via editor (permanent)"
+        await accounts.update_one({"accountID": account_id},
+                                  {"$set": {"adminBlocked": 1, "isPermabanned": 1,
+                                            "blockReason": reason, "banReason": reason,
+                                            "banCategory": "blocked",
+                                            "banExpireTimestamp": "",
+                                            "shouldForceRefresh": 1}})
+        ips = sorted(set(filter(None, [doc.get("lastIP")] + list(doc.get("recentIPs") or []))))
+        try:
+            from services.ip_bans import ban_ip
+            for ip in ips:
+                await ban_ip(ip, f"account {account_id} banned by {who}")
+        except Exception:
+            pass
+        try:
+            from services.device_bans import ban_devices
+            await ban_devices(doc.get("deviceKeys") or [], f"account {account_id} banned by {who}")
+        except Exception:
+            pass
+
+    shown = ips
+    return {"ok": True, "accountID": account_id, "adminBlocked": 1,
+            "bannedIPs": shown, "until": expire,
+            "permanent": not expire}
 
 @router.post("/players/{account_id}/unban")
-async def unban_player(account_id: str, x_editor_password: str | None = Header(default=None),
+async def unban_player(account_id: str, payload: dict = Body(default={}), x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
     _auth(x_editor_password, editor_pw)
-    result = await accounts.update_one({"accountID": account_id}, {"$set": {"adminBlocked": 0}, "$unset": {"banReason": ""}})
-    if not result.matched_count:
+    doc = await accounts.find_one({"accountID": account_id},
+                                  {"_id": 0, "displayName": 1, "lastIP": 1, "recentIPs": 1, "deviceKeys": 1})
+    if not doc:
         raise HTTPException(status_code=404, detail="Account not found")
-    return {"ok": True, "accountID": account_id, "adminBlocked": 0}
+    await accounts.update_one({"accountID": account_id},
+                              {"$set": {"adminBlocked": 0, "isPermabanned": 0,
+                                        "isMutebanned": 0, "isIsolated": 0,
+                                        "blockReason": "", "banReason": "",
+                                        "banExpireTimestamp": "", "banCategory": "",
+                                        "shadowBanned": 0, "shouldForceRefresh": 1}})
+    try:
+        from services.device_bans import unban_devices
+        await unban_devices(doc.get("deviceKeys") or [])
+    except Exception:
+        pass
+    unbanned = []
+    if payload.get("alsoIP"):
+        try:
+            from services.ip_bans import unban_ip
+            for ip in set(filter(None, [doc.get("lastIP")] + list(doc.get("recentIPs") or []))):
+                if await unban_ip(ip):
+                    unbanned.append(ip)
+        except Exception:
+            pass
+    return {"ok": True, "accountID": account_id, "adminBlocked": 0, "unbannedIPs": unbanned}
 
 @router.delete("/players/{account_id}")
 async def delete_player(account_id: str, x_editor_password: str | None = Header(default=None),

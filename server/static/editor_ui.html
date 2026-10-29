@@ -190,13 +190,16 @@ function renderJsonEditor(opts) {
     <p class="note" id="sel"></p>
     <textarea id="ed" placeholder="select ${opts.label} above"></textarea>
     ${opts.devreset ? `<p class="note">Accounts are locked to the headset they play on. If a player gets "locked to another headset" (new or factory-reset headset, or new internet), select them and press <b>Reset headset lock</b>; their next login sets their headset.</p>` : ""}
-    <div class="row" style="margin-top:10px"><button class="go" id="save">Save</button>${opts.kick ? ` <button class="blk" id="kickrow">Kick</button>` : ""}${opts.devreset ? ` <button class="blk adminonly" id="devrow">Reset headset lock</button>` : ""}${opts.block ? ` <button class="blk adminonly" id="blockrow">Block</button>` : ""}${opts.del ? ` <button class="del adminonly" id="delrow">Delete</button>` : ""}</div>`;
+    <div class="row" style="margin-top:10px"><button class="go" id="save">Save</button>${opts.kick ? ` <button class="blk" id="kickrow">Kick</button>` : ""}${opts.devreset ? ` <button class="blk adminonly" id="devrow">Reset headset lock</button>` : ""}${opts.block ? ` <button class="blk adminonly" id="blockrow">Ban</button> <button class="blk adminonly" id="blockiprow">Ban + IP</button>` : ""}${opts.del ? ` <button class="del adminonly" id="delrow">Delete</button>` : ""}</div>`;
   const ed = document.getElementById("ed");
   const sel = document.getElementById("sel");
   let id = null, run = null, loaded = null;
   function updBlock() {
-    const b = document.getElementById("blockrow");
-    if (b) b.textContent = (loaded && (loaded.adminBlocked == 1 || loaded.adminBlocked === true)) ? "Unban" : "Ban (+ IP)";
+    const blocked = loaded && (loaded.adminBlocked == 1 || loaded.adminBlocked === true);
+    const b1 = document.getElementById("blockrow");
+    const b2 = document.getElementById("blockiprow");
+    if (b1) b1.textContent = blocked ? "Unban" : "Ban (account)";
+    if (b2) b2.textContent = blocked ? "Unban + IP" : "Ban + IP";
   }
   async function open(theId) {
     id = theId;
@@ -242,17 +245,33 @@ function renderJsonEditor(opts) {
     try { await opts.devreset(id); toast("Headset lock reset - their next login sets the new headset"); }
     catch (e) { toast(e.message, true); }
   };
-  const blockBtn = document.getElementById("blockrow");
-  if (blockBtn) blockBtn.onclick = async () => {
+  function askBan(alsoIP) {
+    const raw = prompt("Ban length - e.g. 2h, 3d, 7d, 1w - or leave BLANK for permanent:", "");
+    if (raw === null) return Promise.reject(new Error("cancelled"));
+    const h = parseDur(raw);
+    if (h === null) return Promise.reject(new Error("Bad length - use e.g. 2h, 3d, 7d, or blank for permanent"));
+    return { alsoIP, durationHours: h };
+  }
+  const doBan = async (alsoIP) => {
     if (!id) return toast("Select a player first", true);
     const isBlocked = loaded && (loaded.adminBlocked == 1 || loaded.adminBlocked === true);
     try {
-      const r = await opts.block(id, !isBlocked);
-      if (isBlocked) toast("Unbanned — can connect" + (r && r.unbannedIPs && r.unbannedIPs.length ? " (IPs: " + r.unbannedIPs.join(", ") + ")" : ""));
-      else toast("Banned " + (r && r.until ? "until " + r.until : "(permanent)") + (r && r.bannedIPs && r.bannedIPs.length ? " + " + r.bannedIPs.length + " IP(s)" : (r && r.permanent ? " (no IP on record yet)" : "")));
+      let r;
+      if (isBlocked) {
+        r = await api("/player/" + encodeURIComponent(id) + "/unban", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ alsoIP }) });
+        toast("Unbanned - can connect" + (r && r.unbannedIPs && r.unbannedIPs.length ? " (IPs: " + r.unbannedIPs.join(", ") + ")" : ""));
+      } else {
+        const params = askBan(alsoIP);
+        r = await api("/player/" + encodeURIComponent(id) + "/ban", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(params) });
+        toast("Banned " + (r && r.until ? "until " + r.until : "(permanent)") + (r && r.bannedIPs && r.bannedIPs.length ? " + " + r.bannedIPs.length + " IP(s)" : (r && r.permanent ? " (no IP on record yet)" : "")));
+      }
       await open(id);
-    } catch (e) { toast(e.message, true); }
+    } catch (e) { if (e.message !== "cancelled") toast(e.message, true); }
   };
+  const blockBtn = document.getElementById("blockrow");
+  if (blockBtn) blockBtn.onclick = () => doBan(false);
+  const blockIpBtn = document.getElementById("blockiprow");
+  if (blockIpBtn) blockIpBtn.onclick = () => doBan(true);
 }
 
 const tabs = {
