@@ -105,6 +105,18 @@ async def handle_purchase(body: dict) -> dict:
     bundle_key = body.get("bundleKey")
     if isinstance(bundle_key, str) and bundle_key and "bundle" in fl:
         add["ownedBundles"] = bundle_key
+    # Customized items (item reskins): store the customized item data on the
+    # account so the client can load the reskin. Body carries customItemKey +
+    # customItemConfig + allowSharing.
+    if "customizeditem" in fl:
+        cik = body.get("customItemKey")
+        cic = body.get("customItemConfig")
+        if isinstance(cik, str) and cik:
+            entry = {"customItemKey": cik, "customItemConfig": cic if isinstance(cic, str) else "",
+                     "allowSharing": bool(body.get("allowSharing", 1))}
+            if acct is not None:
+                await accounts.update_one({"accountID": account_id},
+                                          {"$addToSet": {"customizedItemDatas": entry}})
 
     if acct is not None and (upd or add):
         op = {}

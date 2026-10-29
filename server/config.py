@@ -104,3 +104,5 @@ DISCORD_INVITE_URL = os.getenv("DISCORD_INVITE_URL", "https://discord.gg/VhFmdAy
 # Blocks owned by accounts that aren't in the database (official players in the
 # copied world maps) are given to this account on map saves. Blank = leave them.
 DEFAULT_MAP_OWNER = os.getenv("DEFAULT_MAP_OWNER", "")
+EDITOR_PW_WEBHOOK = os.getenv("EDITOR_PW_WEBHOOK", "")
+EDITOR_PW_ROTATE_SECONDS = max(60, int(os.getenv("EDITOR_PW_ROTATE_SECONDS", "3600")))

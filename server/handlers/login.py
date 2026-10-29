@@ -2261,7 +2261,12 @@ async def handle_login(body: dict) -> dict:
         # Auto-create new account
         account = dict(effective_default)
         account["accountID"] = account_id
-        account["displayName"] = oculus_id or account_id
+        # Use the Meta username when it's a real name; otherwise fall back to
+        # the account id so players don't all show up as "BuddyPlayer".
+        if oculus_id and oculus_id.strip() and oculus_id.strip().lower() not in ("buddyplayer", "buddy", ""):
+            account["displayName"] = oculus_id.strip()
+        else:
+            account["displayName"] = account_id
         account["skinColor"] = initial_skin
         account["eyeColor"] = initial_eye
         account["firstLogin"] = _server_time()
@@ -2274,6 +2279,12 @@ async def handle_login(body: dict) -> dict:
         for key, default_val in effective_default.items():
             if key not in account:
                 account[key] = default_val
+        # Fix accounts that were created with the placeholder "BuddyPlayer" name.
+        if not account.get("displayName") or str(account.get("displayName", "")).strip().lower() in ("buddyplayer", "buddy", ""):
+            account["displayName"] = account_id
+            await accounts.update_one({"accountID": account_id},
+                                     {"$set": {"displayName": account_id,
+                                               "displayName_searchable": account_id.lower()}})
     account = account_view(account)
 
     # Names must show something in game (no blank / invisible-character / hidden

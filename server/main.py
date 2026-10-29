@@ -22,9 +22,26 @@ from routers.dynamo_router import router as dynamo_router
 from seed.load_world import load_world
 from services.replay_log import lookup_replay
 from services.db import accounts, globals_col
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 app = FastAPI(title="Yeeps Buddy Private Server")
 
+from routers.editor_admin_232 import router as editor_admin_router
+app.include_router(editor_admin_router, prefix="/editor")
+app.include_router(editor_admin_router, prefix="/editor/api")
+app.include_router(editor_admin_router)
+@app.get("/editor-ui")
+async def editor_ui():
+    return FileResponse(
+        Path(__file__).parent / "static" / "editor_ui.html"
+    )
+
+
+@app.get("/me")
+async def me():
+    from config import DB_NAME
+    return {"name": "admin", "tier": "admin", "db": DB_NAME}
 
 @app.get("/health")
 async def health():
@@ -265,6 +282,7 @@ async def startup_event():
 # ─── Include routers ─────────────────────────────────────────────────
 
 # Lambda routes (specific path pattern)
+# player_editor router superseded by editor_admin_232 (fuller player endpoints)
 app.include_router(lambda_router)
 
 

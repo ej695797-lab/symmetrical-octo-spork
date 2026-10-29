@@ -149,6 +149,20 @@ async def _generic_fallback(body: dict) -> dict:
     If body has propertiesToGet → return defaults for each property.
     Otherwise → return success.
     """
+    try:
+        from services.db import db as _db
+        from datetime import datetime, timezone
+        fn = str(body.get("_fn") or body.get("functionName") or "?")[:80]
+        await _db["extra_unknown"].update_one(
+            {"fn": fn},
+            {"$inc": {"count": 1},
+             "$set": {"lastAt": datetime.now(timezone.utc).isoformat(),
+                      "lastBody": {k: v for k, v in (body or {}).items()
+                                   if not str(k).startswith("_")}}},
+            upsert=True,
+        )
+    except Exception as e:
+        print(f"[lambda] unknown-log failed: {e}")
     props = body.get("propertiesToGet", [])
     if props:
         data = {p: default_for_property(p) for p in props}
