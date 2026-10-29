@@ -37,6 +37,12 @@ async def editor_ui():
         Path(__file__).parent / "static" / "editor_ui.html"
     )
 
+@app.get("/editor")
+async def editor_root():
+    return FileResponse(
+        Path(__file__).parent / "static" / "editor_ui.html"
+    )
+
 
 @app.get("/me")
 async def me():
