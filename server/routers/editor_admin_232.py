@@ -263,16 +263,43 @@ async def get_map(room_key: str, x_editor_password: str | None = Header(default=
 async def save_map(room_key: str, payload: Any = Body(...), x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
     _auth(x_editor_password, editor_pw)
+    from services.mapsync_serializer import extract_blocks, serialize_blocks_spam
     if isinstance(payload, list):
-        doc = {"roomKey": room_key, "blocks": payload}
+        blocks = payload
+        doc = {"roomKey": room_key, "blocks": blocks}
     elif isinstance(payload, dict):
+        try:
+            blocks = extract_blocks(payload)
+        except Exception:
+            blocks = payload.get("blocks") if isinstance(payload.get("blocks"), list) else None
         doc = dict(payload)
         doc.pop("_id", None)
         doc["roomKey"] = room_key
         if "blocks" not in doc and isinstance(doc.get("map"), list):
             doc["blocks"] = doc.pop("map")
+        if blocks is None:
+            blocks = doc.get("blocks") if isinstance(doc.get("blocks"), list) else []
+        doc["blocks"] = blocks
     else:
         raise HTTPException(status_code=400, detail="Map must be a JSON object or blocks array")
+    try:
+        save_data = serialize_blocks_spam(blocks or [])
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not serialize map: {e}")
+    import time as _t
+    sid = int(_t.time())
+    doc["saveData"] = save_data
+    doc["mapDataVersion"] = 3
+    doc["applicationVersion"] = "2.32.0"
+    doc["savedAt"] = datetime.now(timezone.utc).strftime("%Y %m/%d %H:%M:%S")
+    doc["savedBy"] = "editor"
+    try:
+        from services.db import rooms as rooms_col
+        await rooms_col.update_one({"roomKey": room_key},
+                                  {"$set": {"lastEditedSessionID": sid, "roomDataVersion": 3}},
+                                  upsert=True)
+    except Exception:
+        pass
     collection, existing = await _find_map(room_key)
     if collection is None:
         collection = room_maps
@@ -280,7 +307,19 @@ async def save_map(room_key: str, payload: Any = Body(...), x_editor_password: s
     else:
         query = {"_id": existing["_id"]} if "_id" in existing else {"roomKey": room_key}
         await collection.replace_one(query, doc, upsert=True)
-    blocks = doc.get("blocks")
+    # Also write to maps collection so the client loads it.
+    try:
+        from services.db import maps as maps_col
+        await maps_col.update_one({"mapKey": f"{room_key}$current"}, {"$set": {
+            "mapKey": f"{room_key}$current", "roomKey": room_key,
+            "saveData": save_data, "editorBlocks": blocks,
+            "mapDataVersion": 3, "savedBy": "editor",
+            "applicationVersion": "2.32.0",
+            "savedAt": datetime.now(timezone.utc).strftime("%Y %m/%d %H:%M:%S"),
+            "saveInternalStates": "",
+        }}, upsert=True)
+    except Exception as e:
+        print(f"[editor] map->live write failed for {room_key}: {e}")
     return {"ok": True, "roomKey": room_key, "blockCount": len(blocks) if isinstance(blocks, list) else None}
 
 @router.delete("/maps/{room_key}")
