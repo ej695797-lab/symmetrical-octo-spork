@@ -60,6 +60,18 @@ async def handle_fetch_popular_world_list(body: dict) -> dict:
     return await _world_list(body, "popular")
 
 
+async def handle_fetch_room_card_shards(body: dict) -> dict:
+    """Trading card shards for a room. Returns an empty list until real card
+    data is configured; keeps the client from erroring on missing data."""
+    return {"cardShards": [], "cardShardIDs": [], "shards": [],
+            "roomCardShards": [], "data": {"cardShards": []}}
+
+
+async def handle_fetch_available_loot(body: dict) -> dict:
+    """Available loot for a room. Returns empty until configured."""
+    return {"loot": [], "availableLoot": [], "data": {"loot": []}}
+
+
 async def handle_log_debug(body: dict) -> dict:
     """Record what the client reports (the last 200, in the debug_logs collection)."""
     entry = {

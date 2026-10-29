@@ -84,6 +84,13 @@ async def editor_login(request: Request):
     return resp
 
 
+@router.get("/me")
+async def editor_me(x_editor_password: str | None = Header(default=None), editor_pw: str | None = Cookie(default=None)):
+    _auth(x_editor_password, editor_pw)
+    from config import DB_NAME
+    return {"name": "admin", "tier": "admin", "db": DB_NAME}
+
+
 @router.get("/players")
 async def list_players(q: str = Query(default=""), limit: int = Query(default=100, ge=1, le=500),
                        x_editor_password: str | None = Header(default=None),

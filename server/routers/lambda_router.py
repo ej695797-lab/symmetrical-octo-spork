@@ -36,6 +36,8 @@ from handlers.misc import (
     handle_fetch_global_fatal_error,
     handle_refresh_account_online,
     handle_try_redeem_currency_stash,
+    handle_fetch_room_card_shards,
+    handle_fetch_available_loot,
 )
 from handlers.purchases import handle_purchase
 from services.property_defaults import default_for_property
@@ -111,6 +113,8 @@ HANDLER_TABLE = [
     ("fetchglobalrotation",     handle_fetch_global_rotation),
     ("fetchfeaturedworldlist",   handle_fetch_featured_world_list),
     ("fetchpopularworldlist",   handle_fetch_popular_world_list),
+    ("fetchroomcardshards",     handle_fetch_room_card_shards),
+    ("fetchavailableloot",      handle_fetch_available_loot),
     ("cwgetcanenter",           handle_cw_get_can_enter),
     ("cwtrackvisit",            handle_cw_track_visit),
     ("cwtrypurchasefuel",       handle_cw_try_purchase_fuel),
