@@ -9,10 +9,10 @@ Grant: add the role to the account's roleKeys (editor / Mongo), e.g. "blaze".
 """
 import os
 
-ROLE_LOCKED_PATTERNS = {"1x5x2_stuffedTextBlaze": "blaze"}
+ROLE_LOCKED_PATTERNS = {}
 from config import IS_BUDDY
 if IS_BUDDY:
-    ROLE_LOCKED_PATTERNS["3x2x1_blazeScreenRole"] = "blaze"
+    pass
 # Roles hidden from the client. "blaze" is NOT hidden any more: the BLAZE blocks
 # carry MapObject.requiredRoleKey = "blaze" (APK 131b4+), and the game checks
 # that against the roleKeys it sees, so it must see the role.
@@ -32,7 +32,7 @@ DISABLED_PATTERNS = {"3x3x1_blazeScreen",
                      "16x16x4_desertRock", "16x16x8_desertRock",
                      "2x2x2_desertRock", "8x8x4_desertRock"}
 if IS_BUDDY:
-    DISABLED_PATTERNS = set()  # The 1.31 missing-mesh exclusions do not describe live79.
+    DISABLED_PATTERNS = {"1x5x2_stuffedTextBlaze", "3x2x1_blazeScreenRole", "3x3x1_blazeScreen"}
 
 
 # Who may hold the "blaze" role (it unlocks the BLAZE blocks and saving shared
