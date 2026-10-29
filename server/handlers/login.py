@@ -2163,7 +2163,7 @@ DEFAULT_ACCOUNT = {
     # ("No spawn room key found") and never gets past the loading screen.
     # Needs to point at a room that actually exists in the seeded `rooms`
     # collection. All players spawn in official_1 (user directive).
-    "spawnRoomKey": "official_1",
+    "spawnRoomKey": "nexus",
     "toymakerRequest": "",
     "warnCategories": [],
     "warnCount": 0,
@@ -2349,7 +2349,7 @@ async def handle_login(body: dict) -> dict:
     if account.get("loginStreakFreezeHistory") is None:
         account["loginStreakFreezeHistory"] = []
     if not account.get("spawnRoomKey"):
-        account["spawnRoomKey"] = "official_1"
+        account["spawnRoomKey"] = "nexus"
 
     # Buttcoins/beans are unlimited on this server: refill anyone who ran low
     # (accounts copied from real Yeeps started at 0 and couldn't buy anything).
