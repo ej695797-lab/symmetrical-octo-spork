@@ -263,7 +263,7 @@ async def get_map(room_key: str, x_editor_password: str | None = Header(default=
 async def save_map(room_key: str, payload: Any = Body(...), x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
     _auth(x_editor_password, editor_pw)
-    from services.mapsync_serializer import extract_blocks, serialize_blocks_spam
+    from services.mapsync_serializer import extract_blocks, serialize_blocks_compressed
     if isinstance(payload, list):
         blocks = payload
         doc = {"roomKey": room_key, "blocks": blocks}
@@ -283,13 +283,13 @@ async def save_map(room_key: str, payload: Any = Body(...), x_editor_password: s
     else:
         raise HTTPException(status_code=400, detail="Map must be a JSON object or blocks array")
     try:
-        save_data = serialize_blocks_spam(blocks or [])
+        save_data = serialize_blocks_compressed(blocks or [])
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Could not serialize map: {e}")
     import time as _t
     sid = int(_t.time())
     doc["saveData"] = save_data
-    doc["mapDataVersion"] = 3
+    doc["mapDataVersion"] = 2
     doc["applicationVersion"] = "2.32.0"
     doc["savedAt"] = datetime.now(timezone.utc).strftime("%Y %m/%d %H:%M:%S")
     doc["savedBy"] = "editor"
@@ -313,7 +313,7 @@ async def save_map(room_key: str, payload: Any = Body(...), x_editor_password: s
         await maps_col.update_one({"mapKey": f"{room_key}$current"}, {"$set": {
             "mapKey": f"{room_key}$current", "roomKey": room_key,
             "saveData": save_data, "editorBlocks": blocks,
-            "mapDataVersion": 3, "savedBy": "editor",
+            "mapDataVersion": 2, "savedBy": "editor",
             "applicationVersion": "2.32.0",
             "savedAt": datetime.now(timezone.utc).strftime("%Y %m/%d %H:%M:%S"),
             "saveInternalStates": "",
