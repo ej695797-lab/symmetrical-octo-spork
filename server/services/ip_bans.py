@@ -19,6 +19,8 @@ _FAIL_LIMIT = 3            # ban after MORE THAN this many wrong passwords (i.e.
 _FAIL_WINDOW = 3600        # seconds; failures older than this don't count toward the streak
 
 _cache = None             # set[str] | None  -- banned IPs, lazily loaded from DB
+_cache_ts: float = 0.0     # when _cache was last loaded
+_CACHE_TTL = 30.0         # seconds before reloading from DB
 _fails: dict = {}         # ip -> [count, first_ts]
 
 
@@ -41,13 +43,16 @@ def client_ip(request) -> str:
 
 
 async def _load() -> set:
-    global _cache
-    if _cache is None:
+    global _cache, _cache_ts
+    import time as _t
+    now = _t.monotonic()
+    if _cache is None or (now - _cache_ts) > _CACHE_TTL:
         try:
             doc = await globals_col.find_one({"key": _GLOBALS_KEY}, {"_id": 0, "ips": 1})
             _cache = set((doc or {}).get("ips") or [])
         except Exception:
-            _cache = set()
+            _cache = set() if _cache is None else _cache
+        _cache_ts = now
     return _cache
 
 
@@ -122,6 +127,11 @@ async def record_failed_login(ip: str) -> bool:
         return False
     now = time.time()
     rec = _fails.get(ip)
+    # If the IP was unbanned (no longer in the ban list), reset the streak
+    # so a single wrong attempt doesn't immediately re-ban.
+    if not await is_banned(ip):
+        _fails.pop(ip, None)
+        rec = None
     if rec is None or now - rec[1] > _FAIL_WINDOW:
         _fails[ip] = [1, now]
     else:
