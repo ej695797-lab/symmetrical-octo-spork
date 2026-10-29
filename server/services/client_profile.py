@@ -19,6 +19,7 @@ _ACCOUNT = {
     "longestLoginStreakRestoreCost": 0, "lootQuotaProgress": {},
     "collectedCardShardIDs": [], "collectedButtonRewardKeys": [],
     "featureGrants": [], "mobileLinkSessionID": "", "dataSegment": "base",
+    "beanTradingCardPackRefStartTime": "2020 01/01 00:00:00",
     "challengeNonces": [],
 }
 _ROOM = {

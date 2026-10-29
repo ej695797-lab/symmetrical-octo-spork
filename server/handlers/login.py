@@ -2112,6 +2112,7 @@ DEFAULT_ACCOUNT = {
     "hoursSpent": 0,
     "lastCardBeanPurchaseTime": "",
     "lastCardChallengeRedeemedTime": "",
+    "beanTradingCardPackRefStartTime": "2020 01/01 00:00:00",
     "lastEditorSessionID": 0,
     "lastLogin": "",
     "lastLoginStatus": "",

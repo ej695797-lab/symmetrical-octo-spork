@@ -111,9 +111,10 @@ async def handle_purchase(body: dict) -> dict:
     if "customizeditem" in fl:
         cik = body.get("customItemKey")
         cic = body.get("customItemConfig")
+        allow = bool(body.get("allowSharing", 1))
         if isinstance(cik, str) and cik:
             entry = {"customItemKey": cik, "customItemConfig": cic if isinstance(cic, str) else "",
-                     "allowSharing": bool(body.get("allowSharing", 1))}
+                     "allowSharing": allow}
             if acct is not None:
                 await accounts.update_one({"accountID": account_id},
                                           {"$addToSet": {"customizedItemDatas": entry}})
@@ -138,6 +139,13 @@ async def handle_purchase(body: dict) -> dict:
         "currencyValueIndex": 0,
         "newCurrency": max(0, currency - price) if acct is not None else 0,
     }
+    if "customizeditem" in fl:
+        resp["customizedItemKey"] = body.get("customItemKey", "")
+        resp["customItemConfig"] = body.get("customItemConfig", "")
+        resp["allowSharing"] = bool(body.get("allowSharing", 1))
+        resp["currencyAmount"] = 0
+        resp["centCost"] = 0
+        resp["items"] = []
     # The BUNDLE purchase coroutine (AccountManager.TryPurchaseBundle) parses a
     # DIFFERENT shape than item purchases: it ContainsKey/GetInt currencyAmount +
     # centCost and GetStringList("items"); missing any one -> INVALID_FORMAT ->
