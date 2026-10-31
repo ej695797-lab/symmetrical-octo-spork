@@ -2293,12 +2293,14 @@ async def handle_login(body: dict) -> dict:
         for key, default_val in effective_default.items():
             if key not in account:
                 account[key] = default_val
-        # Fix accounts that were created with the placeholder "BuddyPlayer" name.
+        # Don't override the display name with the account id. The display name
+        # should only come from the client's Oculus ID. If it's empty or a
+        # placeholder, leave it empty (fallback_name handles it).
         if not account.get("displayName") or str(account.get("displayName", "")).strip().lower() in ("buddyplayer", "buddy", ""):
-            account["displayName"] = account_id
+            account["displayName"] = ""
             await accounts.update_one({"accountID": account_id},
-                                     {"$set": {"displayName": account_id,
-                                               "displayName_searchable": account_id.lower()}})
+                                     {"$set": {"displayName": "",
+                                               "displayName_searchable": ""}})
         elif (str(account.get("displayName", "")) == account_id and oculus_id
               and oculus_id.strip().lower() not in _NAME_PLACEHOLDERS and oculus_id.strip() != account_id):
             # NAMEFIX-v1: it was named after its ID because no name arrived; one has now
