@@ -46,7 +46,7 @@ from handlers.misc import (
 )
 from handlers.purchases import handle_purchase
 from services.property_defaults import default_for_property
-from handlers.fishing import handle_generate_fish_bite
+from handlers.misc import handle_generate_fish_bite
 
 router = APIRouter()
 LAMBDA_LOG_FILE = Path("logs/lambda_traffic.log")
