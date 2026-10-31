@@ -2213,13 +2213,30 @@ def _is_banned_name(*names: str) -> bool:
     return False
 
 
+# NAMEFIX-v1: where the client might put the player's name (oculusID is the one the kit knew)
+_NAME_KEYS = ("oculusID", "oculusId", "oculusUsername", "username", "userName", "displayName",
+              "metaUsername", "metaName", "platformUsername", "platformName", "playerName",
+              "nickname", "nickName", "name")
+_NAME_PLACEHOLDERS = ("buddyplayer", "buddy", "null", "none", "unknown")
+
+
+def _login_name(body: dict) -> str:
+    for k in _NAME_KEYS:
+        v = body.get(k)
+        if isinstance(v, str) and v.strip() and v.strip().lower() not in _NAME_PLACEHOLDERS:
+            return v.strip()
+    print(f"[login] no player name in the login request for {body.get('accountID')!r}; "
+          f"fields sent: {sorted(str(k) for k in body)}")
+    return str(body.get("oculusID", "") or "")
+
+
 async def handle_login(body: dict) -> dict:
     """
     Process a login request. Auto-creates the account if it doesn't exist.
     Returns the 'data' payload (will be wrapped by the Lambda envelope).
     """
     account_id = body.get("accountID", "")
-    oculus_id = body.get("oculusID", "")
+    oculus_id = _login_name(body)
     initial_skin = body.get("initialSkinColor", -3489025)
     initial_eye = body.get("initialEyeColor", -2039846657)
     props_to_get = body.get("propertiesToGet", [])
@@ -2262,12 +2279,8 @@ async def handle_login(body: dict) -> dict:
         # Auto-create new account
         account = dict(effective_default)
         account["accountID"] = account_id
-        # Use the Meta username when it's a real name; otherwise fall back to
-        # the account id so players don't all show up as "BuddyPlayer".
-        if oculus_id and oculus_id.strip() and oculus_id.strip().lower() not in ("buddyplayer", "buddy", ""):
-            account["displayName"] = oculus_id.strip()
-        else:
-            account["displayName"] = account_id
+        # Display name is the Meta/Oculus username only. No account-id fallback.
+        account["displayName"] = oculus_id.strip() if oculus_id else ""
         account["skinColor"] = initial_skin
         account["eyeColor"] = initial_eye
         account["firstLogin"] = _server_time()
@@ -2286,6 +2299,15 @@ async def handle_login(body: dict) -> dict:
             await accounts.update_one({"accountID": account_id},
                                      {"$set": {"displayName": account_id,
                                                "displayName_searchable": account_id.lower()}})
+        elif (str(account.get("displayName", "")) == account_id and oculus_id
+              and oculus_id.strip().lower() not in _NAME_PLACEHOLDERS and oculus_id.strip() != account_id):
+            # NAMEFIX-v1: it was named after its ID because no name arrived; one has now
+            print(f"[login] {account_id}: name {account_id!r} -> {oculus_id.strip()!r}")
+            account["displayName"] = oculus_id.strip()
+            account["displayName_searchable"] = oculus_id.strip().lower()
+            await accounts.update_one({"accountID": account_id},
+                                     {"$set": {"displayName": oculus_id.strip(),
+                                               "displayName_searchable": oculus_id.strip().lower()}})
     account = account_view(account)
 
     # Names must show something in game (no blank / invisible-character / hidden

@@ -38,9 +38,15 @@ from handlers.misc import (
     handle_try_redeem_currency_stash,
     handle_fetch_room_card_shards,
     handle_fetch_available_loot,
+    handle_generate_fish_bite,
+    handle_put_player_status,
+    handle_validate_text,
+    handle_fetch_customized_items,
+    handle_put_customized_item_allow_sharing,
 )
 from handlers.purchases import handle_purchase
 from services.property_defaults import default_for_property
+from handlers.fishing import handle_generate_fish_bite
 
 router = APIRouter()
 LAMBDA_LOG_FILE = Path("logs/lambda_traffic.log")
@@ -106,6 +112,8 @@ WRITE_LAMBDAS = {
     "putactivecosmetics", "saveroommapcompressed", "saveroommapproperties", "devresetcurrency",
     "tryredeemcurrencystash", "moderatorbanaccount", "moderatorwarnaccount", "trypurchase",
     "tryexpandprivateworld", "trydeleteprivateroom", "trydeletecommunityworldroom",
+    "putplayerstatus", "putcustomizeditemallowsharing", "putfavoritepatterns",
+    "putsavedoutfits", "putfishinanotherbucket", "putautonomousmode","generatefishbite",
 }
 
 HANDLER_TABLE = [
@@ -115,6 +123,11 @@ HANDLER_TABLE = [
     ("fetchpopularworldlist",   handle_fetch_popular_world_list),
     ("fetchroomcardshards",     handle_fetch_room_card_shards),
     ("fetchavailableloot",      handle_fetch_available_loot),
+    ("generatefishbite",        handle_generate_fish_bite),
+    ("putplayerstatus",         handle_put_player_status),
+    ("validatetext",            handle_validate_text),
+    ("fetchcustomizeditems",    handle_fetch_customized_items),
+    ("putcustomizeditemallowsharing", handle_put_customized_item_allow_sharing),
     ("cwgetcanenter",           handle_cw_get_can_enter),
     ("cwtrackvisit",            handle_cw_track_visit),
     ("cwtrypurchasefuel",       handle_cw_try_purchase_fuel),
@@ -135,11 +148,11 @@ HANDLER_TABLE = [
     ("tryredeemcurrencystash",  handle_try_redeem_currency_stash),
     ("moderatorbanaccount",     handle_moderator_ban_account),
     ("moderatorwarnaccount",    handle_moderator_warn_account),
-    # 1.31 purchases (after cwtrypurchasefuel, which keeps its own handler).
     ("trypurchase",             handle_purchase),
     ("tryexpandprivateworld",   handle_purchase),
     ("trydeleteprivateroom",    handle_purchase),
     ("trydeletecommunityworldroom", handle_purchase),
+    ("generatefishbite", handle_generate_fish_bite),
 ]
 
 from config import IS_BUDDY

@@ -75,6 +75,50 @@ async def handle_fetch_available_loot(body: dict) -> dict:
     return {"loot": [], "availableLoot": [], "data": {"loot": []}}
 
 
+async def handle_generate_fish_bite(body: dict) -> dict:
+    """Generate a fish bite. Returns an empty result to avoid 'Invalid format' errors."""
+    return {"fish": None, "fishBite": None, "data": {"success": 1}}
+
+
+async def handle_put_player_status(body: dict) -> dict:
+    """Player status update. Acknowledge without storing."""
+    return {"success": 1}
+
+
+async def handle_validate_text(body: dict) -> dict:
+    """Text validation. Accept all text."""
+    return {"success": 1, "valid": True, "isValid": True}
+
+
+async def handle_fetch_customized_items(body: dict) -> dict:
+    """Fetch customized items (reskins) for an account."""
+    account_id = str(body.get("accountID") or "")
+    try:
+        from services.db import accounts
+        doc = await accounts.find_one({"accountID": account_id}, {"_id": 0, "customizedItemDatas": 1})
+        items = (doc or {}).get("customizedItemDatas") or []
+    except Exception:
+        items = []
+    return {"customizedItems": items, "customizedItemDatas": items, "data": {"customizedItems": items}}
+
+
+async def handle_put_customized_item_allow_sharing(body: dict) -> dict:
+    """Update allowSharing on a customized item."""
+    account_id = str(body.get("accountID") or "")
+    key = body.get("customItemKey") or body.get("customizedItemKey")
+    allow = bool(body.get("allowSharing", 1))
+    if account_id and key:
+        try:
+            from services.db import accounts
+            await accounts.update_one(
+                {"accountID": account_id, "customizedItemDatas.customItemKey": key},
+                {"$set": {"customizedItemDatas.$.allowSharing": allow}},
+            )
+        except Exception:
+            pass
+    return {"success": 1}
+
+
 async def handle_log_debug(body: dict) -> dict:
     """Record what the client reports (the last 200, in the debug_logs collection)."""
     entry = {
