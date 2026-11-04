@@ -168,10 +168,6 @@ HANDLER_TABLE = [
     # or tryPurchaseCustomizedItem routes to the generic purchase handler and the
     # reskin is never stored.
     ("trypurchasecustomizeditem", handle_try_purchase_customized_item),
-    ("trypurchasetradingcardpack", _cards.handle_try_purchase_trading_card_pack),
-    ("redeemtradingcardreward", _cards.handle_redeem_trading_card_reward),
-    ("redeemchallengereward", _cards.handle_redeem_challenge_reward),
-    ("tryredeemcurrencystash", _cards.handle_try_redeem_currency_stash),
     ("fetchcustomizeditems",      handle_fetch_customized_items),
     # 1.31 purchases (after cwtrypurchasefuel, which keeps its own handler).
     ("trypurchase",             handle_purchase),

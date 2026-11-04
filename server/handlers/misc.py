@@ -577,6 +577,42 @@ async def handle_put_toymaker_request(body: dict) -> dict:
     return {"success": 1}
 
 
+async def handle_fetch_room_card_shards(body: dict) -> dict:
+    return {"cardShards": [], "cardShardIDs": [], "shards": [],
+            "roomCardShards": [], "data": {"cardShards": []},
+            "beanTradingCardPackRefStartTime": "2020 01/01 00:00:00",
+            "tradingCardPackRefStartTime": "2020 01/01 00:00:00",
+            "cardPackRefStartTime": "2020 01/01 00:00:00"}
+
+
+async def handle_fetch_available_loot(body: dict) -> dict:
+    return {"loot": [], "availableLoot": [], "data": {"loot": []}}
+
+
+async def handle_generate_fish_bite(body: dict) -> dict:
+    return {"fish": None, "fishBite": None, "data": {"success": 1}}
+
+
+async def handle_validate_text(body: dict) -> dict:
+    return {"success": 1, "valid": True, "isValid": True}
+
+
+async def handle_put_customized_item_allow_sharing(body: dict) -> dict:
+    account_id = str(body.get("accountID") or "")
+    key = body.get("customItemKey") or body.get("customizedItemKey")
+    allow = bool(body.get("allowSharing", 1))
+    if account_id and key:
+        try:
+            from services.db import accounts
+            await accounts.update_one(
+                {"accountID": account_id, "customizedItemDatas.customItemKey": key},
+                {"$set": {"customizedItemDatas.$.allowSharing": allow}},
+            )
+        except Exception:
+            pass
+    return {"success": 1}
+
+
 async def handle_fetch_player_statuses(body: dict) -> dict:
     """g2_fetchPlayerStatuses: live presence (which room / photon room / version)
     for a LIST of accounts, so the Friends UI shows who is online and lets you
