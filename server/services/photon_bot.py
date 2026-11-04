@@ -27,7 +27,7 @@ VIEW = os.path.join(STATE_DIR, "view.json")                  # View tab: players
 VIEW_BLOCKS = os.path.join(STATE_DIR, "view_blocks.json")    # View tab: the room's blocks
 UNIT = "yeeps-photon-bot-240"
 BOT_ID = 3
-BOT_NAME = "BlazeBot"
+BOT_NAME = "YeeperBot"
 _gen = 0                     # bumped on every start/stop: cancels queued commands
 
 
