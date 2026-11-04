@@ -670,6 +670,10 @@ async def _photon_auth_denied(account_id: str, request) -> str | None:
     return None
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok", "profile": "buddy232", "clientVersion": "2.32.0-yeeper"}
+
 @app.api_route("/", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"])
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"])
 async def catch_all(request: Request, path: str = ""):
@@ -888,7 +892,7 @@ async def catch_all(request: Request, path: str = ""):
         # this canonical shape as "this is really API Gateway, keep going".
         print(f"Service: (unknown) — returning API Gateway-style 403")
         print(f"{'='*60}\n")
-        return JSONResponse(content={"message": "Missing Authentication Token"}, status_code=403)
+        return JSONResponse(content={})
     print(f"Service: (unknown) — returning empty 200")
     print(f"{'='*60}\n")
     return JSONResponse(content={})

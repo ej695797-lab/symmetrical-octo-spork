@@ -3,6 +3,19 @@ import hmac
 import hashlib
 import time
 
+def _load_dotenv() -> None:
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(path):
+        return
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, val = line.split("=", 1)
+        os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
+
+_load_dotenv()
+
 MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://USER:PASSWORD@YOUR-CLUSTER/")
 # 2.4.0 gets its OWN database (its own "folder"), isolated from 1.19.0/others.
 # This codebase serves the 1.19.0 version -> its own database. The 2.4.0
