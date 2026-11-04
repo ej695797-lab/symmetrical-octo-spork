@@ -1,0 +1,12 @@
+[seed] Skipped (set SEED_DB=1 to enable)
+============================================================
+  Yeeps v1 Private Server is READY
+============================================================
+[yeeps] ban probe error: No module named 'boto3'
+[worlds] popular: empty/failed -> serving 0 cached
+[worlds] featured: empty/failed -> serving 0 cached
+[worlds] random: empty/failed -> serving 0 cached
+[geo] location database unavailable: No module named 'maxminddb'
+[editor] wrong password for 'yeeper920' from 127.0.0.1, fixed code is for admin accounts only
+[editor] discord webhook failed: Request URL is missing an 'http://' or 'https://' protocol.
+INFO:     127.0.0.1:56436 - "POST /editor/login HTTP/1.1" 401 Unauthorized

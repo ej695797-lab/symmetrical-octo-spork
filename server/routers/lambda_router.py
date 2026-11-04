@@ -43,8 +43,12 @@ from handlers.misc import (
     handle_put_toymaker_request,
     handle_put_favorite_patterns,
     handle_try_purchase_customized_item,
-    handle_fetch_customized_items)
+    handle_fetch_customized_items,
+    handle_fetch_room_card_shards,
+    handle_fetch_available_loot,
+    handle_generate_fish_bite)
 from handlers.purchases import handle_purchase
+from handlers import cards as _cards
 from services.property_defaults import default_for_property
 
 router = APIRouter()
@@ -150,6 +154,9 @@ HANDLER_TABLE = [
     ("devresetcurrency",        handle_dev_reset_currency),
     ("getroomdata",             handle_room_data),
     ("fetchroommapextraproperties", handle_fetch_room_map_extra_properties),
+    ("fetchroomcardshards",     handle_fetch_room_card_shards),
+    ("fetchavailableloot",      handle_fetch_available_loot),
+    ("generatefishbite",        handle_generate_fish_bite),
     ("fetchroomdata",           handle_room_data),
     ("logdebug",                handle_log_debug),
     ("fetchglobalfatalerror",   handle_fetch_global_fatal_error),
@@ -161,6 +168,10 @@ HANDLER_TABLE = [
     # or tryPurchaseCustomizedItem routes to the generic purchase handler and the
     # reskin is never stored.
     ("trypurchasecustomizeditem", handle_try_purchase_customized_item),
+    ("trypurchasetradingcardpack", _cards.handle_try_purchase_trading_card_pack),
+    ("redeemtradingcardreward", _cards.handle_redeem_trading_card_reward),
+    ("redeemchallengereward", _cards.handle_redeem_challenge_reward),
+    ("tryredeemcurrencystash", _cards.handle_try_redeem_currency_stash),
     ("fetchcustomizeditems",      handle_fetch_customized_items),
     # 1.31 purchases (after cwtrypurchasefuel, which keeps its own handler).
     ("trypurchase",             handle_purchase),
