@@ -1,0 +1,1878 @@
+    1: #!/usr/bin/env python3
+    2: """920Man block workshop: add custom blocks to the Yeeps 1.31 game data from
+    3: an interactive menu.  Run it from anywhere:
+    4: 
+    5:     python tools\\data\\addblock.py
+    6: 
+    7: Menu:
+    8:     1  picture block            texture on a cotton cube (any AxB key)
+    9:     2  basic mesh block         paste a path to a Unity asset bundle
+   10:                                 (.bundle) and its WHOLE prefab is imported --
+   11:                                 every mesh, material, texture, animation,
+   12:                                 audio clip and particle system -- or just
+   13:                                 Enter for a plain cube
+   14:     3  music disk               flat disk that plays your song on a loop
+   15:     4  custom block             mix and match:
+   16:          1 animation + mesh          2 audio + mesh
+   17:          3 texture + mesh            4 texture + animation + mesh
+   18:          5 texture + audio + animation + mesh
+   19:     5  remove a block           takes it out of the menu / container again
+   20:     6  list my blocks           what this tool has added
+   21:     7  build the APK            packs the edited data into a signed APK
+   22: 
+   23: A .bundle import keeps the prefab's own look: each renderer becomes a submesh
+   24: with its own material (the bundle's _MainTex, or its _BaseColor if it has no
+   25: texture), remapped onto the game's mapobject shaders.  Bundles are the files a
+   26: Unity project writes to GeneratedAssetBundles.  A texture you pick is ignored
+   27: for bundle blocks (the bundle carries its own).  When the bundle carries an
+   28: AudioClip it is used automatically for the block's sound; its AnimationClips
+   29: are detected and reported, and a spin/bob is used in their place.  Particle
+   30: systems (ParticleSystem + ParticleSystemRenderer) are imported too, with their
+   31: materials/textures remapped, and parented to the block so they follow it.
+   32: 
+   33: Every add updates the pattern list, the block container, the two
+   34: globals.json lists and role_locks.ALWAYS_OWNED_PATTERNS (with .bak backups),
+   35: and remembers everything in tools/data/addblock_state.json so remove works.
+   36: After adding, run menu 7 (or tools/configure_apk.py by hand) and install the
+   37: APK on the headset.  Redeploy the server after globals.json changes.
+   38: 
+   39: Audio blocks store their .ogg at the end of sharedassets1.resource (the same
+   40: file the dancing-skeleton music lives in); remove truncates it when the block
+   41: is the last one appended.
+   42: """
+   43: 
+   44: import copy
+   45: import json
+   46: import math
+   47: import os
+   48: import re
+   49: import struct
+   50: import subprocess
+   51: import sys
+   52: import tempfile
+   53: import time
+   54: 
+   55: import UnityPy
+   56: from PIL import Image, ImageDraw, ImageFont
+   57: from UnityPy.enums import TextureFormat
+   58: 
+   59: sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+   60: from add_picture_block import list_count_offset, picture, s  # noqa: E402
+   61: 
+   62: HERE = os.path.dirname(os.path.abspath(__file__))
+   63: ROOT = os.path.dirname(os.path.dirname(HERE))
+   64: DATA = os.path.join(HERE, "data", "data.unity3d")
+   65: RES = os.path.join(HERE, "data", "sharedassets1.resource")
+   66: STATE_PATH = os.path.join(HERE, "addblock_state.json")
+   67: GLOBALS = os.path.join(ROOT, "server", "seed", "world", "globals.json")
+   68: ROLE_LOCKS = os.path.join(ROOT, "server", "services", "role_locks.py")
+   69: 
+   70: YEEP_PATH = "mapobjects/decoration/1x4x2_forbidden_textyeep"
+   71: PILLOW_KEY = b"1x1_stuffed"
+   72: PICTURE_MATERIAL_PID = 54
+   73: STUFFED_MATERIAL_PID = 110
+   74: TEXTURE_TEMPLATE = "discordIcon"
+   75: OLD_GO, OLD_MB, OLD_BC = 132695, 132697, 132700
+   76: PREF_CLIP, PREF_AUDIO, PREF_ANIM = 53109, 53126, 53021
+   77: SPIN_PERIOD, BOB_PERIOD = 2.0, 1.2
+   78: # Mesh reduction (grid vertex clustering).  On: a 3.1M-vertex mesh alone is
+   79: # ~220MB of vertex+index data, which exceeds the Quest's ~460MB GPU budget and
+   80: # gets the game OOM-killed (signal 9) partway through loading.  Bundles that are
+   81: # already light are left alone, so nothing small loses detail.
+   82: REDUCE_TARGET_TRIS, REDUCE_OVER_TRIS = 150_000, 200_000
+   83: MAX_VERTS = 4_000_000
+   84: # Bundle textures larger than this are shrunk on import - a 2048 body map is
+   85: # wasted on a 2m block and would add ~17MB to the game data each time.
+   86: TEX_MAX = 1024
+   87: NULL = {"m_FileID": 0, "m_PathID": 0}
+   88: ZERO3 = {"x": 0.0, "y": 0.0, "z": 0.0}
+   89: IDENT_Q = {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0}
+   90: KEY_RE = re.compile(r"[0-9]+x[0-9]+(?:x[0-9]+)?_[A-Za-z0-9]+")
+   91: _PREFAB_CACHE = {}
+   92: ALLOWED_EXTERNALS = {"resources.assets", "globalgamemanagers.assets",
+   93:                      "unity_builtin_extra", "unity default resources",
+   94:                      "sharedassets0.assets"}
+   95: BUILD_CMD = [sys.executable, os.path.join(ROOT, "tools", "configure_apk.py"),
+   96:              "--apk", os.path.join(ROOT, "Yeeps-2.32.0-yeeper.apk"),
+   97:              "--server", "https://yeeper920-yeeps.onrender.com",
+   98:              "--photon-app-id", "a279e749-3e24-464c-9336-f3a412bdfdbc",
+   99:              "--photon-voice-app-id", "2d9a7f4b-96b8-4305-b87f-0ea0aa722d1f",
+  100:              "--data", os.path.join(ROOT, "tools", "data", "data"),
+  101:              "--lib", os.path.join(ROOT, "build", "native", "libBNMExplorer.so"),
+  102:              "--out", os.path.join(ROOT, "tools", "Yeeps-2.32.0-yeeper.apk")]
+  103: 
+  104: 
+  105: # ----------------------------------------------------------------- helpers
+  106: def clone(f, reader, pid):
+  107:     new = copy.copy(reader)
+  108:     new.path_id = pid
+  109:     f.objects[pid] = new
+  110:     return new
+  111: 
+  112: 
+  113: def pptr(pid):
+  114:     return {"m_FileID": 0, "m_PathID": pid}
+  115: 
+  116: 
+  117: def xptr(file_id, pid):
+  118:     return {"m_FileID": file_id, "m_PathID": pid}
+  119: 
+  120: 
+  121: def parse_size(key):
+  122:     parts = key.split("_", 1)[0].lower().split("x")
+  123:     if len(parts) == 2:
+  124:         return (int(parts[0]), 1, int(parts[1]))
+  125:     if len(parts) == 3:
+  126:         return (int(parts[0]), int(parts[1]), int(parts[2]))
+  127:     raise SystemExit(f'cannot read a size from key "{key}"')
+  128: 
+  129: 
+  130: def template(f, typ, prefer=None):
+  131:     if prefer is not None and prefer in f.objects and f.objects[prefer].type.name == typ:
+  132:         return f.objects[prefer]
+  133:     return next(o for o in f.objects.values() if o.type.name == typ)
+  134: 
+  135: 
+  136: def files(env):
+  137:     return {a.assets_file.name: a.assets_file for a in env.objects}
+  138: 
+  139: 
+  140: def state_load():
+  141:     return json.load(open(STATE_PATH)) if os.path.exists(STATE_PATH) else {}
+  142: 
+  143: 
+  144: def state_save(st):
+  145:     json.dump(st, open(STATE_PATH, "w"), indent=1)
+  146: 
+  147: 
+  148: def backup(path):
+  149:     import shutil
+  150:     bak = path + ".pre-addblock"
+  151:     if not os.path.exists(bak):
+  152:         shutil.copyfile(path, bak)
+  153:     return bak
+  154: 
+  155: 
+  156: # ---------------------------------------------------------------- geometry
+  157: def _quad(verts, idx, ps, n, uvs):
+  158:     base = len(verts)
+  159:     for p, uv in zip(ps, uvs):
+  160:         verts.append((p, n, (1.0, 1.0, 1.0, 1.0), uv))
+  161:     a, b, c, d = base, base + 1, base + 2, base + 3
+  162:     u = [ps[1][i] - ps[0][i] for i in range(3)]
+  163:     v = [ps[2][i] - ps[0][i] for i in range(3)]
+  164:     cr = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2],
+  165:           u[0] * v[1] - u[1] * v[0])
+  166:     if sum(cr[i] * n[i] for i in range(3)) > 0:
+  167:         idx.extend([a, b, c, a, c, d])
+  168:     else:
+  169:         idx.extend([a, c, b, a, d, c])
+  170: 
+  171: 
+  172: def build_cube(size, textured):
+  173:     hx, hy, hz = size[0] * 0.25, size[1] * 0.25, size[2] * 0.25
+  174:     verts, idx = [], []
+  175:     if textured:
+  176:         for _ in range(3):
+  177:             verts.append(((0.0, 0.0, 0.0), (0.0, 1.0, 0.0),
+  178:                           (1.0, 1.0, 1.0, 1.0), (0.5, 0.5)))
+  179:     up = [(0, 0), (1, 0), (1, 1), (0, 1)] if textured else [(0.5, 0.5)] * 4
+  180:     _quad(verts, idx, [(hx, -hy, hz), (-hx, -hy, hz), (-hx, hy, hz), (hx, hy, hz)], (0, 0, 1), up)
+  181:     _quad(verts, idx, [(-hx, -hy, -hz), (hx, -hy, -hz), (hx, hy, -hz), (-hx, hy, -hz)], (0, 0, -1), up)
+  182:     _quad(verts, idx, [(hx, -hy, -hz), (hx, -hy, hz), (hx, hy, hz), (hx, hy, -hz)], (1, 0, 0), up)
+  183:     _quad(verts, idx, [(-hx, -hy, hz), (-hx, -hy, -hz), (-hx, hy, -hz), (-hx, hy, hz)], (-1, 0, 0), up)
+  184:     _quad(verts, idx, [(-hx, hy, -hz), (hx, hy, -hz), (hx, hy, hz), (-hx, hy, hz)], (0, 1, 0), up)
+  185:     _quad(verts, idx, [(-hx, -hy, hz), (hx, -hy, hz), (hx, -hy, -hz), (-hx, -hy, -hz)], (0, -1, 0), up)
+  186:     return _finish(verts, idx, textured, (hx, hy, hz))
+  187: 
+  188: 
+  189: def build_disk(size, textured):
+  190:     r = max(size[0], size[2]) * 0.25
+  191:     t = min(size[1] * 0.1, 0.04)
+  192:     n = 16
+  193:     verts, idx = [], []
+  194:     if textured:
+  195:         for _ in range(3):
+  196:             verts.append(((0.0, 0.0, 0.0), (0.0, 1.0, 0.0),
+  197:                           (1.0, 1.0, 1.0, 1.0), (0.5, 0.5)))
+  198:     uv = None if textured else [(0.5, 0.5)] * 4
+  199:     for i in range(n):
+  200:         a0, a1 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
+  201:         c0, s0_, c1, s1_ = math.cos(a0), math.sin(a0), math.cos(a1), math.sin(a1)
+  202:         nrm = ((c0 + c1) / 2, 0.0, (s0_ + s1_) / 2)
+  203:         ln = math.hypot(nrm[0], nrm[2]) or 1.0
+  204:         nrm = (nrm[0] / ln, 0.0, nrm[2] / ln)
+  205:         quv = ([(i / n, 0), ((i + 1) / n, 0), ((i + 1) / n, 1), (i / n, 1)]
+  206:                if uv is None else uv)
+  207:         _quad(verts, idx,
+  208:               [(c0 * r, -t, s0_ * r), (c1 * r, -t, s1_ * r),
+  209:                (c1 * r, t, s1_ * r), (c0 * r, t, s0_ * r)], nrm, quv)
+  210:     for sign in (1.0, -1.0):
+  211:         base = len(verts)
+  212:         for i in range(n):
+  213:             a = 2 * math.pi * i / n
+  214:             p = (math.cos(a) * r, sign * t, math.sin(a) * r)
+  215:             tuv = ((0.5 + math.cos(a) / 2, 0.5 + math.sin(a) / 2)
+  216:                    if uv is None else (0.5, 0.5))
+  217:             verts.append((p, (0.0, sign, 0.0), (1.0, 1.0, 1.0, 1.0), tuv))
+  218:         centre = len(verts)
+  219:         verts.append(((0.0, sign * t, 0.0), (0.0, sign, 0.0),
+  220:                       (1.0, 1.0, 1.0, 1.0), (0.5, 0.5)))
+  221:         for i in range(n):
+  222:             a, b = base + i, base + (i + 1) % n
+  223:             idx.extend([centre, b, a] if sign > 0 else [centre, a, b])
+  224:     return _finish(verts, idx, textured, (r, t, r))
+  225: 
+  226: 
+  227: def build_bundle(bundle_path, scale, textured):
+  228:     from add_mesh_block import build_geometry, parse_obj
+  229:     if not textured:
+  230:         blob, idx, vcount, ext = build_geometry(bundle_path, scale)
+  231:         return blob, None, idx, vcount, ext
+  232:     env = UnityPy.load(bundle_path)
+  233:     mesh_obj = next((o for o in env.objects if o.type.name == "Mesh"), None)
+  234:     if mesh_obj is None:
+  235:         raise SystemExit(f"no Mesh in {bundle_path!r}")
+  236:     verts, norms, corners = parse_obj(mesh_obj.read().export())
+  237:     if not verts or not corners:
+  238:         raise SystemExit(f"no geometry in {bundle_path}")
+  239:     xs, ys, zs = [v[0] for v in verts], [v[1] for v in verts], [v[2] for v in verts]
+  240:     lo, hi = (min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs))
+  241:     centre = tuple((lo[i] + hi[i]) / 2 for i in range(3))
+  242:     half = tuple((hi[i] - lo[i]) / 2 for i in range(3))
+  243:     k = (scale / 2.0) / (max(half) or 1.0)
+  244:     blob = bytearray()
+  245:     for _ in range(3):
+  246:         blob += struct.pack("<3f3f4f2f", 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0.5, 0.5)
+  247:     h = scale / 2.0
+  248:     for vi, ni in corners:
+  249:         p = verts[vi]
+  250:         n = norms[ni] if 0 <= ni < len(norms) else (0.0, 1.0, 0.0)
+  251:         pos = tuple((p[i] - centre[i]) * k for i in range(3))
+  252:         an = tuple(abs(n[i]) for i in range(3))
+  253:         ax = an.index(max(an))
+  254:         o1, o2 = [i for i in range(3) if i != ax]
+  255:         tu = min(1.0, max(0.0, (pos[o1] / h + 1) / 2))
+  256:         tv = min(1.0, max(0.0, (pos[o2] / h + 1) / 2))
+  257:         blob += struct.pack("<3f3f4f2f", *pos, *n, 1.0, 1.0, 1.0, 1.0, tu, tv)
+  258:     vcount = len(corners) + 3
+  259:     ext = {"x": round(half[0] * k, 6), "y": round(half[1] * k, 6), "z": round(half[2] * k, 6)}
+  260:     return bytes(blob), [0, 1, 2], list(range(3, vcount)), vcount, ext
+  261: 
+  262: 
+  263: def _finish(verts, idx, textured, ext):
+  264:     blob = bytearray()
+  265:     for p, n, col, uv in verts:
+  266:         blob += struct.pack("<3f3f4f2f", *p, *n, *col, *uv)
+  267:     if textured:
+  268:         return bytes(blob), [0, 1, 2], idx, len(verts), ext
+  269:     return bytes(blob), None, idx, len(verts), ext
+  270: 
+  271: 
+  272: def geo_for(key_size, mesh_choice, textured):
+  273:     if mesh_choice == "disk":
+  274:         return build_disk(key_size, textured)
+  275:     if mesh_choice and mesh_choice != "cube":
+  276:         return build_bundle(mesh_choice, max(key_size) * 0.5, textured)
+  277:     return build_cube(key_size, textured)
+  278: 
+  279: 
+  280: def _write_mesh(f, tmpl_pid, target_pid, key, blob, allidx, subs, vcount, ext):
+  281:     """Clone a game mesh template to target_pid with new vertex data and one
+  282:     submesh per (firstVertex, vertexCount, firstIndex, indexCount) in `subs`."""
+  283:     mesh_src = f.objects[tmpl_pid]
+  284:     mt = mesh_src.read_typetree()
+  285:     if isinstance(ext, (tuple, list)):
+  286:         ext = {"x": ext[0], "y": ext[1], "z": ext[2]}
+  287:     mt["m_Name"] = key
+  288:     mt["m_VertexData"]["m_VertexCount"] = vcount
+  289:     mt["m_VertexData"]["m_DataSize"] = blob
+  290:     big = vcount > 0xFFFF
+  291:     if "m_IndexFormat" in mt:
+  292:         mt["m_IndexFormat"] = 1 if big else 0
+  293:     isz = 4 if big else 2
+  294:     ib = struct.pack(f"<{len(allidx)}{'I' if big else 'H'}", *allidx)
+  295:     mt["m_IndexBuffer"] = list(ib) if isinstance(mt["m_IndexBuffer"], list) else ib
+  296:     aabb = {"m_Center": {"x": 0.0, "y": 0.0, "z": 0.0}, "m_Extent": ext}
+  297:     base = mt["m_SubMeshes"][0]
+  298:     mt["m_SubMeshes"] = [
+  299:         {**base, "firstByte": fi * isz, "indexCount": ic, "baseVertex": 0,
+  300:          "firstVertex": fv, "vertexCount": vc, "localAABB": aabb}
+  301:         for (fv, vc, fi, ic) in subs]
+  302:     mt["m_LocalAABB"] = aabb
+  303:     for k in ("m_BakedConvexCollisionMesh", "m_BakedTriangleCollisionMesh"):
+  304:         if k in mt:
+  305:             mt[k] = b"" if isinstance(mt[k], (bytes, bytearray)) else []
+  306:     clone(f, mesh_src, target_pid).save_typetree(mt)
+  307: 
+  308: 
+  309: def write_mesh(f, tmpl_pid, target_pid, key, blob, idx0, idx, vcount, ext):
+  310:     """Single-piece mesh: an optional hidden degenerate submesh 0 (idx0 = [0,1,2])
+  311:     then the geometry (idx) as submesh 1, matching the game's own blocks."""
+  312:     allidx = (idx0 + idx) if idx0 else idx
+  313:     if idx0:
+  314:         subs = [(0, 3, 0, len(idx0)),
+  315:                 (3, vcount - 3, len(idx0), len(idx))]
+  316:     else:
+  317:         subs = [(0, vcount, 0, len(idx))]
+  318:     _write_mesh(f, tmpl_pid, target_pid, key, blob, allidx, subs, vcount, ext)
+  319: 
+  320: 
+  321: 
+  322: def add_texture(res, key, image_path, start):
+  323:     """Picture texture + sign material in resources.assets; next free pid."""
+  324:     tmpl = next(o for o in res.objects.values()
+  325:                 if o.type.name == "Texture2D" and o.read().m_Name == TEXTURE_TEMPLATE)
+  326:     tex = clone(res, tmpl, start).read()
+  327:     tex.m_Name = key
+  328:     tex.set_image(picture(image_path), target_format=TextureFormat.RGBA32, mipmap_count=1)
+  329:     tex.save()
+  330:     pic_src = res.objects[PICTURE_MATERIAL_PID]
+  331:     mat = pic_src.read_typetree()
+  332:     mat["m_Name"] = key
+  333:     mat["m_SavedProperties"]["m_TexEnvs"] = [
+  334:         (k, {**v, "m_Texture": pptr(start)}) if k == "_MainTex" else (k, v)
+  335:         for k, v in mat["m_SavedProperties"]["m_TexEnvs"]]
+  336:     clone(res, pic_src, start + 1).save_typetree(mat)
+  337:     return start, start + 1, start + 2
+  338: 
+  339: 
+  340: # ---------------------------------------------------------------- prefab bundles
+  341: def _quat_matrix(q, p, s):
+  342:     x, y, z, w = q["x"], q["y"], q["z"], q["w"]
+  343:     r = [[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+  344:          [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+  345:          [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]]
+  346:     ax = "xyz"
+  347:     m = [[r[i][c] * s[ax[c]] for c in range(3)] + [p[ax[i]]] for i in range(3)]
+  348:     m.append([0.0, 0.0, 0.0, 1.0])
+  349:     return m
+  350: 
+  351: 
+  352: def _mat_mul(a, b):
+  353:     return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)]
+  354:             for i in range(4)]
+  355: 
+  356: 
+  357: def _xform(m, p):
+  358:     return tuple(m[i][0] * p[0] + m[i][1] * p[1] + m[i][2] * p[2] + m[i][3]
+  359:                  for i in range(3))
+  360: 
+  361: 
+  362: def _xform_dir(m, p):
+  363:     return tuple(m[i][0] * p[0] + m[i][1] * p[1] + m[i][2] * p[2]
+  364:                  for i in range(3))
+  365: 
+  366: 
+  367: def _matrix_trs(m, sc=1.0):
+  368:     """Row-major 4x4 (from _quat_matrix) -> (position, quaternion, scale)
+  369:     with an extra uniform scale applied - used to place particle systems."""
+  370:     ns = [math.sqrt(sum(m[i][j] ** 2 for i in range(3))) or 1.0
+  371:           for j in range(3)]
+  372:     r = [[m[i][j] / ns[j] for j in range(3)] for i in range(3)]
+  373:     px, py, pz = m[0][3] * sc, m[1][3] * sc, m[2][3] * sc
+  374:     tr = r[0][0] + r[1][1] + r[2][2]
+  375:     if tr > 0:
+  376:         s = math.sqrt(tr + 1.0) * 2
+  377:         qw, qx = 0.25 * s, (r[2][1] - r[1][2]) / s
+  378:         qy, qz = (r[0][2] - r[2][0]) / s, (r[1][0] - r[0][1]) / s
+  379:     elif r[0][0] > r[1][1] and r[0][0] > r[2][2]:
+  380:         s = math.sqrt(1.0 + r[0][0] - r[1][1] - r[2][2]) * 2
+  381:         qw, qx = (r[2][1] - r[1][2]) / s, 0.25 * s
+  382:         qy, qz = (r[0][1] + r[1][0]) / s, (r[0][2] + r[2][0]) / s
+  383:     elif r[1][1] > r[2][2]:
+  384:         s = math.sqrt(1.0 + r[1][1] - r[0][0] - r[2][2]) * 2
+  385:         qw, qx = (r[0][2] - r[2][0]) / s, (r[0][1] + r[1][0]) / s
+  386:         qy, qz = 0.25 * s, (r[1][2] + r[2][1]) / s
+  387:     else:
+  388:         s = math.sqrt(1.0 + r[2][2] - r[0][0] - r[1][1]) * 2
+  389:         qw, qx = (r[1][0] - r[0][1]) / s, (r[0][2] + r[2][0]) / s
+  390:         qy, qz = (r[1][2] + r[2][1]) / s, 0.25 * s
+  391:     return ((px, py, pz), (qx, qy, qz, qw),
+  392:             (ns[0] * sc, ns[1] * sc, ns[2] * sc))
+  393: 
+  394: 
+  395: def _obj_geometry(text):
+  396:     """(positions, uvs, normals, corners) from UnityPy Mesh.export() OBJ text;
+  397:     each corner is (vertex index, uv index, normal index)."""
+  398:     pos, uv, nrm, corners = [], [], [], []
+  399:     for line in text.splitlines():
+  400:         if line.startswith("v "):
+  401:             _, x, y, z = line.split()[:4]
+  402:             pos.append((float(x), float(y), float(z)))
+  403:         elif line.startswith("vt "):
+  404:             f = line.split()
+  405:             uv.append((float(f[1]), float(f[2]) if len(f) > 2 else 0.0))
+  406:         elif line.startswith("vn "):
+  407:             _, x, y, z = line.split()[:4]
+  408:             nrm.append((float(x), float(y), float(z)))
+  409:         elif line.startswith("f "):
+  410:             poly = []
+  411:             for tok in line.split()[1:]:
+  412:                 c = tok.split("/")
+  413:                 vi = int(c[0]) - 1
+  414:                 ti = int(c[1]) - 1 if len(c) > 1 and c[1] else -1
+  415:                 ni = int(c[2]) - 1 if len(c) > 2 and c[2] else -1
+  416:                 poly.append((vi, ti, ni))
+  417:             for i in range(1, len(poly) - 1):
+  418:                 for cc in (poly[0], poly[i], poly[i + 1]):
+  419:                     corners.append(cc)
+  420:     return pos, uv, nrm, corners
+  421: 
+  422: 
+  423: def import_prefab(path):
+  424:     """Read a Unity asset bundle into pieces, each already placed in the
+  425:     bundle's own root space.  Returns {pieces, materials, textures, audio,
+  426:     clips}: audio is the bundle's first AudioClip decoded to WAV bytes (or
+  427:     None), clips maps each AnimationClip path id to its name, legacy flag and
+  428:     the object paths its curves drive."""
+  429:     ck = (os.path.abspath(path), os.path.getmtime(path), os.path.getsize(path))
+  430:     if ck in _PREFAB_CACHE:
+  431:         return _PREFAB_CACHE[ck]
+  432:     env = UnityPy.load(path)
+  433:     objs = list(env.objects)
+  434:     trs = {o.path_id: o.read_typetree() for o in objs if o.type.name == "Transform"}
+  435:     world = {}
+  436: 
+  437:     def world_of(pid, seen=()):
+  438:         if pid in world:
+  439:             return world[pid]
+  440:         t = trs.get(pid)
+  441:         if t is None:
+  442:             return None
+  443:         local = _quat_matrix(t["m_LocalRotation"], t["m_LocalPosition"], t["m_LocalScale"])
+  444:         father = t.get("m_Father", {}).get("m_PathID", 0)
+  445:         if father and father in trs and father not in seen:
+  446:             pm = world_of(father, seen + (pid,))
+  447:             m = _mat_mul(pm, local) if pm else local
+  448:         else:
+  449:             m = local
+  450:         world[pid] = m
+  451:         return m
+  452: 
+  453:     go_tr, go_mesh, go_mats = {}, {}, {}
+  454:     for o in objs:
+  455:         if o.type.name not in ("Transform", "MeshFilter", "MeshRenderer",
+  456:                                "SkinnedMeshRenderer"):
+  457:             continue
+  458:         t = o.read_typetree()
+  459:         go = t["m_GameObject"]["m_PathID"]
+  460:         if o.type.name == "Transform":
+  461:             go_tr[go] = o.path_id
+  462:         elif o.type.name == "MeshFilter":
+  463:             go_mesh[go] = t["m_Mesh"]["m_PathID"]
+  464:         elif o.type.name == "MeshRenderer":
+  465:             go_mats[go] = [m["m_PathID"] for m in t.get("m_Materials", [])]
+  466:         else:
+  467:             go_mesh[go] = t.get("m_Mesh", {}).get("m_PathID", 0)
+  468:             go_mats[go] = [m["m_PathID"] for m in t.get("m_Materials", [])]
+  469: 
+  470:     meshes = {o.path_id: o for o in objs if o.type.name == "Mesh"}
+  471:     mats = {o.path_id: o.read_typetree() for o in objs if o.type.name == "Material"}
+  472:     texs = {}
+  473:     for o in objs:
+  474:         if o.type.name == "Texture2D":
+  475:             try:
+  476:                 img = o.read().image
+  477:             except Exception:
+  478:                 img = None
+  479:             if img is not None:
+  480:                 if img.width > TEX_MAX or img.height > TEX_MAX:
+  481:                     img.thumbnail((TEX_MAX, TEX_MAX), Image.LANCZOS)
+  482:                 texs[o.path_id] = img
+  483: 
+  484:     pieces = []
+  485:     for go, mesh_pid in go_mesh.items():
+  486:         if not mesh_pid or mesh_pid not in meshes:
+  487:             continue
+  488:         m = world_of(go_tr.get(go, 0)) or [[1, 0, 0, 0], [0, 1, 0, 0],
+  489:                                            [0, 0, 1, 0], [0, 0, 0, 1]]
+  490:         p, u, n, corners = _obj_geometry(meshes[mesh_pid].read().export())
+  491:         if not corners:
+  492:             continue
+  493:         vlist = []
+  494:         for (vi, ti, ni) in corners:
+  495:             pos = _xform(m, p[vi]) if 0 <= vi < len(p) else (0.0, 0.0, 0.0)
+  496:             nn = _xform_dir(m, n[ni]) if 0 <= ni < len(n) else (0.0, 1.0, 0.0)
+  497:             uu = u[ti] if 0 <= ti < len(u) else (0.5, 0.5)
+  498:             vlist.append((pos, nn, uu))
+  499:         mat = (go_mats.get(go) or [0])[0]
+  500:         pieces.append({"verts": vlist, "mat": mat})
+  501:     if not pieces:
+  502:         raise SystemExit(f"no MeshFilter/SkinnedMeshRenderer meshes in {path!r}")
+  503:     go_ps, go_psr = {}, {}
+  504:     for o in objs:
+  505:         if o.type.name not in ("ParticleSystem", "ParticleSystemRenderer"):
+  506:             continue
+  507:         t = o.read_typetree()
+  508:         go = t["m_GameObject"]["m_PathID"]
+  509:         if o.type.name == "ParticleSystem":
+  510:             go_ps[go] = t
+  511:         else:
+  512:             go_psr[go] = t
+  513:     go_names = {}
+  514:     for o in objs:
+  515:         if o.type.name == "GameObject" and o.path_id in go_ps:
+  516:             go_names[o.path_id] = o.read_typetree().get("m_Name", "fx")
+  517:     particles = []
+  518:     for go, ps in go_ps.items():
+  519:         psr = go_psr.get(go)
+  520:         if psr is None:
+  521:             continue
+  522:         m = world_of(go_tr.get(go, 0))
+  523:         if m is None:
+  524:             m = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0],
+  525:                  [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
+  526:         particles.append({"name": go_names.get(go, "fx")[:60], "matrix": m,
+  527:                           "ps": ps, "psr": psr})
+  528:     audio = None
+  529:     for o in objs:
+  530:         if o.type.name == "AudioClip":
+  531:             try:
+  532:                 samp = o.read().samples
+  533:             except Exception:
+  534:                 samp = None
+  535:             if samp:
+  536:                 nm, data = next(iter(samp.items()))
+  537:                 audio = {"name": nm, "data": data}
+  538:                 break
+  539:     clips = {}
+  540:     for o in objs:
+  541:         if o.type.name == "AnimationClip":
+  542:             try:
+  543:                 t = o.read_typetree()
+  544:             except Exception:
+  545:                 continue
+  546:             paths = set()
+  547:             for grp in ("m_PositionCurves", "m_FloatCurves", "m_EulerCurves",
+  548:                         "m_ScaleCurves"):
+  549:                 for c in t.get(grp) or []:
+  550:                     paths.add(c.get("path"))
+  551:             clips[o.path_id] = {"name": t.get("m_Name"),
+  552:                                 "legacy": t.get("m_Legacy"), "paths": paths}
+  553:     imp = {"pieces": pieces, "materials": mats, "textures": texs,
+  554:            "audio": audio, "clips": clips, "particles": particles}
+  555:     _PREFAB_CACHE[ck] = imp
+  556:     return imp
+  557: 
+  558: 
+  559: def _reduce_geometry(verts, allidx, subs, mats):
+  560:     """Grid vertex clustering: collapse vertices that fall in the same grid
+  561:     cell onto its centroid, then drop triangles that became degenerate.  Keeps
+  562:     the hidden submesh 0 and each submesh's material, so a very heavy bundle
+  563:     (a whole Minecraft map, say) shrinks to something the headset can draw.
+  564: 
+  565:     The cell key is position-only: a Minecraft-style mesh is made of isolated
+  566:     faces, so a key that also carried the normal/UV would keep every triangle
+  567:     alive and the mesh would never shrink.  Each cell keeps the first vertex's
+  568:     normal and UV, which preserves the hard voxel edges instead of averaging
+  569:     them away."""
+  570:     pts = [v[0] for v in verts[3:]]
+  571:     if not pts:
+  572:         return verts, allidx, subs, mats
+  573:     lo = [min(p[i] for p in pts) for i in range(3)]
+  574:     diag = math.sqrt(sum((max(p[i] for p in pts) - lo[i]) ** 2
+  575:                          for i in range(3))) or 1.0
+  576: 
+  577:     def tri_count(cell):
+  578:         inv = 1.0 / cell
+  579: 
+  580:         def cellkey(p):
+  581:             return (int((p[0] - lo[0]) * inv),
+  582:                     int((p[1] - lo[1]) * inv),
+  583:                     int((p[2] - lo[2]) * inv))
+  584: 
+  585:         keys = [cellkey(v[0]) for v in verts[3:]]
+  586:         live = 0
+  587:         for si, (fv, vc, fi, ic) in enumerate(subs):
+  588:             if si == 0:
+  589:                 continue
+  590:             for a2 in range(fi, fi + ic, 3):
+  591:                 k0 = keys[allidx[a2] - 3]
+  592:                 k1 = keys[allidx[a2 + 1] - 3]
+  593:                 k2 = keys[allidx[a2 + 2] - 3]
+  594:                 if k0 != k1 and k1 != k2 and k0 != k2:
+  595:                     live += 1
+  596:         return live
+  597: 
+  598:     def cluster(want):
+  599:         # Grow the grid until the number of *surviving triangles* is near the
+  600:         # target, then really merge on that grid.
+  601:         cell_lo, cell_hi = diag / 1_000_000, diag
+  602:         for _ in range(24):
+  603:             mid = math.sqrt(cell_lo * cell_hi)
+  604:             if tri_count(mid) > want:
+  605:                 cell_lo = mid
+  606:             else:
+  607:                 cell_hi = mid
+  608:         inv = 1.0 / cell_hi
+  609: 
+  610:         def ckey(p):
+  611:             return (int((p[0] - lo[0]) * inv),
+  612:                     int((p[1] - lo[1]) * inv),
+  613:                     int((p[2] - lo[2]) * inv))
+  614: 
+  615:         new = [v for v in verts[:3]]
+  616:         cellmap, csum = {}, []
+  617:         remap = [0, 1, 2] + [0] * (len(verts) - 3)
+  618:         for i in range(3, len(verts)):
+  619:             p, n, c, u = verts[i]
+  620:             key = ckey(p)
+  621:             j = cellmap.get(key)
+  622:             if j is None:
+  623:                 j = len(new)
+  624:                 cellmap[key] = j
+  625:                 new.append([p, n, c, u])
+  626:                 csum.append([p[0], p[1], p[2], 1])
+  627:             else:
+  628:                 s = csum[j - 3]
+  629:                 s[0] += p[0]
+  630:                 s[1] += p[1]
+  631:                 s[2] += p[2]
+  632:                 s[3] += 1
+  633:             remap[i] = j
+  634:         for j in range(3, len(new)):
+  635:             s = csum[j - 3]
+  636:             new[j][0] = (s[0] / s[3], s[1] / s[3], s[2] / s[3])
+  637:         nv = [(tuple(p), n, c, u) for p, n, c, u in new]
+  638:         ni, nsubs, nmats = [0, 1, 2], [(0, 3, 0, 3)], []
+  639:         for si, (fv, vc, fi, ic) in enumerate(subs):
+  640:             if si == 0:
+  641:                 continue
+  642:             start = len(ni)
+  643:             for a2 in range(fi, fi + ic, 3):
+  644:                 i0 = remap[allidx[a2]]
+  645:                 i1 = remap[allidx[a2 + 1]]
+  646:                 i2 = remap[allidx[a2 + 2]]
+  647:                 if i0 != i1 and i1 != i2 and i0 != i2:
+  648:                     ni.extend((i0, i1, i2))
+  649:             if len(ni) > start:
+  650:                 nsubs.append((0, len(nv), start, len(ni) - start))
+  651:                 nmats.append(mats[si - 1])
+  652:         return nv, ni, nsubs, nmats
+  653: 
+  654:     return cluster(REDUCE_TARGET_TRIS)
+  655: 
+  656: 
+  657: def build_prefab_geometry(imp, size):
+  658:     """Merge every piece into one block mesh (scaled to `size`, centred).
+  659:     Returns (blob, index list, submesh ranges, vertex count, extent, mat list)."""
+  660:     scale = max(size) * 0.5
+  661:     pts = [v[0] for pc in imp["pieces"] for v in pc["verts"]]
+  662:     lo = [min(p[i] for p in pts) for i in range(3)]
+  663:     hi = [max(p[i] for p in pts) for i in range(3)]
+  664:     centre = [(lo[i] + hi[i]) / 2 for i in range(3)]
+  665:     half = [(hi[i] - lo[i]) / 2 for i in range(3)]
+  666:     k = (scale / 2.0) / (max(half) or 1.0)
+  667: 
+  668:     verts = [((0.0, 0.0, 0.0), (0.0, 1.0, 0.0), (1.0, 1.0, 1.0, 1.0), (0.5, 0.5))
+  669:              for _ in range(3)]
+  670:     allidx = [0, 1, 2]
+  671:     subs, mats = [(0, 3, 0, 3)], []
+  672: 
+  673:     def vkey(p, n, u):
+  674:         return (round(p[0], 5), round(p[1], 5), round(p[2], 5),
+  675:                 round(n[0], 4), round(n[1], 4), round(n[2], 4),
+  676:                 round(u[0], 5), round(u[1], 5))
+  677: 
+  678:     vmap = {vkey(p, n, u): i for i, (p, n, _c, u) in enumerate(verts)}
+  679: 
+  680:     def add_vert(p, n, u):
+  681:         key = vkey(p, n, u)
+  682:         i = vmap.get(key)
+  683:         if i is None:
+  684:             i = len(verts)
+  685:             vmap[key] = i
+  686:             verts.append((p, n, (1.0, 1.0, 1.0, 1.0), u))
+  687:         return i
+  688: 
+  689:     # Emit every triangle, then group the indices by material.  A bundle often
+  690:     # has thousands of pieces sharing a handful of materials (a Minecraft map:
+  691:     # 1072 pieces, 101 materials), and one submesh per piece means one draw call
+  692:     # each - hundreds on the headset.  Grouping by material cuts that ~10x while
+  693:     # leaving the geometry identical.
+  694:     per_mat = {}
+  695:     order = []
+  696:     for pc in imp["pieces"]:
+  697:         src = pc["verts"]
+  698:         if len(src) < 3:
+  699:             continue
+  700:         m = pc["mat"]
+  701:         bucket = per_mat.get(m)
+  702:         if bucket is None:
+  703:             bucket = per_mat[m] = []
+  704:             order.append(m)
+  705:         for i in range(0, len(src) - 2, 3):
+  706:             for (pos, nn, uu) in src[i:i + 3]:
+  707:                 p = tuple((pos[j] - centre[j]) * k for j in range(3))
+  708:                 bucket.append(add_vert(p, nn, uu))
+  709:     for m in order:
+  710:         bucket = per_mat[m]
+  711:         if not bucket:
+  712:             continue
+  713:         first_i = len(allidx)
+  714:         allidx.extend(bucket)
+  715:         subs.append((0, len(verts), first_i, len(allidx) - first_i))
+  716:         mats.append(m)
+  717:     if len(allidx) // 3 > REDUCE_OVER_TRIS:
+  718:         tris = len(allidx) // 3
+  719:         print(f"  mesh has {tris:,} triangles - clustering it down to about "
+  720:               f"{REDUCE_TARGET_TRIS:,} for the headset ...")
+  721:         t0 = time.time()
+  722:         verts, allidx, subs, mats = _reduce_geometry(verts, allidx, subs, mats)
+  723:         print(f"  reduced to {len(verts):,} vertices / {len(allidx) // 3:,} "
+  724:               f"triangles in {time.time() - t0:.0f}s")
+  725:     if len(verts) > 4_000_000:
+  726:         raise SystemExit(f"prefab has {len(verts)} vertices - too big to load; "
+  727:                          "split it into smaller pieces or decimate the model")
+  728:     blob = bytearray()
+  729:     for p, n, col, uvv in verts:
+  730:         blob += struct.pack("<3f3f4f2f", *p, *n, *col, *uvv)
+  731:     ext = {"x": round(half[0] * k, 6), "y": round(half[1] * k, 6),
+  732:            "z": round(half[2] * k, 6)}
+  733:     if len(verts) > 1_000_000:
+  734:         print(f"  warning: {len(verts)} vertices - an extremely heavy block; "
+  735:               "expect long load times and poor frame rate on the headset")
+  736:     elif len(verts) > 200_000:
+  737:         print(f"  note: {len(verts)} vertices - a very heavy block; "
+  738:               "it will use a 32-bit mesh and may load slowly in game")
+  739:     return bytes(blob), allidx, subs, len(verts), ext, mats
+  740: 
+  741: 
+  742: def add_texture_img(res, name, img, start):
+  743:     tmpl = next(o for o in res.objects.values()
+  744:                 if o.type.name == "Texture2D" and o.read().m_Name == TEXTURE_TEMPLATE)
+  745:     tex = clone(res, tmpl, start).read()
+  746:     tex.m_Name = name
+  747:     tex.set_image(img.convert("RGBA"), target_format=TextureFormat.RGBA32, mipmap_count=1)
+  748:     tex.save()
+  749:     return start
+  750: 
+  751: 
+  752: def import_bundle_materials(res, imp, mats, start):
+  753:     """Clone the game's textured mapobject material once per bundle material,
+  754:     with the bundle's _MainTex (or a solid colour swatch).  Returns
+  755:     (map bundle mat pid -> game material pid, next free pid)."""
+  756:     src = res.objects[PICTURE_MATERIAL_PID]
+  757:     mapping = {}
+  758:     for bpid, mt in mats.items():
+  759:         props = mt.get("m_SavedProperties", {})
+  760:         teximg, main = None, 0
+  761:         for k, v in props.get("m_TexEnvs", []):
+  762:             if k == "_MainTex":
+  763:                 main = v.get("m_Texture", {}).get("m_PathID", 0)
+  764:         if main and main in imp["textures"]:
+  765:             teximg = imp["textures"][main]
+  766:         if teximg is None:
+  767:             col = (1.0, 1.0, 1.0, 1.0)
+  768:             for k, v in props.get("m_Colors", []):
+  769:                 if k in ("_BaseColor", "_Color"):
+  770:                     col = (v["r"], v["g"], v["b"], v["a"])
+  771:             teximg = Image.new("RGBA", (8, 8),
+  772:                                tuple(int(c * 255) for c in
+  773:                                      (col[0], col[1], col[2], col[3])))
+  774:         name = mt.get("m_Name", "mat")
+  775:         tex_pid = add_texture_img(res, f"{name}_tex", teximg, start)
+  776:         mat = src.read_typetree()
+  777:         mat["m_Name"] = name
+  778:         mat["m_SavedProperties"]["m_TexEnvs"] = [
+  779:             (k, {**v, "m_Texture": pptr(tex_pid)}) if k == "_MainTex" else (k, v)
+  780:             for k, v in mat["m_SavedProperties"]["m_TexEnvs"]]
+  781:         clone(res, src, start + 1).save_typetree(mat)
+  782:         mapping[bpid] = start + 1
+  783:         start += 2
+  784:     return mapping, start
+  785: 
+  786: 
+  787: # ---------------------------------------------------------------- audio
+  788: _FFMPEG = None
+  789: 
+  790: 
+  791: def bundle_audio_wav(audio):
+  792:     """Write a bundle AudioClip's decoded WAV bytes to a temp file."""
+  793:     p = os.path.join(tempfile.gettempdir(),
+  794:                      f"addblock_bundle_{os.getpid()}.wav")
+  795:     with open(p, "wb") as fh:
+  796:         fh.write(audio["data"])
+  797:     return p
+  798: 
+  799: 
+  800: def ffmpeg():
+  801:     global _FFMPEG
+  802:     if _FFMPEG is None:
+  803:         try:
+  804:             import imageio_ffmpeg
+  805:             _FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
+  806:         except Exception as e:
+  807:             raise SystemExit(f"ffmpeg not available (pip install imageio-ffmpeg): {e}")
+  808:     return _FFMPEG
+  809: 
+  810: 
+  811: def make_ogg(src_path, dst_path):
+  812:     exe = ffmpeg()
+  813:     r = subprocess.run([exe, "-y", "-i", src_path, "-ac", "2",
+  814:                         "-c:a", "libvorbis", "-q:a", "4", dst_path],
+  815:                        capture_output=True, text=True)
+  816:     if r.returncode != 0 or not os.path.exists(dst_path):
+  817:         raise SystemExit(f"ffmpeg could not encode {src_path}:\n{r.stderr[-600:]}")
+  818:     info = subprocess.run([exe, "-i", dst_path], capture_output=True, text=True)
+  819:     m = re.search(r"Duration: (\d+):(\d+):(\d+\.\d+)", info.stderr)
+  820:     h, mnt, sec = (float(x) for x in m.groups())
+  821:     mf = re.search(r"Audio: \w+, (\d+) Hz, (\w+)", info.stderr)
+  822:     return h * 3600 + mnt * 60 + sec, int(mf.group(1)), (2 if "stereo" in mf.group(2) else 1)
+  823: 
+  824: 
+  825: def append_audio(s1, clip_pid, key, src_path):
+  826:     """Encode to .ogg, append to sharedassets1.resource, create the AudioClip."""
+  827:     tmpl = template(s1, "AudioClip", PREF_AUDIO)
+  828:     ogg = os.path.join(tempfile.gettempdir(), f"addblock_{os.getpid()}.ogg")
+  829:     try:
+  830:         length, freq, ch = make_ogg(src_path, ogg)
+  831:         with open(ogg, "rb") as fh:
+  832:             blob = fh.read()
+  833:     finally:
+  834:         if os.path.exists(ogg):
+  835:             os.remove(ogg)
+  836:     offset = os.path.getsize(RES)
+  837:     with open(RES, "ab") as fh:
+  838:         fh.write(blob)
+  839:     ac = tmpl.read_typetree()
+  840:     ac["m_Name"] = key
+  841:     ac["m_Channels"] = ch
+  842:     ac["m_Frequency"] = freq
+  843:     ac["m_Length"] = length
+  844:     ac["m_PreloadAudioData"] = True
+  845:     ac["m_CompressionFormat"] = 1
+  846:     ac["m_Resource"] = {"m_Source": "sharedassets1.resource",
+  847:                         "m_Offset": offset, "m_Size": len(blob)}
+  848:     clone(s1, tmpl, clip_pid).save_typetree(ac)
+  849:     return offset, len(blob), length
+  850: 
+  851: 
+  852: # ---------------------------------------------------------------- clips
+  853: def _rot_key(t, yaw):
+  854:     qy, qw = math.sin(yaw / 2), math.cos(yaw / 2)
+  855:     dt = math.pi / SPIN_PERIOD
+  856:     w4 = {"x": 1 / 3, "y": 1 / 3, "z": 1 / 3, "w": 1 / 3}
+  857:     return {"time": t, "value": {"x": 0.0, "y": qy, "z": 0.0, "w": qw},
+  858:             "inSlope": {"x": 0.0, "y": dt * qw, "z": 0.0, "w": -dt * qy},
+  859:             "outSlope": {"x": 0.0, "y": dt * qw, "z": 0.0, "w": -dt * qy},
+  860:             "weightedMode": 0, "inWeight": dict(w4), "outWeight": dict(w4)}
+  861: 
+  862: 
+  863: def _pos_key(t, y, slope):
+  864:     w3 = {"x": 1 / 3, "y": 1 / 3, "z": 1 / 3}
+  865:     return {"time": t, "value": {"x": 0.0, "y": y, "z": 0.0},
+  866:             "inSlope": {"x": 0.0, "y": slope, "z": 0.0},
+  867:             "outSlope": {"x": 0.0, "y": slope, "z": 0.0},
+  868:             "weightedMode": 0, "inWeight": dict(w3), "outWeight": dict(w3)}
+  869: 
+  870: 
+  871: def make_clip(s1, clip_pid, key, preset, amp):
+  872:     tmpl = template(s1, "AnimationClip", PREF_CLIP)
+  873:     clip = tmpl.read_typetree()
+  874:     clip["m_Name"] = key + "_anim"
+  875:     clip["m_Legacy"] = True
+  876:     clip["m_WrapMode"] = 2
+  877:     clip["m_SampleRate"] = 60
+  878:     clip["m_ClipBindingConstant"] = {"genericBindings": [], "pptrCurveMapping": []}
+  879:     clip["m_FloatCurves"] = []
+  880:     clip["m_PPtrCurves"] = []
+  881:     clip["m_EulerCurves"] = []
+  882:     clip["m_CompressedRotationCurves"] = []
+  883:     clip["m_Events"] = []
+  884:     clip["m_HasGenericRootTransform"] = False
+  885:     clip["m_HasMotionFloatCurves"] = False
+  886:     if preset == "spin":
+  887:         keys = [_rot_key(t * SPIN_PERIOD / 4, 2 * math.pi * t / 4) for t in range(5)]
+  888:         clip["m_RotationCurves"] = [{
+  889:             "curve": {"m_Curve": keys, "m_PreInfinity": 2, "m_PostInfinity": 2,
+  890:                       "m_RotationOrder": 4}, "path": ""}]
+  891:         clip["m_PositionCurves"] = []
+  892:     else:
+  893:         keys = []
+  894:         for i in range(5):
+  895:             t = i * BOB_PERIOD / 4
+  896:             y = amp * (1 - math.cos(2 * math.pi * t / BOB_PERIOD)) / 2
+  897:             slope = amp * math.pi * math.sin(2 * math.pi * t / BOB_PERIOD) / BOB_PERIOD
+  898:             keys.append(_pos_key(t, y, slope))
+  899:         clip["m_PositionCurves"] = [{
+  900:             "curve": {"m_Curve": keys, "m_PreInfinity": 2, "m_PostInfinity": 2,
+  901:                       "m_RotationOrder": 4}, "path": ""}]
+  902:         clip["m_RotationCurves"] = []
+  903:     clip["m_ScaleCurves"] = []
+  904:     clone(s1, tmpl, clip_pid).save_typetree(clip)
+  905: 
+  906: 
+  907: # ---------------------------------------------------------------- patterns
+  908: def pattern_db(env):
+  909:     return next(o for o in env.objects if o.type.name == "MonoBehaviour"
+  910:                 and PILLOW_KEY in o.get_raw_data()
+  911:                 and o.get_raw_data().count(b"mapObject") > 100)
+  912: 
+  913: 
+  914: def pattern_find(raw, key):
+  915:     kb = key.encode()
+  916:     needle = struct.pack("<i", len(kb)) + kb
+  917:     off = -1
+  918:     while True:
+  919:         off = raw.find(needle, off + 1)
+  920:         if off < 0:
+  921:             return None
+  922:         try:
+  923:             cnt_off, entries, end = list_count_offset(bytes(raw), off)
+  924:         except SystemExit:
+  925:             continue
+  926:         if off in entries:
+  927:             return cnt_off, entries, end, off
+  928: 
+  929: 
+  930: def pattern_add(env, key, display, cost):
+  931:     db = pattern_db(env)
+  932:     raw = bytearray(db.get_raw_data())
+  933:     if pattern_find(bytes(raw), key):
+  934:         raise SystemExit(f"{key} is already in the pattern list")
+  935:     pillow_off = raw.find(struct.pack("<i", len(PILLOW_KEY)) + PILLOW_KEY + b"\0")
+  936:     cnt_off, entries, end = list_count_offset(bytes(raw), pillow_off)
+  937:     count = struct.unpack_from("<i", raw, cnt_off)[0]
+  938:     entry = (s(key) + s(display) + s("mapObject") + struct.pack("<i", 0)
+  939:              + s("white") + struct.pack("<ii", cost, 0))
+  940:     raw[end:end] = entry
+  941:     struct.pack_into("<i", raw, cnt_off, count + 1)
+  942:     db.set_raw_data(bytes(raw))
+  943: 
+  944: 
+  945: def pattern_remove(env, key):
+  946:     db = pattern_db(env)
+  947:     raw = bytearray(db.get_raw_data())
+  948:     hit = pattern_find(bytes(raw), key)
+  949:     if not hit:
+  950:         raise SystemExit(f"{key} is not in the pattern list")
+  951:     cnt_off, entries, end, off = hit
+  952:     i = entries.index(off)
+  953:     nxt = entries[i + 1] if i + 1 < len(entries) else end
+  954:     del raw[off:nxt]
+  955:     count = struct.unpack_from("<i", raw, cnt_off)[0]
+  956:     struct.pack_into("<i", raw, cnt_off, count - 1)
+  957:     db.set_raw_data(bytes(raw))
+  958: 
+  959: 
+  960: # ---------------------------------------------------------------- server files
+  961: def server_patch(key, add):
+  962:     changed = []
+  963:     g = json.load(open(GLOBALS, encoding="utf-8"))
+  964:     if add:
+  965:         backup(GLOBALS)
+  966:     for item in g:
+  967:         if item.get("key") == "valid_mapobject_keys":
+  968:             if add and key not in item["value"]:
+  969:                 item["value"].append(key)
+  970:                 changed.append("valid_mapobject_keys")
+  971:             elif not add and key in item["value"]:
+  972:                 item["value"].remove(key)
+  973:                 changed.append("valid_mapobject_keys")
+  974:         if item.get("key") == "default_account_override":
+  975:             op = item["value"].setdefault("ownedPatterns", [])
+  976:             if add and key not in op:
+  977:                 op.append(key)
+  978:                 changed.append("ownedPatterns")
+  979:             elif not add and key in op:
+  980:                 op.remove(key)
+  981:                 changed.append("ownedPatterns")
+  982:     if changed:
+  983:         json.dump(g, open(GLOBALS, "w", encoding="utf-8"),
+  984:                   indent=2, ensure_ascii=False)
+  985:     src = open(ROLE_LOCKS, encoding="utf-8").read()
+  986:     m = re.search(r"ALWAYS_OWNED_PATTERNS: list = \[([^\]]*)\]", src)
+  987:     if m:
+  988:         has = f'"{key}"' in m.group(1)
+  989:         if add and not has:
+  990:             backup(ROLE_LOCKS)
+  991:             body = m.group(1).rstrip()
+  992:             if not body.endswith(","):
+  993:                 body += ","
+  994:             src = (src[:m.start()]
+  995:                    + f'ALWAYS_OWNED_PATTERNS: list = [{body}\n    "{key}"]'
+  996:                    + src[m.end():])
+  997:             open(ROLE_LOCKS, "w", encoding="utf-8").write(src)
+  998:             changed.append("ALWAYS_OWNED_PATTERNS")
+  999:         elif not add and has:
+ 1000:             backup(ROLE_LOCKS)
+ 1001:             body = re.sub(rf',?\s*"{re.escape(key)}"', "", m.group(1))
+ 1002:             src = (src[:m.start()]
+ 1003:                    + f"ALWAYS_OWNED_PATTERNS: list = [{body}]"
+ 1004:                    + src[m.end():])
+ 1005:             open(ROLE_LOCKS, "w", encoding="utf-8").write(src)
+ 1006:             changed.append("ALWAYS_OWNED_PATTERNS")
+ 1007:     return changed
+ 1008: 
+ 1009: 
+ 1010: # ---------------------------------------------------------------- builders
+ 1011: def build_resources_block(env, key, size, mesh_choice, texture_path, fid):
+ 1012:     """Picture / mesh / texture-only blocks: flat on the root GO, everything
+ 1013:     in resources.assets (the proven add_picture_block / add_mesh_block layout)."""
+ 1014:     rm_obj = next(o for o in env.objects if o.type.name == "ResourceManager")
+ 1015:     rm_tree = rm_obj.read_typetree()
+ 1016:     cont = dict((k, v) for k, v in rm_tree["m_Container"])
+ 1017:     res_path = "mapobjects/complexdecorationstuffed/" + key.lower()
+ 1018:     if res_path in cont:
+ 1019:         raise SystemExit(f"{key} already present in the container")
+ 1020:     f = files(env)["resources.assets"]
+ 1021:     yeep_go = f.objects[cont[YEEP_PATH]["m_PathID"]]
+ 1022:     comps = {r.type.name: r for r in
+ 1023:              (f.objects[c["component"]["m_PathID"]]
+ 1024:               for c in yeep_go.read_typetree()["m_Component"])}
+ 1025: 
+ 1026:     textured = bool(texture_path)
+ 1027:     tmpl_mesh = comps["MeshFilter"].read_typetree()["m_Mesh"]["m_PathID"]
+ 1028:     nxt = max(f.objects) + 1
+ 1029:     tex_pid = mat_pid = None
+ 1030:     if textured:
+ 1031:         tex_pid, mat_pid, nxt = add_texture(f, key, texture_path, nxt)
+ 1032:     blob, idx0, idx, vcount, ext = geo_for(size, mesh_choice, textured)
+ 1033:     mesh_pid = nxt
+ 1034:     write_mesh(f, tmpl_mesh, mesh_pid, key, blob, idx0, idx, vcount, ext)
+ 1035:     base = nxt + 1
+ 1036:     ids = {k: base + i for i, k in enumerate(("go", "tr", "mb", "mf", "mr", "bc"))}
+ 1037:     ids["mesh"], ids["tex"], ids["mat"] = mesh_pid, tex_pid, mat_pid
+ 1038: 
+ 1039:     gt = yeep_go.read_typetree()
+ 1040:     gt["m_Name"] = key
+ 1041:     gt["m_Tag"] = 20000
+ 1042:     gt["m_Component"] = [{"component": pptr(ids[k])} for k in ("tr", "mb", "mf", "mr", "bc")]
+ 1043:     clone(f, yeep_go, ids["go"]).save_typetree(gt)
+ 1044: 
+ 1045:     tt = comps["Transform"].read_typetree()
+ 1046:     tt["m_GameObject"] = pptr(ids["go"])
+ 1047:     tt["m_Children"] = []
+ 1048:     tt["m_Father"] = NULL
+ 1049:     clone(f, comps["Transform"], ids["tr"]).save_typetree(tt)
+ 1050: 
+ 1051:     ft = comps["MeshFilter"].read_typetree()
+ 1052:     ft["m_GameObject"] = pptr(ids["go"])
+ 1053:     ft["m_Mesh"] = pptr(mesh_pid)
+ 1054:     clone(f, comps["MeshFilter"], ids["mf"]).save_typetree(ft)
+ 1055: 
+ 1056:     rt = comps["MeshRenderer"].read_typetree()
+ 1057:     rt["m_GameObject"] = pptr(ids["go"])
+ 1058:     rt["m_Materials"] = ([pptr(STUFFED_MATERIAL_PID), pptr(mat_pid)] if textured
+ 1059:                          else [pptr(STUFFED_MATERIAL_PID)])
+ 1060:     clone(f, comps["MeshRenderer"], ids["mr"]).save_typetree(rt)
+ 1061: 
+ 1062:     bt = comps["BoxCollider"].read_typetree()
+ 1063:     bt["m_GameObject"] = pptr(ids["go"])
+ 1064:     bt["m_Size"] = {"x": size[0] * 0.5, "y": size[1] * 0.5, "z": size[2] * 0.5}
+ 1065:     bt["m_Center"] = ZERO3
+ 1066:     clone(f, comps["BoxCollider"], ids["bc"]).save_typetree(bt)
+ 1067: 
+ 1068:     yraw = comps["MonoBehaviour"].get_raw_data()
+ 1069:     mb = (struct.pack("<iq", 0, ids["go"]) + yraw[12:16] + yraw[16:28]
+ 1070:           + s("") + struct.pack("<3i", *size) + b"\0" * 16
+ 1071:           + s("") + struct.pack("<i", 0) + s("placePillow") + struct.pack("<fi", 0.2, 0)
+ 1072:           + s("breakPillow") + s("footstepPillow") + struct.pack("<3i", 0, 0, 1))
+ 1073:     clone(f, comps["MonoBehaviour"], ids["mb"]).set_raw_data(mb)
+ 1074: 
+ 1075:     rm_tree["m_Container"].append((res_path, xptr(fid, ids["go"])))
+ 1076:     if textured:
+ 1077:         rm_tree["m_Container"].append(("blazepic/mat_" + key.lower(),
+ 1078:                                        xptr(fid, mat_pid)))
+ 1079:     rm_obj.save_typetree(rm_tree)
+ 1080:     return ids, res_path, textured
+ 1081: 
+ 1082: 
+ 1083: def build_shared1_block(env, key, size, mesh_choice, texture_path,
+ 1084:                         anim, with_audio, fid_s1, fid_res, particles=None):
+ 1085:     """Skeleton-style blocks (audio and/or animation): root GO
+ 1086:     [Transform, MapObject, Collider, AudioSource?] + VisualContainer child with
+ 1087:     MeshFilter / MeshRenderer / Animation.  Mesh + texture stay in
+ 1088:     resources.assets, referenced across via fileID.  `particles` is an optional
+ 1089:     list of particle dicts (from import_prefab) cloned as children of the root."""
+ 1090:     ggm_f = files(env)["globalgamemanagers"]
+ 1091:     rm_obj = next(o for o in env.objects
+ 1092:                   if o.type.name == "ResourceManager" and o.assets_file is ggm_f)
+ 1093:     rm_tree = rm_obj.read_typetree()
+ 1094:     cont = dict((k, v) for k, v in rm_tree["m_Container"])
+ 1095:     res_path = "mapobjects/complexdecorationstuffed/" + key.lower()
+ 1096:     if res_path in cont:
+ 1097:         raise SystemExit(f"{key} already present in the container")
+ 1098:     s1 = files(env)["sharedassets1.assets"]
+ 1099:     res = files(env)["resources.assets"]
+ 1100:     yeep_go = res.objects[cont[YEEP_PATH]["m_PathID"]]
+ 1101:     old_go = res.objects[OLD_GO].read_typetree()
+ 1102:     old_bc = res.objects[OLD_BC].read_typetree()
+ 1103:     old_mb_raw = bytearray(res.objects[OLD_MB].get_raw_data())
+ 1104: 
+ 1105:     textured = bool(texture_path)
+ 1106:     yeep_comps = {r.type.name: r for r in
+ 1107:                   (res.objects[c["component"]["m_PathID"]]
+ 1108:                    for c in yeep_go.read_typetree()["m_Component"])}
+ 1109:     tmpl_mesh = yeep_comps["MeshFilter"].read_typetree()["m_Mesh"]["m_PathID"]
+ 1110:     nxt_res = max(res.objects) + 1
+ 1111:     tex_pid = mat_pid = None
+ 1112:     if textured:
+ 1113:         tex_pid, mat_pid, nxt_res = add_texture(res, key, texture_path, nxt_res)
+ 1114:     blob, idx0, idx, vcount, ext = geo_for(size, mesh_choice, textured)
+ 1115:     mesh_pid = nxt_res
+ 1116:     write_mesh(res, tmpl_mesh, mesh_pid, key, blob, idx0, idx, vcount, ext)
+ 1117: 
+ 1118:     need = ["go_root", "tr_root", "mb", "bc", "go_vc", "tr_vc", "mf", "mr"]
+ 1119:     if with_audio:
+ 1120:         need.append("audio")
+ 1121:     if anim:
+ 1122:         need.append("anim")
+ 1123:     nxt = max(s1.objects) + 1
+ 1124:     ids = {k: nxt + i for i, k in enumerate(need)}
+ 1125:     ids["mesh"], ids["tex"], ids["mat"] = mesh_pid, tex_pid, mat_pid
+ 1126: 
+ 1127:     go = copy.deepcopy(old_go)
+ 1128:     go["m_Name"] = key
+ 1129:     go["m_Component"] = [{"component": pptr(ids["tr_root"])},
+ 1130:                          {"component": pptr(ids["mb"])},
+ 1131:                          {"component": pptr(ids["bc"])}]
+ 1132:     if with_audio:
+ 1133:         go["m_Component"].append({"component": pptr(ids["audio"])})
+ 1134:     clone(s1, template(s1, "GameObject"), ids["go_root"]).save_typetree(go)
+ 1135: 
+ 1136:     tr_t = template(s1, "Transform").read_typetree()
+ 1137:     tr_t["m_GameObject"] = pptr(ids["go_root"])
+ 1138:     tr_t["m_Children"] = [pptr(ids["tr_vc"])]
+ 1139:     tr_t["m_Father"] = NULL
+ 1140:     tr_t["m_LocalPosition"] = ZERO3
+ 1141:     tr_t["m_LocalRotation"] = IDENT_Q
+ 1142:     tr_t["m_LocalScale"] = {"x": 1.0, "y": 1.0, "z": 1.0}
+ 1143:     clone(s1, template(s1, "Transform"), ids["tr_root"]).save_typetree(tr_t)
+ 1144: 
+ 1145:     struct.pack_into("<q", old_mb_raw, 4, ids["go_root"])
+ 1146:     struct.pack_into("<3i", old_mb_raw, 32, *size)
+ 1147:     clone(s1, template(s1, "MonoBehaviour"), ids["mb"]).set_raw_data(bytes(old_mb_raw))
+ 1148: 
+ 1149:     bc = copy.deepcopy(old_bc)
+ 1150:     bc["m_GameObject"] = pptr(ids["go_root"])
+ 1151:     bc["m_Material"] = NULL
+ 1152:     bc["m_Size"] = {"x": size[0] * 0.5, "y": size[1] * 0.5, "z": size[2] * 0.5}
+ 1153:     bc["m_Center"] = ZERO3
+ 1154:     clone(s1, template(s1, "BoxCollider"), ids["bc"]).save_typetree(bc)
+ 1155: 
+ 1156:     vgo = copy.deepcopy(old_go)
+ 1157:     vgo["m_Name"] = "VisualContainer"
+ 1158:     vgo["m_Component"] = [{"component": pptr(ids["tr_vc"])},
+ 1159:                           {"component": pptr(ids["mf"])},
+ 1160:                           {"component": pptr(ids["mr"])}]
+ 1161:     if anim:
+ 1162:         vgo["m_Component"].append({"component": pptr(ids["anim"])})
+ 1163:     clone(s1, template(s1, "GameObject"), ids["go_vc"]).save_typetree(vgo)
+ 1164: 
+ 1165:     vtr = copy.deepcopy(tr_t)
+ 1166:     vtr["m_GameObject"] = pptr(ids["go_vc"])
+ 1167:     vtr["m_Children"] = []
+ 1168:     vtr["m_Father"] = pptr(ids["tr_root"])
+ 1169:     vtr["m_LocalPosition"] = ZERO3
+ 1170:     clone(s1, template(s1, "Transform"), ids["tr_vc"]).save_typetree(vtr)
+ 1171: 
+ 1172:     mf = template(s1, "MeshFilter").read_typetree()
+ 1173:     mf["m_GameObject"] = pptr(ids["go_vc"])
+ 1174:     mf["m_Mesh"] = xptr(fid_res, mesh_pid)
+ 1175:     clone(s1, template(s1, "MeshFilter"), ids["mf"]).save_typetree(mf)
+ 1176: 
+ 1177:     mr = template(s1, "MeshRenderer").read_typetree()
+ 1178:     mr["m_GameObject"] = pptr(ids["go_vc"])
+ 1179:     mr["m_Materials"] = ([xptr(fid_res, STUFFED_MATERIAL_PID),
+ 1180:                           xptr(fid_res, mat_pid)] if textured
+ 1181:                          else [xptr(fid_res, STUFFED_MATERIAL_PID)])
+ 1182:     clone(s1, template(s1, "MeshRenderer"), ids["mr"]).save_typetree(mr)
+ 1183: 
+ 1184:     if anim:
+ 1185:         clip_pid = nxt + len(need)
+ 1186:         make_clip(s1, clip_pid, key, anim, max(size) * 0.16)
+ 1187:         an = template(s1, "Animation", PREF_ANIM).read_typetree()
+ 1188:         an["m_GameObject"] = pptr(ids["go_vc"])
+ 1189:         an["m_Animation"] = pptr(clip_pid)
+ 1190:         an["m_Animations"] = [pptr(clip_pid)]
+ 1191:         an["m_WrapMode"] = 2
+ 1192:         an["m_PlayAutomatically"] = True
+ 1193:         clone(s1, template(s1, "Animation", PREF_ANIM), ids["anim"]).save_typetree(an)
+ 1194:         ids["animclip"] = clip_pid
+ 1195: 
+ 1196:     # Attach particle systems (if any) as children of the block root.
+ 1197:     fx = particles or []
+ 1198:     if fx:
+ 1199:         pts_all = [(0.0, 0.0, 0.0)]
+ 1200:         centre = [0.0, 0.0, 0.0]
+ 1201:         fk = max(size) * 0.5
+ 1202:         fx_base = max(s1.objects) + 1
+ 1203:         tr_root_obj = s1.objects[ids["tr_root"]]
+ 1204:         tr_root_tree = tr_root_obj.read_typetree()
+ 1205:         tr_root_tree["m_Children"] = [pptr(ids["tr_vc"])] + [
+ 1206:             pptr(fx_base + 4 * i + 1) for i in range(len(fx))]
+ 1207:         tr_root_obj.save_typetree(tr_root_tree)
+ 1208:         for i, p in enumerate(fx):
+ 1209:             go_fx = fx_base + 4 * i
+ 1210:             tr_fx = go_fx + 1
+ 1211:             ps_pid = go_fx + 2
+ 1212:             psr_pid = go_fx + 3
+ 1213:             pos, quat, scl = _matrix_trs(p["matrix"], 1.0)
+ 1214:             pos = tuple(pos[j] * fk for j in range(3))
+ 1215:             scl = tuple(s * fk for s in scl)
+ 1216:             fgo = copy.deepcopy(old_go)
+ 1217:             fgo["m_Name"] = p["name"]
+ 1218:             fgo["m_Component"] = [{"component": pptr(tr_fx)},
+ 1219:                                   {"component": pptr(ps_pid)},
+ 1220:                                   {"component": pptr(psr_pid)}]
+ 1221:             clone(s1, template(s1, "GameObject"), go_fx).save_typetree(fgo)
+ 1222:             ftr = copy.deepcopy(tr_t)
+ 1223:             ftr["m_GameObject"] = pptr(go_fx)
+ 1224:             ftr["m_Children"] = []
+ 1225:             ftr["m_Father"] = pptr(ids["tr_root"])
+ 1226:             ftr["m_LocalPosition"] = {"x": pos[0], "y": pos[1], "z": pos[2]}
+ 1227:             ftr["m_LocalRotation"] = {"x": quat[0], "y": quat[1],
+ 1228:                                       "z": quat[2], "w": quat[3]}
+ 1229:             ftr["m_LocalScale"] = {"x": scl[0], "y": scl[1], "z": scl[2]}
+ 1230:             clone(s1, template(s1, "Transform"), tr_fx).save_typetree(ftr)
+ 1231:             ps = copy.deepcopy(p["ps"])
+ 1232:             ps["m_GameObject"] = pptr(go_fx)
+ 1233:             ps.pop("m_PrefabInstance", None)
+ 1234:             ps.pop("m_PrefabAsset", None)
+ 1235:             clone(s1, template(s1, "ParticleSystem"), ps_pid).save_typetree(ps)
+ 1236:             psr = copy.deepcopy(p["psr"])
+ 1237:             psr["m_GameObject"] = pptr(go_fx)
+ 1238:             pmats = [m.get("m_PathID", 0) for m in (psr.get("m_Materials") or [])]
+ 1239:             psr["m_Materials"] = [
+ 1240:                 xptr(fid_res, STUFFED_MATERIAL_PID) for mp in pmats
+ 1241:             ] or [xptr(fid_res, STUFFED_MATERIAL_PID)]
+ 1242:             psr.pop("m_PrefabInstance", None)
+ 1243:             psr.pop("m_PrefabAsset", None)
+ 1244:             clone(s1, template(s1, "ParticleSystemRenderer"), psr_pid).save_typetree(psr)
+ 1245: 
+ 1246:     rm_tree["m_Container"].append((res_path, xptr(fid_s1, ids["go_root"])))
+ 1247:     if textured:
+ 1248:         rm_tree["m_Container"].append(("blazepic/mat_" + key.lower(),
+ 1249:                                        xptr(fid_res, mat_pid)))
+ 1250:     rm_obj.save_typetree(rm_tree)
+ 1251:     return ids, res_path, textured
+ 1252: 
+ 1253: 
+ 1254: def build_prefab_block(env, key, size, bundle_path, anim, with_audio,
+ 1255:                        fid_s1, fid_res, particles=None):
+ 1256:     """Whole .bundle block: import every mesh/material/texture from a Unity
+ 1257:     asset bundle and place it under a VisualContainer (skeleton-style
+ 1258:     hierarchy).  Meshes/materials/textures live in resources.assets and are
+ 1259:     referenced across files; the root GO + collider + audio/animation live in
+ 1260:     sharedassets1, so a bundle can carry sound and a spin/bob too."""
+ 1261:     ggm_f = files(env)["globalgamemanagers"]
+ 1262:     rm_obj = next(o for o in env.objects
+ 1263:                   if o.type.name == "ResourceManager" and o.assets_file is ggm_f)
+ 1264:     rm_tree = rm_obj.read_typetree()
+ 1265:     cont = dict((k, v) for k, v in rm_tree["m_Container"])
+ 1266:     res_path = "mapobjects/complexdecorationstuffed/" + key.lower()
+ 1267:     if res_path in cont:
+ 1268:         raise SystemExit(f"{key} already present in the container")
+ 1269:     s1 = files(env)["sharedassets1.assets"]
+ 1270:     res = files(env)["resources.assets"]
+ 1271:     yeep_go = res.objects[cont[YEEP_PATH]["m_PathID"]]
+ 1272:     old_go = res.objects[OLD_GO].read_typetree()
+ 1273:     old_bc = res.objects[OLD_BC].read_typetree()
+ 1274:     old_mb_raw = bytearray(res.objects[OLD_MB].get_raw_data())
+ 1275:     yeep_comps = {r.type.name: r for r in
+ 1276:                   (res.objects[c["component"]["m_PathID"]]
+ 1277:                    for c in yeep_go.read_typetree()["m_Component"])}
+ 1278:     tmpl_mesh = yeep_comps["MeshFilter"].read_typetree()["m_Mesh"]["m_PathID"]
+ 1279: 
+ 1280:     imp = import_prefab(bundle_path)
+ 1281:     blob, allidx, subs, vcount, ext, piece_mats = build_prefab_geometry(imp, size)
+ 1282:     nxt_res = max(res.objects) + 1
+ 1283:     mat_map, nxt_res = import_bundle_materials(res, imp, imp["materials"], nxt_res)
+ 1284:     mesh_pid = nxt_res
+ 1285:     _write_mesh(res, tmpl_mesh, mesh_pid, key, blob, allidx, subs, vcount, ext)
+ 1286: 
+ 1287:     need = ["go_root", "tr_root", "mb", "bc", "go_vc", "tr_vc", "mf", "mr"]
+ 1288:     if with_audio:
+ 1289:         need.append("audio")
+ 1290:     if anim:
+ 1291:         need.append("anim")
+ 1292:     nxt = max(s1.objects) + 1
+ 1293:     ids = {k: nxt + i for i, k in enumerate(need)}
+ 1294:     ids["mesh"] = mesh_pid
+ 1295:     ids["mats"] = [mat_map.get(pm, STUFFED_MATERIAL_PID) for pm in piece_mats]
+ 1296:     ids["tex"] = ids["mat"] = None
+ 1297:     fx = imp.get("particles") or particles or []
+ 1298:     clip_off = nxt + len(need)
+ 1299:     fx_base = clip_off + (1 if anim else 0)
+ 1300:     ids["fx"] = len(fx)
+ 1301:     ids["fx_end"] = fx_base + 4 * len(fx) - 1 if fx else 0
+ 1302: 
+ 1303:     go = copy.deepcopy(old_go)
+ 1304:     go["m_Name"] = key
+ 1305:     go["m_Component"] = [{"component": pptr(ids["tr_root"])},
+ 1306:                          {"component": pptr(ids["mb"])},
+ 1307:                          {"component": pptr(ids["bc"])}]
+ 1308:     if with_audio:
+ 1309:         go["m_Component"].append({"component": pptr(ids["audio"])})
+ 1310:     clone(s1, template(s1, "GameObject"), ids["go_root"]).save_typetree(go)
+ 1311: 
+ 1312:     tr_t = template(s1, "Transform").read_typetree()
+ 1313:     tr_t["m_GameObject"] = pptr(ids["go_root"])
+ 1314:     tr_t["m_Children"] = [pptr(ids["tr_vc"])] + [
+ 1315:         pptr(fx_base + 4 * i + 1) for i in range(len(fx))]
+ 1316:     tr_t["m_Father"] = NULL
+ 1317:     tr_t["m_LocalPosition"] = ZERO3
+ 1318:     tr_t["m_LocalRotation"] = IDENT_Q
+ 1319:     tr_t["m_LocalScale"] = {"x": 1.0, "y": 1.0, "z": 1.0}
+ 1320:     clone(s1, template(s1, "Transform"), ids["tr_root"]).save_typetree(tr_t)
+ 1321: 
+ 1322:     struct.pack_into("<q", old_mb_raw, 4, ids["go_root"])
+ 1323:     struct.pack_into("<3i", old_mb_raw, 32, *size)
+ 1324:     clone(s1, template(s1, "MonoBehaviour"), ids["mb"]).set_raw_data(bytes(old_mb_raw))
+ 1325: 
+ 1326:     bc = copy.deepcopy(old_bc)
+ 1327:     bc["m_GameObject"] = pptr(ids["go_root"])
+ 1328:     bc["m_Material"] = NULL
+ 1329:     bc["m_Size"] = {"x": size[0] * 0.5, "y": size[1] * 0.5, "z": size[2] * 0.5}
+ 1330:     bc["m_Center"] = ZERO3
+ 1331:     clone(s1, template(s1, "BoxCollider"), ids["bc"]).save_typetree(bc)
+ 1332: 
+ 1333:     vgo = copy.deepcopy(old_go)
+ 1334:     vgo["m_Name"] = "VisualContainer"
+ 1335:     vgo["m_Component"] = [{"component": pptr(ids["tr_vc"])},
+ 1336:                           {"component": pptr(ids["mf"])},
+ 1337:                           {"component": pptr(ids["mr"])}]
+ 1338:     if anim:
+ 1339:         vgo["m_Component"].append({"component": pptr(ids["anim"])})
+ 1340:     clone(s1, template(s1, "GameObject"), ids["go_vc"]).save_typetree(vgo)
+ 1341: 
+ 1342:     vtr = copy.deepcopy(tr_t)
+ 1343:     vtr["m_GameObject"] = pptr(ids["go_vc"])
+ 1344:     vtr["m_Children"] = []
+ 1345:     vtr["m_Father"] = pptr(ids["tr_root"])
+ 1346:     vtr["m_LocalPosition"] = ZERO3
+ 1347:     clone(s1, template(s1, "Transform"), ids["tr_vc"]).save_typetree(vtr)
+ 1348: 
+ 1349:     mf = template(s1, "MeshFilter").read_typetree()
+ 1350:     mf["m_GameObject"] = pptr(ids["go_vc"])
+ 1351:     mf["m_Mesh"] = xptr(fid_res, mesh_pid)
+ 1352:     clone(s1, template(s1, "MeshFilter"), ids["mf"]).save_typetree(mf)
+ 1353: 
+ 1354:     mr = template(s1, "MeshRenderer").read_typetree()
+ 1355:     mr["m_GameObject"] = pptr(ids["go_vc"])
+ 1356:     mr["m_Materials"] = [xptr(fid_res, STUFFED_MATERIAL_PID)] + [
+ 1357:         xptr(fid_res, mp) for mp in ids["mats"]]
+ 1358:     clone(s1, template(s1, "MeshRenderer"), ids["mr"]).save_typetree(mr)
+ 1359: 
+ 1360:     if anim:
+ 1361:         clip_pid = nxt + len(need)
+ 1362:         make_clip(s1, clip_pid, key, anim, max(size) * 0.16)
+ 1363:         an = template(s1, "Animation", PREF_ANIM).read_typetree()
+ 1364:         an["m_GameObject"] = pptr(ids["go_vc"])
+ 1365:         an["m_Animation"] = pptr(clip_pid)
+ 1366:         an["m_Animations"] = [pptr(clip_pid)]
+ 1367:         an["m_WrapMode"] = 2
+ 1368:         an["m_PlayAutomatically"] = True
+ 1369:         clone(s1, template(s1, "Animation", PREF_ANIM), ids["anim"]).save_typetree(an)
+ 1370:         ids["animclip"] = clip_pid
+ 1371: 
+ 1372:     pts_all = [v[0] for pc in imp["pieces"] for v in pc["verts"]]
+ 1373:     lo = [min(p[i] for p in pts_all) for i in range(3)]
+ 1374:     hi = [max(p[i] for p in pts_all) for i in range(3)]
+ 1375:     centre = [(lo[i] + hi[i]) / 2 for i in range(3)]
+ 1376:     half = [(hi[i] - lo[i]) / 2 for i in range(3)]
+ 1377:     fk = (max(size) * 0.25) / (max(half) or 1.0)
+ 1378:     for i, p in enumerate(fx):
+ 1379:         go_fx = fx_base + 4 * i
+ 1380:         tr_fx = go_fx + 1
+ 1381:         ps_pid = go_fx + 2
+ 1382:         psr_pid = go_fx + 3
+ 1383:         pos, quat, scl = _matrix_trs(p["matrix"], 1.0)
+ 1384:         pos = tuple((pos[j] - centre[j]) * fk for j in range(3))
+ 1385:         scl = tuple(s * fk for s in scl)
+ 1386:         fgo = copy.deepcopy(old_go)
+ 1387:         fgo["m_Name"] = p["name"]
+ 1388:         fgo["m_Component"] = [{"component": pptr(tr_fx)},
+ 1389:                               {"component": pptr(ps_pid)},
+ 1390:                               {"component": pptr(psr_pid)}]
+ 1391:         clone(s1, template(s1, "GameObject"), go_fx).save_typetree(fgo)
+ 1392:         ftr = copy.deepcopy(tr_t)
+ 1393:         ftr["m_GameObject"] = pptr(go_fx)
+ 1394:         ftr["m_Children"] = []
+ 1395:         ftr["m_Father"] = pptr(ids["tr_root"])
+ 1396:         ftr["m_LocalPosition"] = {"x": pos[0], "y": pos[1], "z": pos[2]}
+ 1397:         ftr["m_LocalRotation"] = {"x": quat[0], "y": quat[1],
+ 1398:                                   "z": quat[2], "w": quat[3]}
+ 1399:         ftr["m_LocalScale"] = {"x": scl[0], "y": scl[1], "z": scl[2]}
+ 1400:         clone(s1, template(s1, "Transform"), tr_fx).save_typetree(ftr)
+ 1401:         ps = copy.deepcopy(p["ps"])
+ 1402:         ps["m_GameObject"] = pptr(go_fx)
+ 1403:         ps.pop("m_PrefabInstance", None)
+ 1404:         ps.pop("m_PrefabAsset", None)
+ 1405:         clone(s1, template(s1, "ParticleSystem"), ps_pid).save_typetree(ps)
+ 1406:         psr = copy.deepcopy(p["psr"])
+ 1407:         psr["m_GameObject"] = pptr(go_fx)
+ 1408:         pmats = [m.get("m_PathID", 0) for m in (psr.get("m_Materials") or [])]
+ 1409:         psr["m_Materials"] = [
+ 1410:             xptr(fid_res, mat_map.get(mp, STUFFED_MATERIAL_PID)) for mp in pmats
+ 1411:         ] or [xptr(fid_res, STUFFED_MATERIAL_PID)]
+ 1412:         psr.pop("m_PrefabInstance", None)
+ 1413:         psr.pop("m_PrefabAsset", None)
+ 1414:         clone(s1, template(s1, "ParticleSystemRenderer"), psr_pid).save_typetree(psr)
+ 1415: 
+ 1416:     rm_tree["m_Container"].append((res_path, xptr(fid_s1, ids["go_root"])))
+ 1417:     rm_obj.save_typetree(rm_tree)
+ 1418:     return ids, res_path, True
+ 1419: 
+ 1420: 
+ 1421: # ---------------------------------------------------------------- verify
+ 1422: def verify(key, host, pids):
+ 1423:     env = UnityPy.load(DATA)
+ 1424:     rm = next(o for o in env.objects if o.type.name == "ResourceManager")
+ 1425:     cont = dict((k, v) for k, v in rm.read_typetree()["m_Container"])
+ 1426:     res_path = "mapobjects/complexdecorationstuffed/" + key.lower()
+ 1427:     ok = True
+ 1428: 
+ 1429:     def check(cond, msg):
+ 1430:         nonlocal ok
+ 1431:         print(("  OK   " if cond else "  FAIL ") + msg)
+ 1432:         ok = ok and bool(cond)
+ 1433: 
+ 1434:     check(res_path in cont, f"container entry -> {cont.get(res_path)}")
+ 1435:     check(pattern_find(pattern_db(env).get_raw_data(), key) is not None,
+ 1436:           "pattern list entry")
+ 1437:     mp = pids.get("mesh")
+ 1438:     if mp:
+ 1439:         mt = files(env)["resources.assets"].objects[mp].read_typetree()
+ 1440:         vc = mt["m_VertexData"]["m_VertexCount"]
+ 1441:         fmt = mt.get("m_IndexFormat", 0)
+ 1442:         isz = 4 if fmt else 2
+ 1443:         tot = sum(s["indexCount"] for s in mt["m_SubMeshes"])
+ 1444:         check(fmt == (1 if vc > 0xFFFF else 0)
+ 1445:               and len(mt["m_IndexBuffer"]) == tot * isz
+ 1446:               and len(mt["m_VertexData"]["m_DataSize"]) == vc * 48,
+ 1447:               f"mesh {vc} verts, index fmt {fmt}, "
+ 1448:               f"{len(mt['m_SubMeshes'])} submeshes")
+ 1449:     if host == "shared1":
+ 1450:         s1 = files(env)["sharedassets1.assets"]
+ 1451:         go = s1.objects[pids["go_root"]].read_typetree()
+ 1452:         names = [s1.objects[c["component"]["m_PathID"]].type.name
+ 1453:                  for c in go["m_Component"]]
+ 1454:         check(go["m_Name"] == key and names[0] == "Transform"
+ 1455:               and "MonoBehaviour" in names and "BoxCollider" in names,
+ 1456:               f"root GO {names}")
+ 1457:         vc = s1.objects[pids["go_vc"]].read_typetree()
+ 1458:         vnames = [s1.objects[c["component"]["m_PathID"]].type.name
+ 1459:                   for c in vc["m_Component"]]
+ 1460:         check("MeshFilter" in vnames and "MeshRenderer" in vnames,
+ 1461:               f"VisualContainer {vnames}")
+ 1462:         bad = []
+ 1463: 
+ 1464:         def refs(x):
+ 1465:             if isinstance(x, dict):
+ 1466:                 if "m_FileID" in x and "m_PathID" in x:
+ 1467:                     yield x
+ 1468:                 else:
+ 1469:                     for v in x.values():
+ 1470:                         yield from refs(v)
+ 1471:             elif isinstance(x, (list, tuple)):
+ 1472:                 for v in x:
+ 1473:                     yield from refs(v)
+ 1474: 
+ 1475:         for pid in pids.values():
+ 1476:             if not isinstance(pid, int):
+ 1477:                 continue
+ 1478:             o = s1.objects.get(pid)
+ 1479:             if o is None or o.type.name in ("MonoBehaviour",):
+ 1480:                 continue
+ 1481:             try:
+ 1482:                 t = o.read_typetree()
+ 1483:             except Exception:
+ 1484:                 continue
+ 1485:             for r in refs(t):
+ 1486:                 if r["m_PathID"] and r["m_FileID"]:
+ 1487:                     nm = s1.externals[r["m_FileID"] - 1].name
+ 1488:                     if nm not in ALLOWED_EXTERNALS:
+ 1489:                         bad.append((o.type.name, nm))
+ 1490:         check(not bad, f"external refs resolve ({bad[:3]})")
+ 1491:         for pid in pids.values():
+ 1492:             o = s1.objects.get(pid) if isinstance(pid, int) else None
+ 1493:             if o is None:
+ 1494:                 continue
+ 1495:             if o.type.name == "AudioClip":
+ 1496:                 r = o.read_typetree()["m_Resource"]
+ 1497:                 check(r["m_Source"] == "sharedassets1.resource"
+ 1498:                       and r["m_Offset"] + r["m_Size"] <= os.path.getsize(RES),
+ 1499:                       f"AudioClip bytes off={r['m_Offset']} size={r['m_Size']}")
+ 1500:             if o.type.name == "AnimationClip":
+ 1501:                 c = o.read_typetree()
+ 1502:                 curves = c["m_PositionCurves"] or c["m_RotationCurves"]
+ 1503:                 check(c.get("m_WrapMode") == 2 and curves
+ 1504:                       and curves[0]["path"] == "",
+ 1505:                       f"clip {c['m_Name']} loop, self-path, {len(curves)} curve")
+ 1506:         if "audio" in pids and "clip" in pids:
+ 1507:             asrc = s1.objects[pids["audio"]].read_typetree()
+ 1508:             check(asrc["m_audioClip"] == pptr(pids["clip"])
+ 1509:                   and asrc.get("Loop") is True,
+ 1510:                   "AudioSource -> clip, looping")
+ 1511:     print("VERIFY", "OK" if ok else "FAILED")
+ 1512:     return ok
+ 1513: 
+ 1514: 
+ 1515: # ---------------------------------------------------------------- add/remove
+ 1516: def do_add(kind, combo=None):
+ 1517:     env = UnityPy.load(DATA)
+ 1518:     ggm_f = files(env)["globalgamemanagers"]
+ 1519:     rm = next(o for o in env.objects
+ 1520:               if o.type.name == "ResourceManager" and o.assets_file is ggm_f)
+ 1521:     cont = dict((k, v) for k, v in rm.read_typetree()["m_Container"])
+ 1522:     fid_s1 = [e.name for e in ggm_f.externals].index("sharedassets1.assets") + 1
+ 1523:     fid_res = [e.name for e in ggm_f.externals].index("resources.assets") + 1
+ 1524: 
+ 1525:     key = ask("Block key (e.g. 1x1_coolblock, 2x2_dancething)", regex=KEY_RE)
+ 1526:     if ("mapobjects/complexdecorationstuffed/" + key.lower()) in cont:
+ 1527:         raise SystemExit(f"{key} already exists in the game data")
+ 1528:     if pattern_find(pattern_db(env).get_raw_data(), key):
+ 1529:         raise SystemExit(f"{key} already exists in the pattern list")
+ 1530:     display = ask("Display name",
+ 1531:                   default=re.sub(r"^[0-9x]+_", "", key).replace("_", " ").title())
+ 1532:     cost = ask_int("Cotton cost", 0, 0, 10 ** 6)
+ 1533: 
+ 1534:     texture_path = audio_path = None
+ 1535:     anim = None
+ 1536:     particles = None
+ 1537:     bundle = False
+ 1538:     bundle_tmp = None
+ 1539:     host = "resources"
+ 1540:     if kind == "disk":
+ 1541:         mesh_choice = "disk"
+ 1542:         audio_path = ask_audio()
+ 1543:         host = "shared1"
+ 1544:     else:
+ 1545:         mesh_choice = ask_mesh()
+ 1546:         bundle = mesh_choice not in ("cube", "disk") and os.path.exists(mesh_choice)
+ 1547:         imp = import_prefab(mesh_choice) if bundle else None
+ 1548:         if kind == "picture":
+ 1549:             texture_path = ask_image()
+ 1550:             mesh_choice = "cube"
+ 1551:         elif kind == "custom":
+ 1552:             flags = {1: "anim", 2: "audio", 3: "tex",
+ 1553:                      4: "tex+anim", 5: "tex+audio+anim",
+ 1554:                      6: "particles", 7: "tex+particles",
+ 1555:                      8: "tex+audio+particles",
+ 1556:                      9: "tex+audio+anim+particles"}[combo]
+ 1557:             if "tex" in flags and not bundle:
+ 1558:                 texture_path = ask_image()
+ 1559:             if "audio" in flags:
+ 1560:                 if imp and imp.get("audio"):
+ 1561:                     audio_path = bundle_tmp = bundle_audio_wav(imp["audio"])
+ 1562:                     print(f"  using the bundle's own audio: {imp['audio']['name']}")
+ 1563:                 else:
+ 1564:                     audio_path = ask_audio()
+ 1565:             if "anim" in flags:
+ 1566:                 if imp and imp.get("clips"):
+ 1567:                     names = ", ".join(sorted({c["name"] for c in imp["clips"].values()
+ 1568:                                               if c["name"]}))
+ 1569:                     print(f"  bundle animations found ({names}) - not applied yet; "
+ 1570:                           "choosing a simple motion instead")
+ 1571:                 anim = ask_choice("Animation",
+ 1572:                                   [("spin", "spin (loop 2s)"),
+ 1573:                                    ("bob", "bob (loop 1.2s)")])
+ 1574:             particles = None
+ 1575:             if "particles" in flags:
+ 1576:                 if bundle and imp and imp.get("particles"):
+ 1577:                     particles = imp["particles"]
+ 1578:                     print(f"  using {len(particles)} particle system(s) from the bundle")
+ 1579:                 else:
+ 1580:                     pb = ask("Particle bundle path (.bundle with a particle system)",
+ 1581:                              default="").strip().strip('"')
+ 1582:                     if pb and os.path.exists(pb):
+ 1583:                         pimp = import_prefab(pb)
+ 1584:                         particles = pimp.get("particles") or []
+ 1585:                         print(f"  imported {len(particles)} particle system(s) from {pb}")
+ 1586:                     else:
+ 1587:                         print("  no particle bundle - skipping particles")
+ 1588:         if bundle or audio_path or anim or particles:
+ 1589:             host = "shared1"
+ 1590: 
+ 1591:     size = parse_size(key)
+ 1592:     if host == "resources":
+ 1593:         ids, res_path, textured = build_resources_block(
+ 1594:             env, key, size, mesh_choice, texture_path, fid_res)
+ 1595:     else:
+ 1596:         if bundle:
+ 1597:             ids, res_path, textured = build_prefab_block(
+ 1598:                 env, key, size, mesh_choice, anim, bool(audio_path),
+ 1599:                 fid_s1, fid_res, particles=particles)
+ 1600:         else:
+ 1601:             ids, res_path, textured = build_shared1_block(
+ 1602:                 env, key, size, mesh_choice, texture_path, anim,
+ 1603:                 bool(audio_path), fid_s1, fid_res, particles=particles)
+ 1604:         if audio_path:
+ 1605:             s1 = files(env)["sharedassets1.assets"]
+ 1606:             clip_pid = max(v for v in ids.values() if isinstance(v, int)) + 1
+ 1607:             offset, asize, length = append_audio(s1, clip_pid, key, audio_path)
+ 1608:             src = template(s1, "AudioSource", PREF_AUDIO).read_typetree()
+ 1609:             src["m_GameObject"] = pptr(ids["go_root"])
+ 1610:             src["m_audioClip"] = pptr(clip_pid)
+ 1611:             src["m_PlayOnAwake"] = True
+ 1612:             src["Loop"] = True
+ 1613:             clone(s1, template(s1, "AudioSource", PREF_AUDIO),
+ 1614:                   ids["audio"]).save_typetree(src)
+ 1615:             ids["clip"] = clip_pid
+ 1616:             audio_meta = {"offset": offset, "size": asize}
+ 1617:         else:
+ 1618:             audio_meta = None
+ 1619: 
+ 1620:     if bundle_tmp and os.path.exists(bundle_tmp):
+ 1621:         os.remove(bundle_tmp)
+ 1622: 
+ 1623:     pattern_add(env, key, display, cost)
+ 1624:     open(DATA, "wb").write(env.file.save(packer="lz4"))
+ 1625:     changed = server_patch(key, True)
+ 1626: 
+ 1627:     st = state_load()
+ 1628:     st[key] = {"kind": kind, "combo": combo, "name": display, "host": host,
+ 1629:                "pids": ids, "audio": audio_meta, "textured": textured,
+ 1630:                "created": time.strftime("%Y-%m-%d %H:%M")}
+ 1631:     state_save(st)
+ 1632: 
+ 1633:     print(f"\nadded {key} ({kind}) -> {res_path}")
+ 1634:     if changed:
+ 1635:         print("server files updated:", ", ".join(changed), "(redeploy to apply)")
+ 1636:     print("structural check:")
+ 1637:     if not verify(key, host, ids):
+ 1638:         raise SystemExit("verification failed - fix before building the APK")
+ 1639:     print("\nnext: menu 7 to build the APK, then install it on the headset.")
+ 1640: 
+ 1641: 
+ 1642: def do_remove():
+ 1643:     st = state_load()
+ 1644:     key = ask("Key to remove")
+ 1645:     info = st.get(key)
+ 1646:     if not info:
+ 1647:         print("not in this tool's state; trying the game data anyway")
+ 1648:     env = UnityPy.load(DATA)
+ 1649:     rm = next(o for o in env.objects if o.type.name == "ResourceManager")
+ 1650:     rm_tree = rm.read_typetree()
+ 1651:     res_path = "mapobjects/complexdecorationstuffed/" + key.lower()
+ 1652:     mat_path = "blazepic/mat_" + key.lower()
+ 1653:     before = len(rm_tree["m_Container"])
+ 1654:     rm_tree["m_Container"] = [(k, v) for k, v in rm_tree["m_Container"]
+ 1655:                               if k not in (res_path, mat_path)]
+ 1656:     if len(rm_tree["m_Container"]) == before:
+ 1657:         print("no container entry found")
+ 1658:     else:
+ 1659:         rm.save_typetree(rm_tree)
+ 1660:     try:
+ 1661:         pattern_remove(env, key)
+ 1662:         print("pattern list entry removed")
+ 1663:     except SystemExit as e:
+ 1664:         print(e)
+ 1665:     open(DATA, "wb").write(env.file.save(packer="lz4"))
+ 1666: 
+ 1667:     info = st.pop(key, None)
+ 1668:     if info and info.get("audio"):
+ 1669:         off, sz = info["audio"]["offset"], info["audio"]["size"]
+ 1670:         if os.path.getsize(RES) == off + sz:
+ 1671:             with open(RES, "r+b") as fh:
+ 1672:                 fh.truncate(off)
+ 1673:             print(f"truncated sharedassets1.resource back to {off}")
+ 1674:         else:
+ 1675:             print("audio is not the last one in the resource file; left in place")
+ 1676:     changed = server_patch(key, False)
+ 1677:     if changed:
+ 1678:         print("server files updated:", ", ".join(changed), "(redeploy to apply)")
+ 1679:     if info is not None:
+ 1680:         state_save(st)
+ 1681:     print(f"removed {key} (its Unity objects stay in the file, unused)")
+ 1682: 
+ 1683: 
+ 1684: def do_list():
+ 1685:     st = state_load()
+ 1686:     if not st:
+ 1687:         print("nothing added yet")
+ 1688:         return
+ 1689:     for k, v in sorted(st.items()):
+ 1690:         extra = v["kind"] + (f" combo {v['combo']}" if v.get("combo") else "")
+ 1691:         print(f"  {k:32s} {v['name']:24s} [{extra}] host={v['host']} {v['created']}")
+ 1692: 
+ 1693: 
+ 1694: def do_build():
+ 1695:     print("building APK (2-4 minutes)...")
+ 1696:     r = subprocess.run(BUILD_CMD, cwd=ROOT)
+ 1697:     if r.returncode == 0:
+ 1698:         print("done - install tools/Yeeps-1.31.0-yeeper920-blocks.apk on the headset")
+ 1699:     else:
+ 1700:         print("build failed")
+ 1701: 
+ 1702: 
+ 1703: # ---------------------------------------------------------------- prompts
+ 1704: def ask(prompt, default=None, regex=None):
+ 1705:     while True:
+ 1706:         suffix = f" [{default}]" if default else ""
+ 1707:         v = input(f"{prompt}{suffix}: ").strip().strip('"').strip("'")
+ 1708:         if not v and default is not None:
+ 1709:             v = str(default)
+ 1710:         if not v:
+ 1711:             print("  required")
+ 1712:             continue
+ 1713:         if regex and not regex.fullmatch(v):
+ 1714:             print('  must look like 1x1_name, 2x2_name or 2x2x2_name')
+ 1715:             continue
+ 1716:         return v
+ 1717: 
+ 1718: 
+ 1719: def ask_int(prompt, default, lo, hi):
+ 1720:     while True:
+ 1721:         v = input(f"{prompt} [{default}]: ").strip()
+ 1722:         if not v:
+ 1723:             return default
+ 1724:         try:
+ 1725:             n = int(v)
+ 1726:             if lo <= n <= hi:
+ 1727:                 return n
+ 1728:         except ValueError:
+ 1729:             pass
+ 1730:         print(f"  a number {lo}-{hi} please")
+ 1731: 
+ 1732: 
+ 1733: def ask_choice(prompt, options):
+ 1734:     print(prompt + ":")
+ 1735:     for i, (_val, label) in enumerate(options, 1):
+ 1736:         print(f"  {i}. {label}")
+ 1737:     while True:
+ 1738:         v = input("> ").strip()
+ 1739:         if v.isdigit() and 1 <= int(v) <= len(options):
+ 1740:             return options[int(v) - 1][0]
+ 1741:         print("  pick a number")
+ 1742: 
+ 1743: 
+ 1744: def ask_mesh():
+ 1745:     v = input("Mesh: Enter = block cube, 'disk', or paste a path to a Unity "
+ 1746:               "asset bundle (.bundle) and its whole prefab is imported: "
+ 1747:               ).strip().strip('"').strip("'")
+ 1748:     if not v:
+ 1749:         return "cube"
+ 1750:     if not os.path.exists(v):
+ 1751:         print("  no such file - using the cube")
+ 1752:         return "cube"
+ 1753:     return v
+ 1754: 
+ 1755: 
+ 1756: def ask_image():
+ 1757:     while True:
+ 1758:         v = input("Picture file (png/jpg): ").strip().strip('"').strip("'")
+ 1759:         if v and os.path.exists(v):
+ 1760:             try:
+ 1761:                 Image.open(v).convert("RGBA")
+ 1762:                 return v
+ 1763:             except Exception as e:
+ 1764:                 print(f"  cannot read image: {e}")
+ 1765:         else:
+ 1766:             print("  no such file")
+ 1767: 
+ 1768: 
+ 1769: def ask_audio():
+ 1770:     while True:
+ 1771:         v = input("Audio file (mp3/wav/ogg/m4a...): ").strip().strip('"').strip("'")
+ 1772:         if v and os.path.exists(v):
+ 1773:             return v
+ 1774:         print("  no such file")
+ 1775: 
+ 1776: 
+ 1777: # ---------------------------------------------------------------- ascii art
+ 1778: def ascii_art():
+ 1779:     if os.name == "nt":
+ 1780:         try:
+ 1781:             import ctypes
+ 1782:             k = ctypes.windll.kernel32
+ 1783:             h = k.GetStdHandle(-11)
+ 1784:             mode = ctypes.c_uint32()
+ 1785:             if k.GetConsoleMode(h, ctypes.byref(mode)):
+ 1786:                 k.SetConsoleMode(h, mode.value | 4)
+ 1787:         except Exception:
+ 1788:             pass
+ 1789:     text, cols = "920Man", 78
+ 1790:     try:
+ 1791:         font = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 48)
+ 1792:     except Exception:
+ 1793:         print(text.center(cols))
+ 1794:         return
+ 1795:     probe = ImageDraw.Draw(Image.new("L", (10, 10)))
+ 1796:     bbox = probe.textbbox((0, 0), text, font=font)
+ 1797:     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+ 1798:     pad = 8
+ 1799:     img = Image.new("L", (tw + pad * 2, th + pad * 2))
+ 1800:     ImageDraw.Draw(img).text((pad, pad), text, font=font, fill=255)
+ 1801:     rows = max(8, round(cols * img.height / img.width * 0.5))
+ 1802:     px = img.resize((cols, rows), Image.BOX).tobytes()
+ 1803:     ramp = " .:-=+*#%@"
+ 1804:     for r in range(rows):
+ 1805:         grad = 1.0 - 0.55 * (r / max(1, rows - 1))
+ 1806:         line, total = [], 0.0
+ 1807:         for c in range(cols):
+ 1808:             v = px[r * cols + c] * grad
+ 1809:             total += v
+ 1810:             line.append(ramp[min(len(ramp) - 1, int(v / 255 * len(ramp)))])
+ 1811:         grey = 232 + max(0, min(23, round(total / cols / 255 * 23)))
+ 1812:         print(f"\x1b[38;5;{grey}m{''.join(line)}\x1b[0m")
+ 1813:     print()
+ 1814: 
+ 1815: 
+ 1816: # ---------------------------------------------------------------- menu
+ 1817: MENU = """
+ 1818:   1. picture block       texture on a cotton cube
+ 1819:   2. basic mesh block    your model (bundle) or a plain cube, paintable
+ 1820:   3. music disk          flat disk that plays your song on a loop
+ 1821:   4. custom block        mix texture / audio / animation / particles
+ 1822:   5. remove a block
+ 1823:   6. list my blocks
+ 1824:   7. build the APK
+ 1825:   q. quit
+ 1826: """
+ 1827: 
+ 1828: 
+ 1829: def main():
+ 1830:     if not os.path.exists(DATA):
+ 1831:         raise SystemExit(f"missing {DATA}")
+ 1832:     ascii_art()
+ 1833:     while True:
+ 1834:         print(MENU)
+ 1835:         try:
+ 1836:             c = input("> ").strip().lower()
+ 1837:         except (EOFError, KeyboardInterrupt):
+ 1838:             print()
+ 1839:             return
+ 1840:         try:
+ 1841:             if c == "q":
+ 1842:                 return
+ 1843:             elif c == "1":
+ 1844:                 do_add("picture")
+ 1845:             elif c == "2":
+ 1846:                 do_add("mesh")
+ 1847:             elif c == "3":
+ 1848:                 do_add("disk")
+ 1849:             elif c == "4":
+ 1850:                 combo = ask_choice("What should the block have?", [
+ 1851:                     (1, "animation + mesh"),
+ 1852:                     (2, "audio + mesh"),
+ 1853:                     (3, "texture + mesh"),
+ 1854:                     (4, "texture + animation + mesh"),
+ 1855:                     (5, "texture + audio + animation + mesh"),
+ 1856:                     (6, "particles + mesh"),
+ 1857:                     (7, "texture + particles + mesh"),
+ 1858:                     (8, "texture + audio + particles + mesh"),
+ 1859:                     (9, "texture + audio + animation + particles + mesh")])
+ 1860:                 do_add("custom", combo)
+ 1861:             elif c == "5":
+ 1862:                 do_remove()
+ 1863:             elif c == "6":
+ 1864:                 do_list()
+ 1865:             elif c == "7":
+ 1866:                 do_build()
+ 1867:             else:
+ 1868:                 print("pick 1-7 or q")
+ 1869:         except SystemExit as e:
+ 1870:             print(f"error: {e}")
+ 1871:         except Exception as e:
+ 1872:             import traceback
+ 1873:             traceback.print_exc()
+ 1874:             print(f"error: {e}")
+ 1875: 
+ 1876: 
+ 1877: if __name__ == "__main__":
+ 1878:     main()

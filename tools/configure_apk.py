@@ -38,15 +38,23 @@ GUID = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}
 
 def find_tool(name: str) -> str:
     exe = name + (".bat" if os.name == "nt" and name == "apksigner" else ".exe" if os.name == "nt" else "")
+
+    if os.name == "nt" and name == "apksigner":
+        root = r"C:\Users\HAYDEN~1\AppData\Local\Android\Sdk"
+        cands = sorted(glob.glob(os.path.join(root, "build-tools", "*", exe)))
+        if cands:
+            return cands[-1]
+
     hit = shutil.which(name) or shutil.which(exe)
     if hit:
         return hit
+
     for root in filter(None, [os.environ.get("ANDROID_HOME"), os.environ.get("ANDROID_SDK_ROOT")]):
         cands = sorted(glob.glob(os.path.join(root, "build-tools", "*", exe)))
         if cands:
             return cands[-1]
-    sys.exit(f"Can't find {name}. Install Android build-tools and put them on PATH "
-             f"(or set ANDROID_HOME).")
+
+    sys.exit(f"Can't find {name}. Install Android build-tools and put them on PATH (or set ANDROID_HOME).")
 
 
 def settings_text(a) -> str:

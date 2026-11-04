@@ -1,0 +1,14 @@
+{
+  "key": "neegy",
+  "displayName": "Neegy",
+  "resource": "mapobjects/complexdecorationstuffed/neegy",
+  "gridSize": [
+    1,
+    1,
+    1
+  ],
+  "vertices": 5052,
+  "triangles": 1684,
+  "attribution": {},
+  "headsetVerified": false
+}

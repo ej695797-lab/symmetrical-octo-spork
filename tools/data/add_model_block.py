@@ -141,7 +141,8 @@ def add_model(src, dst, model_path, key, name, size=(1,1,1), cost=0):
     clone(material,ids['mat']).save_typetree(mt)
     rt['m_Container'].append((path,pptr(ids['go'],resources[TEMPLATE]['m_FileID'])))
     rm.save_typetree(rt); patterns.set_raw_data(pattern_raw)
-    atomic_write(dst,env.file.save(packer='lz4'))
+    Path(dst).parent.mkdir(parents=True, exist_ok=True)
+    env.save(out_path=str(Path(dst).parent), pack="lz4")
     result=dict(key=key,displayName=name,resource=path,gridSize=list(size),
                 vertices=len(model['positions']),triangles=len(model['indices'])//3,
                 attribution=model['attribution'],headsetVerified=False)

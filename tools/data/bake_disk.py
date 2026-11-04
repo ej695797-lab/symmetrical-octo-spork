@@ -6,9 +6,8 @@ Works on a folder holding the game's data.unity3d and sharedassets1.resource
 16-bit PCM (FSB5) and appended to sharedassets1.resource, and the record's
 AudioClip is pointed at it. Optionally the record's label art gets a picture.
 
-    python tools/data/bake_disk.py data --list                       # record clips + art names
-    python tools/data/bake_disk.py data --clip SuburbTheme --audio song.mp3 \\
-        [--art recordArtTexture_suburbTheme --label cover.png [--crop x0,y0,x1,y1]]
+    python bake_disk.py data --list                       # record clips + art names
+    python tools/data/bake_disk.py data --clip SuburbTheme --audio song.mp3 --art recordArtTexture_suburbTheme --label LARPGNG.png [--crop x0,y0,x1,y1]]
 
 Then put both files back into an APK: tools/configure_apk.py ... --data data
 """

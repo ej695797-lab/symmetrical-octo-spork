@@ -99,3 +99,71 @@ def fallback_name(oculus_id: str, account_id: str) -> str:
     if is_visible_name(oculus_id):
         return str(oculus_id)
     return "Yeep" + re.sub(r"\D", "", str(account_id or ""))[-4:]
+
+
+# ---- unique names (owner's rule, 2026-10-27) ----
+# No two players may share a name: same-named players are impossible to track.
+# Names are compared as they read in game: color/size tags, accents and other
+# combining marks, invisible characters and case are ignored, so "Nathan",
+# "<color=red>nathan</color>" and "N̶a̶t̶h̶a̶n̶" all count as the same name.
+# Checked across both versions' account lists (1.31 and live share accountIDs).
+NAME_DBS = ("Yeeps119", "Yeeps240")
+
+
+def name_key(name) -> str:
+    s = unicodedata.normalize("NFKD", _TAG.sub("", str(name or "")))
+    s = "".join(c for c in s if _char_visible(c) or c == " ")
+    return " ".join(s.lower().split())
+
+
+async def name_owner(name, account_id: str = ""):
+    """accountID of another account already using this name, else None. Accounts
+    linked to the same Discord as account_id (one person's duplicate docs) don't count."""
+    key = name_key(name)
+    if not key:
+        return None
+    from services.db import client
+    mine = set()
+    if account_id:
+        for db in NAME_DBS:
+            d = await client[db]["accounts"].find_one({"accountID": account_id}, {"_id": 0, "discordID": 1})
+            if d and d.get("discordID"):
+                mine.add(str(d["discordID"]))
+    for db in NAME_DBS:
+        async for a in client[db]["accounts"].find({"displayName": {"$type": "string", "$ne": ""}},
+                                                   {"_id": 0, "accountID": 1, "displayName": 1, "discordID": 1}):
+            if a.get("accountID") == account_id or name_key(a.get("displayName")) != key:
+                continue
+            if a.get("discordID") and str(a["discordID"]) in mine:
+                continue
+            return a.get("accountID")
+    return None
+
+
+def add_suffix(name: str, sfx: str, cap: int = 20) -> str:
+    """name + sfx, cutting a plain name's visible characters (keeping accents and
+    other marks on the letters they belong to) so it stays within cap."""
+    if _TAG.sub("", name) != name or visible_count(name) + len(sfx) <= cap:
+        return name + sfx
+    keep, out = max(1, cap - len(sfx)), ""
+    for c in name:
+        if _char_visible(c):
+            if keep == 0:
+                break
+            keep -= 1
+        out += c
+    return out + sfx
+
+
+async def unique_name(name, account_id: str = "", cap: int = 20) -> str:
+    """The name itself if free, else the name with the lowest free number added
+    (Nathan -> Nathan2, Nathan3, ...)."""
+    name = str(name or "")
+    if not await name_owner(name, account_id):
+        return name
+    for n in range(2, 1000):
+        sfx = str(n)
+        cand = add_suffix(name, sfx, cap)
+        if not await name_owner(cand, account_id):
+            return cand
+    return fallback_name("", account_id)

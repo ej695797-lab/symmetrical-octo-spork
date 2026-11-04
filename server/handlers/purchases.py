@@ -32,7 +32,7 @@ def _is_blocked(fl: str) -> bool:
     """Purchases that would add new rooms/worlds to the database are disabled
     so players can't fill the server. Renaming/retheming/deleting existing
     rooms and every other purchase still work."""
-    if any(k in fl for k in ("theme", "name", "lobby", "fuel", "delete")):
+    if any(k in fl for k in ("theme", "name", "lobby", "fuel", "delete", "dimension")):
         return False
     return ("trypurchaseprivateroom" in fl or "expandprivateworld" in fl
             or "trypurchasecommunityworld" in fl)
@@ -105,25 +105,6 @@ async def handle_purchase(body: dict) -> dict:
     bundle_key = body.get("bundleKey")
     if isinstance(bundle_key, str) and bundle_key and "bundle" in fl:
         add["ownedBundles"] = bundle_key
-    # Customized items (item reskins): store the customized item data on the
-    # account so the client can load the reskin. Body carries customItemKey +
-    # customItemConfig + allowSharing.
-    if "customizeditem" in fl:
-        cik = body.get("customItemKey")
-        cic = body.get("customItemConfig")
-        allow = bool(body.get("allowSharing", 1))
-        if isinstance(cik, str) and cik:
-            entry = {"customItemKey": cik, "customItemConfig": cic if isinstance(cic, str) else "",
-                     "allowSharing": allow}
-            if acct is not None:
-                await accounts.update_one({"accountID": account_id},
-                                          {"$addToSet": {"customizedItemDatas": entry}})
-        # Echo body fields back so the client finds whatever it reads.
-        for k, v in body.items():
-            if not str(k).startswith("_") and k not in resp:
-                resp[k] = v
-        resp["allowSharing"] = int(bool(body.get("allowSharing", 1)))
-        resp["customizedItemDatas"] = [entry] if isinstance(cik, str) and cik else []
 
     if acct is not None and (upd or add):
         op = {}
@@ -145,16 +126,6 @@ async def handle_purchase(body: dict) -> dict:
         "currencyValueIndex": 0,
         "newCurrency": max(0, currency - price) if acct is not None else 0,
     }
-    if "customizeditem" in fl:
-        cik = body.get("customItemKey", "")
-        cic = body.get("customItemConfig", "")
-        allow = bool(body.get("allowSharing", 1))
-        # Store the customized item on the account so the client can load it.
-        if isinstance(cik, str) and cik and acct is not None:
-            entry = {"customItemKey": cik, "customItemConfig": cic if isinstance(cic, str) else "",
-                     "allowSharing": allow}
-            await accounts.update_one({"accountID": account_id},
-                                      {"$addToSet": {"customizedItemDatas": entry}})
     # The BUNDLE purchase coroutine (AccountManager.TryPurchaseBundle) parses a
     # DIFFERENT shape than item purchases: it ContainsKey/GetInt currencyAmount +
     # centCost and GetStringList("items"); missing any one -> INVALID_FORMAT ->
@@ -208,8 +179,68 @@ async def _save_pw_map(doc: dict) -> None:
                          upsert=True)
 
 
+async def _save_pw_room_settings(rk: str, upd: dict) -> None:
+    """Write a private room's edited settings to BOTH databases: the live rooms and the
+    shared 1.31 copy (CARRYOVER_DB) that the pw room overlay prefers on load. Saving only
+    the live copy meant the old shared value came back on the next load."""
+    import os as _os
+    from services.db import client as _mc
+    cols = [get_collection("G2_Rooms")]
+    if _os.getenv("CARRYOVER_DB"):
+        cols.append(_mc[_os.getenv("CARRYOVER_DB")]["rooms"])
+    for col in cols:
+        if await col.find_one({"roomKey": rk}, {"_id": 1}):
+            await col.update_one({"roomKey": rk}, {"$set": upd})
+        else:
+            from services.dynamo_ops import _get_fallback_doc
+            base_doc = dict(await _get_fallback_doc("G2_Rooms", {"roomKey": rk}) or {"roomKey": rk})
+            base_doc.update(upd)
+            base_doc.pop("_id", None)
+            await col.insert_one(base_doc)
+
+
+def _settings_update(fl: str, body: dict) -> dict:
+    upd = {}
+    if "theme" in fl and body.get("themeKey"):
+        upd["themeKey"] = str(body["themeKey"])
+    if "name" in fl and body.get("roomName"):
+        upd["roomName"] = str(body["roomName"])[:40]
+    if "lobby" in fl:
+        for k in ("lobbyDirection", "direction", "newLobbyDirection"):
+            if k in body:
+                try:
+                    upd["lobbyDirection"] = int(body[k])
+                except Exception:
+                    pass
+                break
+    if "dimension" in fl and isinstance(body.get("newDimensions"), list) and len(body["newDimensions"]) == 3:
+        try:
+            dims = [max(16, min(256, int(v))) for v in body["newDimensions"]]
+            upd["dimensions"] = dims
+        except Exception:
+            pass
+    return upd
+
+
 async def _private_room_op(fl: str, account_id: str, body: dict) -> None:
     base = f"p_{account_id}"
+    # 2.31.4 / 2.32 send room edits (theme, name, lobby direction, size) with the
+    # room's key and NO gridPosition: match by key (only the caller's own rooms).
+    rk_in = str(body.get("roomKey") or "")
+    if rk_in.startswith(base) and any(k in fl for k in ("theme", "name", "lobby", "dimension")):
+        upd = _settings_update(fl, body)
+        if not upd:
+            return
+        if "themeKey" in upd:
+            doc = await _load_pw_map(base)
+            for n in doc.get("data") or []:
+                if n.get("roomKey") == rk_in:
+                    n["themeKey"] = upd["themeKey"]
+                    await _save_pw_map(doc)
+                    break
+        await _save_pw_room_settings(rk_in, upd)
+        print(f"[pw] {account_id} room {rk_in} <- {upd}")
+        return
     pos = _gp(body.get("gridPosition"))
     if pos is None:
         return
@@ -253,14 +284,7 @@ async def _private_room_op(fl: str, account_id: str, body: dict) -> None:
                         pass
                     break
         if upd:
-            exists = await rooms.find_one({"roomKey": rk}, {"_id": 1})
-            if not exists:
-                from services.dynamo_ops import _get_fallback_doc
-                base_doc = await _get_fallback_doc("G2_Rooms", {"roomKey": rk}) or {}
-                base_doc.update(upd)
-                await rooms.insert_one(base_doc)
-            else:
-                await rooms.update_one({"roomKey": rk}, {"$set": upd})
+            await _save_pw_room_settings(rk, upd)
             print(f"[pw] {account_id} room {rk} <- {upd}")
         return
 
@@ -285,3 +309,52 @@ async def _private_room_op(fl: str, account_id: str, body: dict) -> None:
         name = str(body.get("roomName") or f"Room {len(nodes) - 1}")[:40]
         await rooms.insert_one(_full_room(rk, name, [80, 80, 80], theme=theme))
     print(f"[pw] {account_id} added {theme} room {rk} at {pos}")
+
+
+# ─── Room play/creative mode (owner 2026-10-18: "pw maps get set back to playing
+# when they try and set it to creative"). The client's RoomDatabase.EnterCreativeMode /
+# EnterPlayMode call g2_enterCreativeMode / g2_enterPlayMode {accountID, roomKey}; the
+# room's mode is the G2_Rooms field "isCreative" the client reads on every room load
+# (getRoomData). These were unhandled (generic success, nothing saved), so a private
+# world came back in play mode on the next load. Saved for private worlds only, by the
+# world's owner or a blaze-role account; other rooms keep their stored mode.
+def _pw_owner(rk: str) -> str:
+    if not rk.startswith("p_o_"):
+        return ""
+    base = rk[2:]
+    return base[:-len("_sandbox")] if base.endswith("_sandbox") else base
+
+
+async def _set_room_mode(body: dict, creative: bool) -> dict:
+    acct = str(body.get("accountID") or "")
+    rk = str(body.get("roomKey") or "")
+    owner = _pw_owner(rk)
+    if owner:
+        allowed = acct == owner
+        if not allowed and acct:
+            a = await accounts.find_one({"accountID": acct}, {"_id": 0, "roleKeys": 1}) or {}
+            allowed = "blaze" in (a.get("roleKeys") or [])
+        if allowed:
+            await _save_pw_room_settings(rk, {"isCreative": 1 if creative else 0})
+            print(f"[pw] {acct} set {rk} to {'creative' if creative else 'play'} mode")
+        else:
+            print(f"[pw] {acct} tried to set {rk} (owner {owner}) to {'creative' if creative else 'play'}: not saved")
+    elif rk and not rk.startswith(("c_", "o_")):
+        # shared map: only map builders, from their own headset (creative_builders)
+        from services import creative_builders as _cb
+        if await _cb.is_builder_on_own_headset(acct, body.get("_deviceKey", "")):
+            from services.db import rooms as _rooms
+            r = await _rooms.update_one({"roomKey": rk}, {"$set": {"isCreative": 1 if creative else 0}})
+            print(f"[builder] {acct} set {rk} to {'creative' if creative else 'play'}"
+                  f"{'' if r.matched_count else ' (no stored room doc, not saved)'}")
+        else:
+            print(f"[builder] {acct} tried to set shared map {rk} to {'creative' if creative else 'play'}: not a builder")
+    return {"success": 1}
+
+
+async def handle_enter_creative_mode(body: dict) -> dict:
+    return await _set_room_mode(body, True)
+
+
+async def handle_enter_play_mode(body: dict) -> dict:
+    return await _set_room_mode(body, False)

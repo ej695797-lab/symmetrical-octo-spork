@@ -24,7 +24,6 @@ import re
 import time
 
 MODE = os.getenv("DEVICE_AUTH", "observe").strip().lower()
-# EDITOR_SECRET: what kit1 servers (which had an editor) used, so their bound headsets still match.
 _PEPPER = os.getenv("DEVICE_KEY_PEPPER") or os.getenv("EDITOR_SECRET", "") or "blaze-device"
 _KEY_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -40,8 +39,6 @@ def enforcing() -> bool:
 # Photon room joins (131b15+ adds dk=<key> to the custom-auth params). Separate
 # switch so it can be turned on once the new build is confirmed to send it.
 PHOTON_MODE = os.getenv("PHOTON_DEVICE_AUTH", "observe").strip().lower()
-# Staff accounts whose headset is never bound automatically (env, comma-separated).
-PROTECTED_BIND_IDS = set(filter(None, (os.getenv("PROTECTED_BIND_IDS") or "").replace(" ", "").split(",")))
 
 
 def photon_enforcing() -> bool:
@@ -111,48 +108,23 @@ async def check_login(account: dict, account_id: str, key: str, ip: str, is_new:
             return True, "ok"
         known_ips = set(filter(None, [account.get("lastIP")] + list(account.get("recentIPs") or [])))
         known_nets = {_net(x) for x in known_ips}
-        # Staff/owner accounts never bind a headset just because they have no IP
-        # history (2026-10-11: a raider's headset was bound to the owner's second
-        # account that way). They bind only on a brand-new account, from a known
-        # network, or after an admin's explicit "Reset headset lock".
-        protected = account_id in PROTECTED_BIND_IDS
-        trusted = (is_new or (not protected and not known_ips) or ip in known_ips or _net(ip) in known_nets
-                   or account.get("deviceBindOpen"))
-        near = ""
-        # Never tie an existing account to a headset over a VPN/relay (Oct 10:
-        # the raider reset a player's lock in the editor, then bound his own
-        # banned Quest to that account through a VPN).
-        from services import geo as _geo
-        if not is_new and _geo.vpn_hint(ip):
-            trusted = False
-            near = "x"
-        if not bound and not trusted and not near:
-            # A new connection near where this account usually plays (a friend's
-            # house, mobile data, a trip nearby) is fine too (services/geo.py).
-            from services import geo
-            km = geo.nearest_km(ip, known_ips)
-            if km is not None and km <= geo.GEO_NEAR_KM:
-                trusted, near = True, f" ({km:.0f} km from home)"
-        # Never tie a BANNED headset to an account (it would ban that account).
-        from services.device_bans import is_device_banned
-        if await is_device_banned(key):
-            _log(f"banned headset tried to bind to {account_id} ip={ip} - refused", every=60)
-            return (not enforcing(), "banned-headset")
         # A second headset for an account that already has one: allowed from the
         # account's own home network (exact IP or same /24 or /64, never a VPN) -
         # a new Quest, a factory reset or a sibling's headset. Up to 3 per account.
-        # (2026-10-11: players kept getting "locked to another headset" at home.)
-        if bound and len(bound) < 3 and near != "x" and (ip in known_ips or _net(ip) in known_nets):
-            from services.db import accounts
-            await accounts.update_one({"accountID": account_id},
-                                      {"$addToSet": {"deviceKeys": h},
-                                       "$set": {"deviceKeyBoundAt": int(time.time())}})
-            forget(account_id)
-            account["deviceKeys"] = bound + [h]
-            _log(f"added a second headset to {account_id} from its home network ip={ip}", every=0)
-            return True, "bound"
-        if not bound and trusted:
-            near = "" if near == "x" else near
+        # (mirrors 1.31 2a32e1b: players got "locked to another headset" at home)
+        if bound and len(bound) < 3 and (ip in known_ips or _net(ip) in known_nets):
+            from services import geo as _geo
+            if not _geo.vpn_hint(ip):
+                from services.db import accounts
+                await accounts.update_one({"accountID": account_id},
+                                          {"$addToSet": {"deviceKeys": h},
+                                           "$set": {"deviceKeyBoundAt": int(time.time())}})
+                forget(account_id)
+                account["deviceKeys"] = bound + [h]
+                _log(f"added a second headset to {account_id} from its home network ip={ip}", every=0)
+                return True, "bound"
+        if not bound and (is_new or not known_ips or ip in known_ips or _net(ip) in known_nets
+                          or account.get("deviceBindOpen")):
             from services.db import accounts
             await accounts.update_one({"accountID": account_id},
                                       {"$addToSet": {"deviceKeys": h},
@@ -162,33 +134,14 @@ async def check_login(account: dict, account_id: str, key: str, ip: str, is_new:
             # keep the caller's copy in step (login re-$sets the whole account later)
             account["deviceKeys"] = bound + [h]
             account.pop("deviceBindOpen", None)
-            _log(f"bound a headset to {account_id} ip={ip}{near}", every=0)
+            _log(f"bound a headset to {account_id} ip={ip}", every=0)
             return True, "bound"
-        why = "other-headset" if bound else ("vpn" if near == "x" else "unknown-ip")
+        why = "other-headset" if bound else "unknown-ip"
         _log(f"login MISMATCH {account_id} ({why}) ip={ip} mode={MODE}", every=60)
         return (not enforcing(), why)
     except Exception as e:
         print(f"[device] login check failed for {account_id}: {e}")
         return True, "error"
-
-
-async def check_write(account_id: str, key: str, what: str, ip: str = "") -> bool:
-    """Strict check for calls that CHANGE something as account_id: when enforcing,
-    the account must have a bound headset and this must be it. (check_request
-    lets accounts with no headset bound through, so a script could act as any of
-    them; the real game always sends its key and login binds it.)"""
-    if not enforcing() or not account_id or not isinstance(account_id, str):
-        return True
-    try:
-        bound = await _keys_of(account_id)
-        if bound and valid_key(key) and key_hash(key) in bound:
-            return True
-        _log(f"write {what} as {account_id} refused: "
-             f"{'no headset bound' if not bound else 'wrong/missing headset key'} ip={ip}", every=60)
-        return False
-    except Exception as e:
-        print(f"[device] write check failed for {account_id}: {e}")
-        return True
 
 
 async def check_request(account_id: str, key: str, what: str, ip: str = "", enforce: bool | None = None):

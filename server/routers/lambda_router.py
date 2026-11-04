@@ -14,7 +14,7 @@ from fastapi.responses import Response
 
 from handlers.login import handle_login
 from handlers.moderation import handle_moderator_ban_account, handle_moderator_warn_account
-from handlers.rooms import handle_room_data, handle_room_map_data, handle_room_map_extra_properties
+from handlers.rooms import handle_room_data, handle_room_map_data, handle_fetch_room_map_extra_properties
 from handlers.community import (
     handle_cw_get_can_enter,
     handle_cw_track_visit,
@@ -24,30 +24,28 @@ from handlers.community import (
 from handlers.cosmetics import handle_put_active_cosmetics
 from handlers.maps import handle_save_room_map, handle_fetch_map_data, handle_save_room_map_properties
 from handlers.currency import handle_dev_reset_currency
+from handlers import cards as _cards
 from handlers.challenges import (
+    handle_redeem_challenge_reward,
     handle_fetch_global_rotation,
 )
 from handlers.misc import (
     handle_fetch_account_datas,
     handle_fetch_featured_world_list,
     handle_fetch_popular_world_list,
+    handle_fetch_random_world_list,
     handle_log_debug,
     handle_fetch_global_fatal_error,
     handle_refresh_account_online,
     handle_try_redeem_currency_stash,
-    handle_fetch_room_card_shards,
-    handle_fetch_available_loot,
-    handle_generate_fish_bite,
     handle_put_player_status,
-    handle_validate_text,
-    handle_fetch_customized_items,
-    handle_put_customized_item_allow_sharing,
+    handle_fetch_player_statuses,
+    handle_put_toymaker_request,
+    handle_put_favorite_patterns,
     handle_try_purchase_customized_item,
-)
-from handlers import cards as _cards
+    handle_fetch_customized_items)
 from handlers.purchases import handle_purchase
 from services.property_defaults import default_for_property
-from handlers.misc import handle_generate_fish_bite
 
 router = APIRouter()
 LAMBDA_LOG_FILE = Path("logs/lambda_traffic.log")
@@ -73,7 +71,7 @@ def _lambda_envelope_payload(data: dict) -> dict:
     with {"_lambda_error": "ERR_TYPE"} (anywhere at the top or under "data"):
     the client's LambdaResponse treats a non-200 statusCode as a failure and
     reads body.err_type."""
-    err = data.get("_lambda_error") or (data.get("data") or {}).get("_lambda_error") \
+    err = data.get("_lambda_error") or (data.get("data") if isinstance(data.get("data"), dict) else {}).get("_lambda_error") \
         if isinstance(data, dict) else None
     if err:
         return {"statusCode": 400, "headers": {"Content-Type": "application/json"},
@@ -107,62 +105,69 @@ def _lambda_envelope(data: dict) -> Response:
 
 # ─── Handler dispatch table ────────────────────────────────────────
 # Each entry: (substring to match in lowercase, handler coroutine)
-# Lambdas that change state (vs. read-only fetches): see check_write above.
-WRITE_LAMBDAS = {
-    "cwtrackvisit", "cwtrypurchasefuel", "cweditpermissions", "redeemchallengereward",
-    "putactivecosmetics", "saveroommapcompressed", "saveroommapproperties", "devresetcurrency",
-    "tryredeemcurrencystash", "moderatorbanaccount", "moderatorwarnaccount", "trypurchase",
-    "tryexpandprivateworld", "trydeleteprivateroom", "trydeletecommunityworldroom",
-    "putplayerstatus", "putcustomizeditemallowsharing", "putfavoritepatterns",
-    "putsavedoutfits", "putfishinanotherbucket", "putautonomousmode","generatefishbite",
-}
+from handlers.v2_extras import (
+    handle_save_room_passageway_links, handle_put_saved_outfits, handle_remove_saved_outfit,
+    handle_put_pet_name, handle_put_pet_location, handle_put_anonymous_mode)
+
+import handlers.purchases as _purchases_mode
 
 HANDLER_TABLE = [
+    # Claims (handlers/cards.py, 2026-10-17): MUST precede the "trypurchase" catch-all.
+    # pw play/creative mode persistence (handlers/purchases.py, 2026-10-18); before any
+    # "creative" catch-all
+    ("entercreativemode",       _purchases_mode.handle_enter_creative_mode),
+    ("enterplaymode",           _purchases_mode.handle_enter_play_mode),
+    ("trypurchasetradingcardpack", _cards.handle_try_purchase_trading_card_pack),
+    ("redeemtradingcardreward", _cards.handle_redeem_trading_card_reward),
+    ("redeemchallengereward",   _cards.handle_redeem_challenge_reward),
+    ("tryredeemcurrencystash",  _cards.handle_try_redeem_currency_stash),
     ("logintoaccount",          handle_login),
+    # 2.4.0 (handlers/v2_extras.py)
+    ("saveroompassagewaylinks", handle_save_room_passageway_links),
+    ("putsavedoutfits",         handle_put_saved_outfits),
+    ("removesavedoutfit",       handle_remove_saved_outfit),
+    ("putpetname",              handle_put_pet_name),
+    ("putpetlocation",          handle_put_pet_location),
+    ("putanonymousmode",        handle_put_anonymous_mode),
     ("fetchglobalrotation",     handle_fetch_global_rotation),
     ("fetchfeaturedworldlist",   handle_fetch_featured_world_list),
     ("fetchpopularworldlist",   handle_fetch_popular_world_list),
-    ("fetchroomcardshards",     handle_fetch_room_card_shards),
-    ("fetchavailableloot",      handle_fetch_available_loot),
-    ("generatefishbite",        handle_generate_fish_bite),
+    ("fetchrandomworldlist",    handle_fetch_random_world_list),
     ("putplayerstatus",         handle_put_player_status),
-    ("validatetext",            handle_validate_text),
-    ("fetchcustomizeditems",    handle_fetch_customized_items),
-    ("putcustomizeditemallowsharing", handle_put_customized_item_allow_sharing),
-    ("trypurchasecustomizeditem", handle_try_purchase_customized_item),
-    ("trypurchasetradingcardpack", _cards.handle_try_purchase_trading_card_pack),
-    ("redeemtradingcardreward", _cards.handle_redeem_trading_card_reward),
-    ("redeemchallengereward", _cards.handle_redeem_challenge_reward),
-    ("tryredeemcurrencystash", _cards.handle_try_redeem_currency_stash),
+    ("fetchplayerstatuses",     handle_fetch_player_statuses),
+    ("puttoymakerrequest",      handle_put_toymaker_request),
+    ("putfavoritepatterns",     handle_put_favorite_patterns),
     ("cwgetcanenter",           handle_cw_get_can_enter),
     ("cwtrackvisit",            handle_cw_track_visit),
     ("cwtrypurchasefuel",       handle_cw_try_purchase_fuel),
     ("cweditpermissions",       handle_cw_edit_permissions),
     ("putactivecosmetics",      handle_put_active_cosmetics),
+    ("saveroomterrain",         handle_save_room_map),   # 2.x terrain saves (stored separately)
     ("saveroommapcompressed",   handle_save_room_map),
     ("saveroommapproperties",   handle_save_room_map_properties),
     ("fetchroommapdata",        handle_room_map_data),
     ("fetchmapdata",            handle_fetch_map_data),
     ("devresetcurrency",        handle_dev_reset_currency),
     ("getroomdata",             handle_room_data),
+    ("fetchroommapextraproperties", handle_fetch_room_map_extra_properties),
     ("fetchroomdata",           handle_room_data),
     ("logdebug",                handle_log_debug),
     ("fetchglobalfatalerror",   handle_fetch_global_fatal_error),
     ("fetchaccountdatas",       handle_fetch_account_datas),
     ("refreshaccountonline",    handle_refresh_account_online),
-    ("tryredeemcurrencystash",  handle_try_redeem_currency_stash),
     ("moderatorbanaccount",     handle_moderator_ban_account),
     ("moderatorwarnaccount",    handle_moderator_warn_account),
+    # Reskins (customized items): MUST be before "trypurchase" (substring match)
+    # or tryPurchaseCustomizedItem routes to the generic purchase handler and the
+    # reskin is never stored.
+    ("trypurchasecustomizeditem", handle_try_purchase_customized_item),
+    ("fetchcustomizeditems",      handle_fetch_customized_items),
+    # 1.31 purchases (after cwtrypurchasefuel, which keeps its own handler).
     ("trypurchase",             handle_purchase),
     ("tryexpandprivateworld",   handle_purchase),
     ("trydeleteprivateroom",    handle_purchase),
     ("trydeletecommunityworldroom", handle_purchase),
-    ("generatefishbite", handle_generate_fish_bite),
 ]
-
-from config import IS_BUDDY
-if IS_BUDDY:
-    HANDLER_TABLE.append(("fetchroommapextraproperties", handle_room_map_extra_properties))
 
 
 async def _generic_fallback(body: dict) -> dict:
@@ -171,20 +176,24 @@ async def _generic_fallback(body: dict) -> dict:
     If body has propertiesToGet → return defaults for each property.
     Otherwise → return success.
     """
+    # Capture unhandled trading-card traffic so the card system can be built from
+    # the client's real payloads (no 2.31.4 dump, and real Yeeps won't expose
+    # card fields): every card/shard/pack/challenge call that lands here is
+    # stored (capped) in Mongo `card_capture`. 2026-10-17.
     try:
-        from services.db import db as _db
-        from datetime import datetime, timezone
-        fn = str(body.get("_fn") or body.get("functionName") or "?")[:80]
-        await _db["extra_unknown"].update_one(
-            {"fn": fn},
-            {"$inc": {"count": 1},
-             "$set": {"lastAt": datetime.now(timezone.utc).isoformat(),
-                      "lastBody": {k: v for k, v in (body or {}).items()
-                                   if not str(k).startswith("_")}}},
-            upsert=True,
-        )
-    except Exception as e:
-        print(f"[lambda] unknown-log failed: {e}")
+        _fn = str(body.get("_fn") or body.get("functionName") or "")
+        if any(w in _fn.lower() for w in ("card", "shard", "pack", "challenge", "binder")):
+            from services.db import db as _cdb
+            from datetime import datetime as _dt, timezone as _tz
+            _clean = {k: v for k, v in body.items() if not str(k).startswith("_") or k in ("_fn", "_clientBuildTag")}
+            await _cdb["card_capture"].insert_one({"at": _dt.now(_tz.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                                                   "kind": "lambda-fallback", "fn": _fn, "body": _clean})
+            if await _cdb["card_capture"].estimated_document_count() > 300:
+                _old = [d["_id"] async for d in _cdb["card_capture"].find({}, {"_id": 1}).sort("_id", 1).limit(100)]
+                await _cdb["card_capture"].delete_many({"_id": {"$in": _old}})
+            print(f"[cardcap] captured {_fn}")
+    except Exception as _ce:
+        print(f"[cardcap] capture failed: {_ce}")
     props = body.get("propertiesToGet", [])
     if props:
         data = {p: default_for_property(p) for p in props}
@@ -223,12 +232,110 @@ async def lambda_invoke(function_name: str, request: Request):
         if isinstance(body, dict):
             body["_clientIP"] = _cip(request)
             body["_deviceKey"] = getattr(request.state, "device_key", "")
-            body["_clientBuildTag"] = getattr(request.state, "client_build_tag", "")
+            from services import big_patterns as _bigp
+            body["_clientBuildTag"] = await _bigp.tag_for(getattr(request.state, "client_build_tag", ""),
+                                                          body["_deviceKey"])
     except Exception:
         pass
     print(f"[lambda] Invoking: {function_name}  inner={inner_fn or '-'}")
     if isinstance(body, dict):
         body["_fn"] = str(body.get("functionName") or function_name)
+
+    # REAL-YEEPS passthrough (playyeeps line): forward world-read calls to real
+    # Yeeps so the live event rotation / world lists / map geometry are real.
+    # Real Yeeps' Lambda payload IS already the {statusCode,body} envelope the
+    # client expects, so return it verbatim. Account/write/server calls stay
+    # local. On any failure we fall through to the local handler.
+    try:
+        from services import big_patterns as _bpl, real_yeeps as _ry
+        if _bpl.is_play(body.get("_clientBuildTag")) and _ry.should_forward_lambda(inner_fn or fn_lower):
+            _resp = await _ry.forward_ok(function_name, body)
+            if _resp:
+                print(f"[lambda] -> real yeeps ({inner_fn or fn_lower}) {len(_resp)}b")
+                return Response(content=_resp, media_type="application/json",
+                                headers={"x-amzn-RequestId": uuid.uuid4().hex,
+                                         "X-Amz-Executed-Version": "$LATEST"})
+    except Exception as _e:
+        print(f"[lambda] real-yeeps forward failed ({inner_fn or fn_lower}): {_e}")
+
+    # COMMUNITY-WORLD read passthrough: for a c_ room READ, forward the client's
+    # exact call to real Yeeps (service-account session) and return real Yeeps'
+    # response VERBATIM -- real sid, saveData + saveInternalStates, spawn, cw_
+    # attrs, terrain -- nothing reconstructed/dropped (Blaze: "keep cw calling the
+    # real yeeps apis, dont touch that info"). Fixes wrong-spawn / blank-signs /
+    # empty-blocks-crash. Writes are never in _CW_READ_FUNCS. On total
+    # service-account failure we fall through to the local handler.
+    try:
+        import os as _os_lr
+        from services import dynamo_ops as _cwd
+        from services import big_patterns as _bp_live
+        # Resolve the read function from the dispatcher body OR the URL. The live
+        # 2.31.4 client calls g2_fetchMapData / g2_fetchRoomData DIRECTLY (no
+        # body.functionName), so a body-only check never fired -> the live
+        # passthrough was dead for it and CW fell back to the stale DB cache.
+        _innerfn = str(body.get("functionName") or "") if isinstance(body, dict) else ""
+        _urlfn = function_name[3:] if function_name.lower().startswith("g2_") else function_name
+        _read_fn = ""
+        if _innerfn.lower() in _cwd._CW_READ_FUNCS:
+            _read_fn = _innerfn
+        elif _urlfn.lower() in _cwd._CW_READ_FUNCS:
+            _read_fn = _urlfn
+        if isinstance(body, dict) and _read_fn:
+            _is_cw = _cwd._cw_body_has_c(body)
+            # LIVEBASE (biglive) also serves OFFICIAL/public rooms live from real
+            # Yeeps. Our DB mirror was incomplete (minigame_*, itemCustomization
+            # Studio missing; full nexus/wild_/freebuild_ empty) -> those rooms
+            # "failed to load after 5 attempts". Real Yeeps has them; fetch live
+            # like 1.31 (in-mem cache, nothing saved to the DB). Private worlds
+            # (p_*/o_*) 403 on a service account, so they are NOT forwarded (kept
+            # on our DB, where the player saved them); community worlds (c_) keep
+            # their existing path.
+            # OFFICIAL rooms are served from the local DB mirror, NOT live. Routing
+            # nexus (37k loads) + every official room live across the 16 service
+            # accounts looked like scraping and got 14 of them BANNED by real
+            # Yeeps. Official rooms rarely change, so they belong in the DB mirror
+            # (missing ones are mirrored in once, out of band). Only community
+            # worlds (c_) fetch live here. Flip LIVE_OFFICIAL_ROOMS=1 to re-enable.
+            _is_live_official = (
+                _os_lr.getenv("LIVE_OFFICIAL_ROOMS", "") == "1"
+                and not _is_cw
+                and _bp_live.is_livebase(body.get("_clientBuildTag"))
+                and _cwd._cw_body_is_live_official(body))
+            if _is_cw or _is_live_official:
+                # Map fetches resolve the REAL session id server-side (the client's
+                # targetSessionID comes from our DB room map and 404s on real
+                # Yeeps); room-data fetches forward verbatim.
+                if _read_fn.lower() == "fetchmapdata":
+                    _real = await _cwd._cw_passthrough_map(body)
+                else:
+                    _real = await _cwd._cw_passthrough(_read_fn, body)
+                if (_real is not None and isinstance(_real.get("data"), dict)
+                        and _real.get("data")):
+                    envelope_text = json.dumps(_lambda_envelope_payload(_real), ensure_ascii=False)
+                    _append_lambda_log(function_name, body, envelope_text)
+                    return _lambda_envelope(_real)
+                if _is_cw:
+                    # Community worlds: a transient live miss returns a clean empty
+                    # and lets the CLIENT retry -- do NOT fall through to the local
+                    # DB/relay handler, which loops 16 accounts on the relay and
+                    # creates a storm. The in-mem cache fills on the first success.
+                    print(f"[lambda] cw passthrough {_read_fn}: live fetch failed -> empty (client retries)")
+                    # Return a VALID empty-map shape, not a bare {} -- the 2.31.4
+                    # client CRASHES on a fetchMapData response with no saveData
+                    # key (1.31 tolerated it). For a map read, hand back an empty
+                    # saveData so the CW loads blank instead of crashing the game;
+                    # other CW reads still get {} (they tolerate it).
+                    if _read_fn.lower() == "fetchmapdata":
+                        return _lambda_envelope({"data": {"mapDataVersion": 3, "saveData": "", "saveInternalStates": ""}})
+                    return _lambda_envelope({"data": {}})
+                # Official live miss (real Yeeps lacks it / 403 / empty): FALL
+                # THROUGH to the local handler so our own/custom rooms still serve
+                # from the DB.
+                print(f"[lambda] live-official {_read_fn} "
+                      f"{body.get('roomKey') or body.get('roomMapKey') or '-'}: "
+                      f"no live data -> local handler")
+    except Exception as _e:
+        print(f"[lambda] cw passthrough error: {_e}")
 
     # Find matching handler — try the URL name first, then the dispatcher's
     # inner functionName.
@@ -253,20 +360,38 @@ async def lambda_invoke(function_name: str, request: Request):
                 from services import device_auth
                 _ok, _ = await device_auth.check_request(body.get("accountID"), body.get("_deviceKey", ""),
                                                          function_name, body.get("_clientIP", ""))
-                # Anything that CHANGES something also needs the account's own bound
-                # headset, even for accounts with none bound yet (scripts posing as them).
-                if _ok and match_str in WRITE_LAMBDAS:
-                    _ok = await device_auth.check_write(body.get("accountID"), body.get("_deviceKey", ""),
-                                                        function_name, body.get("_clientIP", ""))
                 if not _ok:
                     return _lambda_envelope({"data": {"success": 0, "error": "NOT_AUTHORIZED"}})
             result = await handler(body)
             # If handler returned {data: ...}, use as-is; otherwise wrap
             if "data" not in result:
                 result = {"data": result}
+            # clients get themes they actually have (stock: all big-only keys;
+            # live: themes newer than their build, e.g. 'classic' below biglive7)
+            from services import big_patterns as _bigp
+            _dtag = body.get("_clientBuildTag") if isinstance(body, dict) else ""
+            _txt = json.dumps(result)
+            _low = _bigp.downgrade_for_tag(_txt, _dtag)
+            if _low != _txt:
+                result = json.loads(_low)
             envelope_text = json.dumps(_lambda_envelope_payload(result), ensure_ascii=False)
             _append_lambda_log(function_name, body, envelope_text)
             return _lambda_envelope(result)
+
+    # No local handler. For play clients, forward the long tail of data calls
+    # to real Yeeps (unless it's an account/write/server call) so "mostly all"
+    # data is real; otherwise use the generic placeholder fallback.
+    try:
+        from services import big_patterns as _bpf, real_yeeps as _ryf
+        if _bpf.is_play(body.get("_clientBuildTag")) and _ryf.fallback_forward_ok(inner_fn or fn_lower):
+            _resp = await _ryf.forward_ok(function_name, body)
+            if _resp:
+                print(f"[lambda] fallback -> real yeeps ({inner_fn or fn_lower}) {len(_resp)}b")
+                return Response(content=_resp, media_type="application/json",
+                                headers={"x-amzn-RequestId": uuid.uuid4().hex,
+                                         "X-Amz-Executed-Version": "$LATEST"})
+    except Exception as _e:
+        print(f"[lambda] fallback real-yeeps forward failed: {_e}")
 
     # No match — use generic fallback
     print(f"[lambda] No handler for '{function_name}', using fallback")

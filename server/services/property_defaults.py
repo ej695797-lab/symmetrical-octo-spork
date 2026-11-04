@@ -6,10 +6,6 @@ Mirrors the _default_for_property logic from server.py.
 
 def default_for_property(name: str):
     """Best-guess default value for a propertiesToGet field name."""
-    from services.client_profile import property_default
-    found, value = property_default(name)
-    if found:
-        return value
     n = name.lower()
 
     # Known account flags expected as numeric toggle fields.

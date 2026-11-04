@@ -11,6 +11,7 @@ If the file or the library is missing, every lookup returns None (no relaxing).
 """
 
 import math
+import time
 import os
 
 GEO_DB_PATH = os.path.expanduser(os.getenv("GEO_DB_PATH", "~/.local/share/yeeps/dbip-city-lite.mmdb"))
@@ -72,49 +73,16 @@ def nearest_km(ip: str, known_ips) -> float | None:
 
 # Consumer VPN / relay egress ranges worth flagging (the Oct 9 editor intruder
 # came through Cloudflare WARP).
-_VPN_NETS = (
-    ("104.28.0.0/16", "Cloudflare WARP"),
-    ("2a09:bac0::/29", "Cloudflare WARP"),
-    ("172.224.0.0/12", "iCloud Private Relay"),
-    ("146.75.0.0/16", "iCloud Private Relay"),
-    # VPN / hosting ranges the Oct 9-10 raiders used (M247 / Datacamp / GSL host
-    # most commercial VPN exits), plus DigitalOcean.
-    ("89.238.128.0/18", "VPN (M247)"),
-    ("146.70.0.0/16", "VPN (M247)"),
-    ("37.120.128.0/17", "VPN (M247)"),
-    ("185.184.192.0/22", "VPN"),
-    ("185.132.134.0/24", "VPN"),
-    ("195.242.214.0/24", "VPN"),
-    ("205.147.16.0/20", "VPN"),
-    ("89.187.160.0/19", "VPN (Datacamp)"),
-    ("212.102.32.0/19", "VPN (Datacamp)"),
-    ("143.244.32.0/19", "VPN (Datacamp)"),
-    ("195.181.160.0/20", "VPN (Datacamp)"),
-    ("138.199.0.0/17", "VPN (Datacamp)"),
-    ("2a02:6ea0::/29", "VPN (Datacamp)"),
-    ("2a0d:5600::/29", "VPN (GSL)"),
-    ("104.131.0.0/16", "DigitalOcean"),
-    ("162.243.0.0/16", "DigitalOcean"),
-    ("159.203.0.0/16", "DigitalOcean"),
-    ("165.227.0.0/16", "DigitalOcean"),
-    ("167.99.0.0/16", "DigitalOcean"),
-    ("138.197.0.0/16", "DigitalOcean"),
-    ("134.209.0.0/16", "DigitalOcean"),
-    ("206.189.0.0/16", "DigitalOcean"),
-    ("68.183.0.0/16", "DigitalOcean"),
-    ("157.245.0.0/16", "DigitalOcean"),
-    ("142.93.0.0/16", "DigitalOcean"),
-    ("161.35.0.0/16", "DigitalOcean"),
-    ("164.90.0.0/16", "DigitalOcean"),
-    ("143.198.0.0/16", "DigitalOcean"),
-    ("137.184.0.0/16", "DigitalOcean"),
-    ("64.225.0.0/16", "DigitalOcean"),
-    ("52.23.177.0/24", "AWS"),
-)
+_VPN_NETS = tuple(
+    tuple(x.split("=", 1)) for x in os.getenv("VPN_NETS", "").split(",") if "=" in x
+)  # "cidr=label,cidr=label"; ranges kept private
 
 
 def vpn_hint(ip: str) -> str:
     """Name of a known VPN/relay the IP belongs to, or ""."""
+    c = _VPN_CACHE.get(ip)
+    if c and c[0] and c[1] > time.time():
+        return c[0]   # flagged by the ip-api lookup (vpn_check) recently
     try:
         import ipaddress
         a = ipaddress.ip_address(ip)
@@ -140,3 +108,49 @@ def describe(ip: str) -> str:
         return out or "unknown location"
     except Exception:
         return "unknown location"
+
+
+# Live VPN / proxy / hosting lookup (owner 2026-11-02: the hand-made list above
+# missed native's AWS IPs and most raider IPs). ip-api.com free tier: no key,
+# 45 lookups/min, so answers are cached (flagged 24h, clean 6h). If the lookup
+# fails the IP is let through (the list above still applies).
+_VPN_CACHE: dict = {}      # ip -> (label or "", expires)
+_VPN_ASNS = {"AS54113": "Fastly relay (iCloud Private Relay / Mozilla VPN)",
+             "AS13335": "Cloudflare WARP"}
+
+
+async def vpn_check(ip: str) -> str:
+    """vpn_hint plus a live ip-api.com lookup. Label of the VPN/proxy/host, or ""."""
+    h = vpn_hint(ip)
+    if h or not ip or ip == "?":
+        return h
+    c = _VPN_CACHE.get(ip)
+    if c and c[1] > time.time():
+        return c[0]
+    try:
+        import ipaddress
+        if not ipaddress.ip_address(ip).is_global:
+            return ""
+        import httpx
+        async with httpx.AsyncClient(timeout=4) as cl:
+            r = await cl.get(f"http://ip-api.com/json/{ip}",
+                             params={"fields": "status,proxy,hosting,as,isp"})
+        d = r.json()
+    except Exception:
+        return ""
+    if d.get("status") != "success":
+        return ""
+    asn = str(d.get("as") or "").split(" ")[0]
+    isp = d.get("isp") or "unknown"
+    if asn in _VPN_ASNS:
+        label = _VPN_ASNS[asn]
+    elif d.get("proxy"):
+        label = f"VPN/proxy ({isp})"
+    elif d.get("hosting"):
+        label = f"hosting/datacenter ({isp})"
+    else:
+        label = ""
+    _VPN_CACHE[ip] = (label, time.time() + (86400 if label else 21600))
+    if len(_VPN_CACHE) > 5000:
+        _VPN_CACHE.pop(next(iter(_VPN_CACHE)))
+    return label

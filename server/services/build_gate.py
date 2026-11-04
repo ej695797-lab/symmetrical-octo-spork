@@ -58,13 +58,51 @@ async def only_guard_builds() -> bool:
     return bool(allowed) and all(_bnum(b) >= _bnum(GUARD_MIN_BUILD) for b in allowed)
 
 
+# Live track (2.32.0) old-APK message, owner's wording 2026-10-28. Shown on the
+# login popup and when an old build is refused at Photon.
+LIVE_OUTDATED_MESSAGE = ('Outdated version. please redownload from the discord and no you are not banned '
+                         'so dont say "im banned please fix this @ownername" i will time you out')
+
+# Owner 2026-10-28: a live player with no Discord link can't load the game at all.
+# Login fails (game shows its purple Fatal Error box) and the box's message comes
+# from fetchGlobalFatalError, matched to the blocked login by IP / account.
+LINK_REQUIRED_MESSAGE = ("Please make sure to do /link in the discord!\n\n"
+                         "if you are not in the discord join by this link:\n"
+                         "https://discord.gg/UfYxE9W9dX")
+_link_blocked_recent: dict = {}      # ip or accountID -> time of the blocked login
+_LINK_BLOCK_WINDOW = 30 * 60
+
+
+def note_link_blocked(account_id: str, ip: str) -> None:
+    now = _time.time()
+    for k in (account_id, ip):
+        if k:
+            _link_blocked_recent[str(k)] = now
+    if len(_link_blocked_recent) > 5000:
+        for k, t in list(_link_blocked_recent.items()):
+            if now - t > _LINK_BLOCK_WINDOW:
+                _link_blocked_recent.pop(k, None)
+
+
+def was_link_blocked(account_id: str = "", ip: str = "") -> bool:
+    now = _time.time()
+    return any(k and now - _link_blocked_recent.get(str(k), 0) < _LINK_BLOCK_WINDOW
+               for k in (account_id, ip))
+
+
+def clear_link_blocked(account_id: str = "", ip: str = "") -> None:
+    for k in (account_id, ip):
+        _link_blocked_recent.pop(str(k), None)
+
+
 def outdated_message() -> str:
     """Shown to players on an old APK (also old builds of the same version,
     so name the build, not just the version)."""
     latest = newest_build()
     build = f" (build {latest})" if latest else ""
-    # No download link in the message (owner, 2026-10-11): players just install the APK again.
-    return f"Outdated version. Install APK again to keep playing{build}."
+    url = os.getenv("LATEST_APK_URL", "131.your-domain.example/download")
+    return (f"Outdated version. Update to the latest {REQUIRED_CLIENT_VERSION}{build} to keep playing."
+            + (f" Download: {url}" if url else ""))
 
 
 # ── "require newest build" testing toggle (globals key "requireBuild") ──
@@ -76,48 +114,17 @@ _req_cache = {"val": "", "ts": 0.0}
 
 
 async def require_build() -> str:
-    """The build everyone must be on. Default (no value stored): the newest allowlisted
-    build, so every new APK is required as soon as it's allowed (owner, 2026-10-11).
-    The stored value "*" is the testing switch: allow all builds."""
     now = _time.time()
     if now - _req_cache["ts"] < 10:
         return _req_cache["val"]
-    raw = None
+    val = _req_cache["val"]
     try:
         from services.db import globals_col
         d = await globals_col.find_one({"key": "requireBuild"}, {"_id": 0, "value": 1})
-        raw = str((d or {}).get("value") or "").strip() if d else None
+        val = str((d or {}).get("value") or "").strip()
     except Exception:
-        raw = None
-    if raw == "*":
-        val = ""                       # allow all builds (testing)
-    elif raw:
-        val = raw                      # a specific build (or comma list) set by hand
-    else:
-        val = newest_build()           # default: always the newest build
+        pass
     _req_cache.update(val=val, ts=now)
-    return val
-
-
-# ── game closed (owner, 2026-10-12: "turn off 1.31.0 servers", game only) ──
-# globals key "gameClosed" {"message": "..."}: while the message is set, every
-# login gets the isolation screen with that message and every Photon join is
-# refused. The Discord bot and the editor keep working. Clear the message to reopen.
-_closed_cache = {"val": "", "ts": 0.0}
-
-
-async def closed_message() -> str:
-    now = _time.time()
-    if now - _closed_cache["ts"] < 10:
-        return _closed_cache["val"]
-    val = ""
-    try:
-        from services.db import globals_col
-        d = await globals_col.find_one({"key": "gameClosed"}, {"_id": 0, "message": 1})
-        val = str((d or {}).get("message") or "").strip()
-    except Exception:
-        val = _closed_cache["val"]
-    _closed_cache.update(val=val, ts=now)
     return val
 
 
@@ -133,6 +140,17 @@ def classify(tag: str) -> str:
     tag = (tag or "").strip()
     if not tag:
         return "outdated"
+    # Big / live-base / play clients run their own version track (biglive*,
+    # big*, play*) and are gated by services.big_patterns, NOT by the 1.31
+    # ALLOWED_CLIENT_BUILDS allowlist. Without this they'd always classify as
+    # "outdated" (their build id isn't in that list) and the editor's online
+    # list would label every live player "outdated" instead of their build.
+    try:
+        from services import big_patterns as _bp
+        if _bp.is_big(tag) or _bp.is_livebase(tag):
+            return "ok"
+    except Exception:
+        pass
     build_id = tag.split(".", 1)[0]
     if build_id not in ALLOWED_CLIENT_BUILDS:
         return "outdated"

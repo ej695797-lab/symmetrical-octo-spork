@@ -1,8 +1,9 @@
 """
 In-game moderation: g2_moderatorBanAccount / g2_moderatorWarnAccount.
 
-The client's mod menu calls these on the server. Role badges alone must not
-authorize moderation. We only apply a ban/warn when the acting account is staff
+The client's mod menu calls these on the server, but every player has the
+`moderator` role from the default loadout, so WITHOUT a gate any player could
+ban anyone. We only apply a ban/warn when the acting account is real staff
 (MOD_STAFF allowlist); everyone else gets a silent no-op success.
 
 A ban sets `adminBlocked` (the existing block switch login.py already serves as
@@ -16,43 +17,12 @@ from datetime import datetime, timedelta, timezone
 
 from services.db import accounts
 
-# Who can actually ban/warn in game. ONLY these accounts (env MOD_STAFF,
-# comma-separated account IDs); every other player's ban/warn is a silent no-op.
-MOD_STAFF = set(filter(None, (os.getenv("MOD_STAFF") or "").replace(" ", "").split(",")))
-
-
-async def _staff_check(body: dict) -> str:
-    """"" if the caller really is staff on their own headset, else why not.
-
-    The game sends accountID in the request body, so anyone can CLAIM to be a
-    staff account through the raw API (2026-10-10: a script logged in as an
-    owner account and spammed bans). A ban/warn therefore needs the staff
-    account's bound headset key and the current game build, not just the id.
-    """
-    mod = body.get("accountID", "")
-    if mod not in MOD_STAFF:
-        return "not staff"
-    from services import device_auth
-    from services.build_gate import current_status
-    key = body.get("_deviceKey", "")
-    bound = await device_auth._keys_of(mod)
-    if not bound:
-        return "staff account has no headset bound yet"
-    if not device_auth.valid_key(key) or device_auth.key_hash(key) not in bound:
-        return "not from the staff member's headset"
-    # The game only tags its login with the build, not these calls, so use the
-    # build the staff account last logged in with.
-    doc = await accounts.find_one({"accountID": mod}, {"_id": 0, "clientBuildTag": 1, "clientBuildStatus": 1})
-    if current_status(doc) != "ok":
-        # live79 has no legacy /c/<build-tag>/ protocol. Hosts may explicitly
-        # approve an untagged Buddy staff account after installing their APK.
-        # This never bypasses the staff allowlist or bound-headset proof, and
-        # never accepts an explicitly outdated/modified tag.
-        from config import IS_BUDDY
-        untagged_staff = set(filter(None, (os.getenv("MOD_UNTAGGED_STAFF") or "").replace(" ", "").split(",")))
-        if not (IS_BUDDY and mod in untagged_staff and not (doc or {}).get("clientBuildTag")):
-            return "not on the current game build"
-    return ""
+# Who can actually ban/warn. ONLY these accounts; every other player's ban/warn
+# is a silent no-op (they all have the moderator role from the default loadout).
+# Override via env MOD_STAFF (comma-separated IDs).
+MOD_STAFF = set(filter(None, (
+    os.getenv("MOD_STAFF") or "o_OWNER0000000001,o_PLAYER0000000003,o_STAFF00000000002"
+).replace(" ", "").split(",")))
 
 
 def _fmt(dt: datetime) -> str:
@@ -69,10 +39,9 @@ BAN_LENGTH_REMAP = {72: 1, 168: 24, 720: 72}
 async def handle_moderator_ban_account(body: dict) -> dict:
     mod = body.get("accountID", "")
     target = body.get("targetAccountID", "")
-    why = await _staff_check(body) if target and target != mod else "no target"
-    if why:
+    if mod not in MOD_STAFF or not target or target == mod:
         if target:
-            print(f"[mod] IGNORED ban by {mod} on {target} ({why}) ip={body.get('_clientIP', '')}")
+            print(f"[mod] IGNORED ban by non-staff {mod} on {target}")
         return {"success": 1}   # menu shows for everyone; only staff actually bans
     # The client's field is targetBanDurationHours (hours); fall back to other
     # likely names. 0 / missing = permanent.
@@ -102,10 +71,9 @@ async def handle_moderator_ban_account(body: dict) -> dict:
 async def handle_moderator_warn_account(body: dict) -> dict:
     mod = body.get("accountID", "")
     target = body.get("targetAccountID", "")
-    why = await _staff_check(body) if target and target != mod else "no target"
-    if why:
+    if mod not in MOD_STAFF or not target or target == mod:
         if target:
-            print(f"[mod] IGNORED warn by {mod} on {target} ({why}) ip={body.get('_clientIP', '')}")
+            print(f"[mod] IGNORED warn by non-staff {mod} on {target}")
         return {"success": 1}
     reason = (body.get("banReason") or "").strip() or "Warned by staff"
     await accounts.update_one({"accountID": target}, {

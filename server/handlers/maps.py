@@ -4,22 +4,23 @@ Stores map data with version history.
 """
 
 import os
+import time as _time
 
 from datetime import datetime, timezone
 
-from services.db import maps, rooms
-from config import IS_BUDDY
+from services.db import maps
 
-# Official rooms that must NOT be editable in-game (raid protection). The host
-# changes them with tools/import_map.py (a separate code path). Override
+# Official rooms that must NOT be editable in-game (raid protection). Admins can
+# still change them from the web editor — that's a separate code path. Override
 # with env PROTECTED_ROOMS (comma list) and/or PROTECTED_ROOM_PREFIX.
 _PROTECTED_ROOMS = set(filter(None, (os.getenv("PROTECTED_ROOMS") or
     "official_0,official_1,official_2,tutorial").replace(" ", "").split(",")))
 _PROTECTED_PREFIX = os.getenv("PROTECTED_ROOM_PREFIX", "official_")
+_protect_notify_ts = {}
 
 
 def _is_protected_room(room_key: str) -> bool:
-    return bool(room_key) and ((IS_BUDDY and room_key == "nexus") or room_key in _PROTECTED_ROOMS or
+    return bool(room_key) and (room_key in _PROTECTED_ROOMS or
                                (bool(_PROTECTED_PREFIX) and room_key.startswith(_PROTECTED_PREFIX)))
 
 
@@ -36,62 +37,13 @@ MAP_EDIT_ROLES = set(filter(None, (os.getenv("MAP_EDIT_ROLES") or
 SHARED_SAVE_ROLE = os.getenv("SHARED_SAVE_ROLE", "blaze")
 
 
-# Official rooms (2026-10-11): people found how to flip a room to creative with
-# BNM and save it. In-game saves to an official room are refused for everyone,
-# whatever mode the room is in (the save request doesn't say which mode it's
-# in). Official maps change only by import (tools/import_map.py) or while
-# UNLOCK_ALL_MODES is on. Read from the room
-# record (isOfficial), cached a minute, with the known official names as a floor.
-_OFFICIAL_PREFIX = ("official_", "bam_", "halloween_", "bonus_", "researchFacility", "tutorial", "freebuild_ch2")
-_official_cache: dict = {}
-
-
-async def _is_official_room(room_key: str) -> bool:
-    if not room_key or room_key.startswith("p_"):
-        return False
-    # Kit: UNLOCK_ALL_MODES=1 is the host's build switch, so official rooms take
-    # in-game saves while it's on (turn it off again when the maps are done).
-    from config import UNLOCK_ALL_MODES
-    if UNLOCK_ALL_MODES:
-        return False
-    if (IS_BUDDY and room_key == "nexus") or room_key.startswith(_OFFICIAL_PREFIX):
-        return True
-    import time as _t
-    hit = _official_cache.get(room_key)
-    if hit and hit[1] > _t.monotonic():
-        return hit[0]
-    try:
-        doc = await rooms.find_one({"roomKey": room_key}, {"_id": 0, "isOfficial": 1})
-        val = bool(doc) and int((doc or {}).get("isOfficial") or 0) == 1
-    except Exception:
-        val = False
-    _official_cache[room_key] = (val, _t.monotonic() + 60)
-    return val
-
-
-def _is_own_pw(account_id: str, room_key: str) -> bool:
-    """room_key is account_id's private world (main room or _sandbox)."""
-    if not account_id:
-        return False
-    own = f"p_{account_id}"
-    return room_key == own or room_key.startswith(own + "_")
-
-
-async def _from_bound_headset(account_id: str, body: dict) -> bool:
-    try:
-        from services import device_auth
-        bound = await device_auth._keys_of(account_id)
-        key = body.get("_deviceKey", "")
-        return bool(bound) and device_auth.valid_key(key) and device_auth.key_hash(key) in bound
-    except Exception as e:
-        print(f"[maps] headset check failed for {account_id}: {e}")
-        return False
-
-
 async def _may_save_shared(account_id: str, room_key: str, body: dict) -> bool:
     """True if this save may be stored (always for the saver's own private world)."""
-    if _is_own_pw(account_id, room_key):
+    if room_key.startswith(f"p_{account_id}"):
         return True
+    from services import creative_builders as _cb
+    if await _cb.is_builder_on_own_headset(account_id, body.get("_deviceKey", "")):
+        return True   # map builder, from their own bound headset
     try:
         from config import UNLOCK_ALL_MODES
         if UNLOCK_ALL_MODES:
@@ -101,10 +53,7 @@ async def _may_save_shared(account_id: str, room_key: str, body: dict) -> bool:
     why = ""
     try:
         acc = await accounts.find_one({"accountID": account_id}, {"_id": 0, "roleKeys": 1})
-        from services import role_locks
-        await role_locks.load_blaze_holders()
-        if SHARED_SAVE_ROLE not in ((acc or {}).get("roleKeys") or []) or (
-                SHARED_SAVE_ROLE == role_locks.BLAZE_ROLE and not role_locks.is_blaze_holder(account_id)):
+        if SHARED_SAVE_ROLE not in ((acc or {}).get("roleKeys") or []):
             why = f"no {SHARED_SAVE_ROLE} role"
         else:
             from services import device_auth
@@ -147,8 +96,20 @@ async def _can_edit_protected(account_id: str, body: dict | None = None) -> bool
             print(f"[maps] headset check failed for {account_id}: {e}")
             return False
     try:
+        from services import creative_builders as _cb
+        if account_id in await _cb.builder_ids():
+            return True   # headset already checked above when a body is given
+    except Exception:
+        pass
+    try:
         from handlers.moderation import MOD_STAFF
         if account_id in MOD_STAFF:
+            return True
+    except Exception:
+        pass
+    try:
+        from routers.editor_router import EDITOR_ADMINS
+        if account_id in EDITOR_ADMINS:
             return True
     except Exception:
         pass
@@ -159,6 +120,35 @@ async def _can_edit_protected(account_id: str, body: dict | None = None) -> bool
     except Exception:
         pass
     return False
+
+# Per-room throttle for in-game map-edit webhook notifications (players building
+# save constantly; without this it would flood the Discord webhook).
+_last_edit_notify: dict = {}
+_EDIT_NOTIFY_THROTTLE = 120   # seconds between notifications per room
+
+
+async def _notify_map_edit(room_key: str, account_id: str, map_data: str) -> None:
+    """Fire a throttled Discord webhook when a map is edited in-game, so the
+    owner can see map activity (and catch griefing)."""
+    now = _time.time()
+    last = _last_edit_notify.get(room_key, 0)
+    if now - last < _EDIT_NOTIFY_THROTTLE:
+        return
+    _last_edit_notify[room_key] = now
+    try:
+        cnt = "saved"
+        try:
+            from services.mapsync_decoder import decode_map
+            cnt = f"{len(decode_map(map_data) or [])} blocks"
+        except Exception:
+            pass
+        from services.db import accounts
+        acc = await accounts.find_one({"accountID": account_id}, {"_id": 0, "displayName": 1})
+        who = (acc or {}).get("displayName") or account_id or "someone"
+        from routers.editor_router import _ingame_notify
+        await _ingame_notify(f"**{who}** (`{account_id}`) edited the map for **{room_key}** ({cnt} blocks) in-game")
+    except Exception as e:
+        print(f"[maps] edit-notify failed for {room_key}: {e}")
 
 # Room-property fields that g2_saveRoomMapProperties may carry. Floor/ground
 # level (floorDepth), liquid, lighting, theme, doors etc. live on G2_Rooms, not
@@ -175,22 +165,16 @@ _ROOM_PROP_FIELDS = {
 
 async def handle_save_room_map_properties(body: dict) -> dict:
     """Persist room-level properties (floor/ground level, liquid, lighting,
-    theme, doors, ...) changed in game. These are stored on G2_Rooms; the
+    theme, doors, ...) changed in the editor. These are stored on G2_Rooms; the
     client sends them via g2_saveRoomMapProperties, separate from the map blob."""
     room_key = body.get("roomKey", "")
     account_id = body.get("accountID", "")
     if not room_key:
         return {"success": 0}
-    if room_key.startswith("c_"):          # community worlds are read live from Yeeps, never stored here
-        print(f"[cw] property save ignored (live from Yeeps): {room_key} by {account_id}")
-        return {"success": 1}
-    # Raid protection: regular players can't change official rooms; map
-    # makers / staff (and anyone while UNLOCK_ALL_MODES is on) may edit them in-game.
+    # Raid protection: official rooms are editor-only for regular players; map
+    # makers / staff (and during testing, anyone) may edit them in-game.
     if _is_protected_room(room_key) and not await _can_edit_protected(account_id, body):
         print(f"[maps] BLOCKED in-game property edit to protected room {room_key} by {account_id}")
-        return {"success": 1}
-    if await _is_official_room(room_key):
-        print(f"[maps] BLOCKED in-game save to official room {room_key} by {account_id}")
         return {"success": 1}
     if not await _may_save_shared(account_id, room_key, body):
         return {"success": 1}
@@ -207,6 +191,10 @@ async def handle_save_room_map_properties(body: dict) -> dict:
     if props:
         from services.db import rooms
         await rooms.update_one({"roomKey": room_key}, {"$set": props}, upsert=True)
+        # Private worlds: settings shared with the 1.31 server (same as the pw map).
+        if room_key.startswith("p_") and os.getenv("CARRYOVER_DB"):
+            from services.db import client as _mc
+            await _mc[os.getenv("CARRYOVER_DB")]["rooms"].update_one({"roomKey": room_key}, {"$set": props}, upsert=True)
     print(f"[maps] saved room properties for {room_key}: {props}")
     return {"success": 1}
 
@@ -226,31 +214,61 @@ async def handle_save_room_map(body: dict) -> dict:
 
     if not room_key:
         return {"success": 0}
-    if room_key.startswith("c_"):          # community worlds are read live from Yeeps, never stored here
-        print(f"[cw] map save ignored (live from Yeeps): {room_key} by {account_id}")
-        return {"success": 1}
+    # Private worlds: ONE shared copy in the 1.31 DB (services.db.maps_for).
+    from services.db import maps_for as _maps_for
+    maps = _maps_for(room_key)
 
-    # Raid protection: regular players can't change official rooms (ack so the
-    # client doesn't error, but don't persist).
+    # Raid protection: official rooms are editor-only for regular players (ack so
+    # the client doesn't error, but don't persist; a rate-limited alert fires).
     # Map makers (developer_mapMaker) / staff — and anyone during testing — may
     # edit them in-game and fall through to the normal save below.
     if _is_protected_room(room_key) and not await _can_edit_protected(account_id, body):
         print(f"[maps] BLOCKED in-game save to protected room {room_key} by {account_id}")
+        try:
+            now = _time.time()
+            if now - _protect_notify_ts.get(room_key, 0) > 600:
+                _protect_notify_ts[room_key] = now
+                from routers.editor_router import _discord_notify
+                await _discord_notify(
+                    f"🛡️ Blocked an in-game edit to protected room **{room_key}** "
+                    f"(by `{account_id}`). Official maps are editor-only.")
+        except Exception as e:
+            print(f"[maps] protected-room notify failed: {e}")
         return {"success": 1}
 
-    if await _is_official_room(room_key):
-        print(f"[maps] BLOCKED in-game save to official room {room_key} by {account_id}")
-        return {"success": 1}
     if not await _may_save_shared(account_id, room_key, body):
         return {"success": 1}
 
     timestamp = datetime.now(timezone.utc).strftime("%Y %m/%d %H:%M:%S")
     map_key = f"{room_key}$current"
 
+    # 2.x terrain saves arrive through this same call (isTerrain). They must
+    # never overwrite the room's block map: store them as their own record,
+    # served back for "{room}$terrain_<id>_save0" reads (dynamo_ops).
+    if str(body.get("isTerrain", 0)).lower() in ("1", "true") or "terrain" in str(body.get("_fn", "")).lower():
+        tkey = f"{room_key}$terrain_current"
+        try:
+            prev = await maps.find_one({"mapKey": tkey}, {"_id": 0})
+            if prev and prev.get("saveData"):
+                from services.db import db as _db
+                await _db["map_history"].insert_one({
+                    "roomKey": room_key, "kind": "terrain", "ts": int(_time.time()),
+                    "savedBy": prev.get("savedBy"), "savedAt": prev.get("savedAt"),
+                    "bytes": len(prev.get("saveData") or ""), "doc": prev})
+        except Exception as e:
+            print(f"[maps] terrain history failed for {room_key}: {e}")
+        await maps.update_one({"mapKey": tkey}, {"$set": {
+            "mapKey": tkey, "roomKey": room_key, "isTerrain": 1,
+            "saveData": map_data, "saveInternalStates": internal_states or "",
+            "mapDataVersion": map_data_version, "savedBy": account_id,
+            "savedAt": timestamp, "applicationVersion": app_version}}, upsert=True)
+        print(f"[maps] Saved TERRAIN for {room_key} by {account_id} ({len(map_data or '')} bytes)")
+        return {"success": 1}
+
     # Anti-wipe guard: refuse a save that shrinks a substantial map by >85% in
     # one go (an accidental autosave from a client that loaded a stale/empty map
-    # kept nuking restored official rooms). saveData size is a cheap proxy for
-    # block count.
+    # kept nuking restored official rooms). Real full clears go through the
+    # editor's Reset button. saveData size is a cheap proxy for block count.
     try:
         new_len = len(map_data or "")
         existing = await maps.find_one({"mapKey": map_key}, {"_id": 0, "saveData": 1})
@@ -262,14 +280,7 @@ async def handle_save_room_map(body: dict) -> dict:
         same_format = old_save[:6] == (map_data or "")[:6]
         # An empty/near-empty save is a wipe whatever the format (Oct 10: raider
         # saves with mapData "" slipped past the same-format check).
-        # A player clearing their own private world is a real clear, as long as
-        # the save comes from their own bound headset (a script naming the
-        # account in the body still can't empty it). map_history below keeps
-        # the previous version.
-        if old_len > 4000 and (new_len < 200 or (same_format and new_len < old_len * 0.15)) \
-                and _is_own_pw(account_id, room_key) and await _from_bound_headset(account_id, body):
-            print(f"[maps] owner cleared own pw {room_key}: {old_len} -> {new_len} bytes (bound headset)")
-        elif old_len > 4000 and (new_len < 200 or (same_format and new_len < old_len * 0.15)):
+        if old_len > 4000 and (new_len < 200 or (same_format and new_len < old_len * 0.15)):
             print(f"[maps] BLOCKED shrink-save for {room_key} by {account_id}: "
                   f"{old_len} -> {new_len} bytes (anti-wipe)")
             return {"success": 1}   # ack so the client doesn't error, but don't persist
@@ -283,8 +294,7 @@ async def handle_save_room_map(body: dict) -> dict:
     try:
         from services.mapsync_decoder import decode_map
         from services.mapsync_serializer import serialize_blocks_compressed
-        # The old decoder/re-encoder does not cover all live79 map fields.
-        blocks = [] if IS_BUDDY else decode_map(map_data)
+        blocks = decode_map(map_data)
         if blocks:
             good = [b for b in blocks
                     if all(0 <= int(b.get(ax, 0) or 0) < 256 for ax in ("x", "y", "z"))]
@@ -300,10 +310,7 @@ async def handle_save_room_map(body: dict) -> dict:
     # owner-ID strings in the blob change (lossless; internal states stay valid).
     try:
         from services.map_owners import default_unknown_owners
-        if IS_BUDDY:
-            _n_owned = 0
-        else:
-            map_data, _n_owned = await default_unknown_owners(map_data)
+        map_data, _n_owned = await default_unknown_owners(map_data)
         if _n_owned:
             print(f"[maps] gave {_n_owned} unknown owner id(s) in {room_key} to the default owner")
     except Exception as e:
@@ -383,55 +390,38 @@ async def handle_save_room_map(body: dict) -> dict:
     # kept in-place at roomKey$current above.)
 
     print(f"[maps] Saved map for {room_key} by {account_id} (version: {map_data_version})")
+    await _notify_map_edit(room_key, account_id, map_data)
     return {"success": 1}
 
 
-async def _fetch_buddy_map_data(body: dict) -> dict:
-    room_key = body.get("roomKey", "")
-    is_terrain = bool(body.get("isTerrain", 0))
-    empty = {"mapDataVersion": 1 if is_terrain else 3, "saveData": ""}
+async def _pw_map_from_131(room_key: str):
+    """The player's 1.31 private-world map from CARRYOVER_DB (Yeeps119, read-only)
+    so a biglive player sees their EXISTING 1.31 pw instead of a separate empty
+    2.31.4 one. Returns the map doc (same field names as ours: saveData /
+    saveInternalStates / mapDataVersion) only when its saveData is SPAM -- the
+    2.31.4 client's block format. Old .NET-binary (1.19-era) or missing 1.31 maps
+    return None so the caller falls back to the local 2.31.4 doc."""
+    import os as _os
+    cdb = _os.getenv("CARRYOVER_DB", "")
+    if not cdb:
+        return None
     try:
-        offset = int(body.get("saveOffset", 0))
-    except (ValueError, TypeError):
-        return empty
-    if not room_key or offset < 0:
-        return empty
+        from services.db import client
+        doc = await client[cdb]["maps"].find_one({"mapKey": f"{room_key}$current"}, {"_id": 0})
+    except Exception as e:
+        print(f"[pw] 1.31 lookup failed for {room_key}: {type(e).__name__}: {e}")
+        return None
+    if not doc:
+        return None
+    if not str(doc.get("saveData") or "").startswith("U1BBTQ"):
+        return None   # old .NET-binary / empty -> let the local 2.31.4 doc handle it
+    return doc
 
-    doc = None
-    session = str(body.get("targetSessionID", ""))
-    if not is_terrain and session.isdecimal():
-        if offset and not await maps.find_one(
-                {"mapKey": f"{room_key}$map_{session}_save0"}, {"_id": 1}):
-            return empty
-        doc = await maps.find_one(
-            {"mapKey": f"{room_key}$map_{session}_save{offset}"}, {"_id": 0})
-    # Only an actual stored chunk can satisfy a later offset. Never repeat an
-    # imported/current snapshot for every chunk or mix it into another session.
-    if offset and doc is None:
-        return empty
-    current = None
-    if doc is None:
-        current = await maps.find_one({"mapKey": f"{room_key}$current"}, {"_id": 0})
-    if is_terrain:
-        # live79's terrain decoder accepts empty data as a successful null
-        # terrain, which selects the theme's procedural preset. SPAM map bytes
-        # and the map's version are not terrain data.
-        return {"mapDataVersion": (current or {}).get("terrainDataVersion", 1),
-                "saveData": (current or {}).get("terrainSaveData", "")}
-    if doc is None and current and session.isdecimal() and str(current.get("gameSessionID")) == session:
-        doc = current
-    if doc is None:
-        from services.db import imported_maps
-        doc = await imported_maps.find_one({"roomKey": room_key}, {"_id": 0})
-    if doc is None:
-        doc = current
-    if doc is None:
-        from services.mapsync_serializer import serialize_blocks_spam
-        return {**empty, "saveData": serialize_blocks_spam([]),
-                "saveInternalStates": "U1BBTQMAAAAA"}
-    return {"mapDataVersion": doc.get("mapDataVersion", 3),
-            "saveData": doc.get("saveData", ""),
-            "saveInternalStates": doc.get("saveInternalStates", "")}
+
+# Empty map exactly as the game itself saves one (base64): "SPAM" 0x01 + 4 x int32 0,
+# and the empty internal-states blob "SPAM" 0x03 + int32 0.
+EMPTY_SPAM_MAP = "U1BBTQEAAAAAAAAAAAAAAAAAAAAA"
+EMPTY_SPAM_INTERNAL = "U1BBTQMAAAAA"
 
 
 async def handle_fetch_map_data(body: dict) -> dict:
@@ -446,35 +436,143 @@ async def handle_fetch_map_data(body: dict) -> dict:
     rejected by the 1.19 client as INVALID_FORMAT and can brick the room, so we
     serve empty for those instead of handing the client something it can't read.
     """
-    if IS_BUDDY:
-        return await _fetch_buddy_map_data(body)
-
     room_key = body.get("roomKey", "")
     save_offset = body.get("saveOffset", 0)
     is_terrain = body.get("isTerrain", 0)
-
-    if not room_key or save_offset:
-        # Everything fits in offset 0 (real Yeeps rooms return the whole map in
-        # a single chunk here) -- any later offset means "no more data".
+    import os as _os
+    _MDBG = _os.getenv("MAP_DEBUG") == "1"
+    if _MDBG:
+        print(f"[mapdbg] REQ room={room_key} offset={save_offset} terrain={is_terrain} "
+              f"targetSess={body.get('targetSessionID')} tag={body.get('_clientBuildTag')}")
+    if not room_key:
+        return {"saveData": ""}
+    if save_offset:
+        # Big live-mirrored rooms (Prop Town: 7 chunks) keep their real chunk list
+        # in saveChunks/terrainChunks (tools/import_live_world.py). Served only
+        # while chunk 0 still equals the stored map, i.e. nobody re-saved the room
+        # since (a re-save writes the whole map at offset 0). Otherwise any later
+        # offset means "no more data".
+        try:
+            from services.db import maps_for as _mf
+            off = int(save_offset)
+            doc = await _mf(room_key).find_one(
+                {"mapKey": f"{room_key}$current"},
+                {"_id": 0, "saveData": 1, "terrainSaveData": 1, "saveChunks": 1, "terrainChunks": 1})
+            ch = (doc or {}).get("terrainChunks" if is_terrain else "saveChunks") or []
+            first = (doc or {}).get("terrainSaveData" if is_terrain else "saveData")
+            if 0 < off < len(ch) and ch[0] == first:
+                return {"mapDataVersion": 1 if is_terrain else 3, "saveData": ch[off]}
+        except Exception as e:
+            print(f"[maps] chunk {save_offset} of {room_key} failed: {e}")
         return {"saveData": ""}
 
-    doc = await maps.find_one({"mapKey": f"{room_key}$current"}, {"_id": 0})
+    # Community worlds (c_<name>): the live 2.31.4 client fetches room blocks
+    # through THIS lambda path, not DynamoDB, so serve the live-mirrored cw map
+    # here in 2.x SPAM (the Dynamo path serves the 1.19 blob the live client
+    # can't read). Stock clients still use the Dynamo/_map_doc path.
+    # Served tag-independently: only 2.x live clients reach this server for c_
+    # rooms (stock 1.19 lives on a different host/DB), and the real client's
+    # fetchMapData sometimes arrives without a resolvable build tag, which used
+    # to drop it to the empty path below -> blank community worlds. Serve the
+    # SPAM v3 mirror (from the cw_content DB cache via _cw_fetch_room) for any
+    # c_ key at offset 0.
+    if room_key.startswith("c_"):
+        from services.dynamo_ops import _cw_fetch_room
+        live = await _cw_fetch_room(room_key)
+        if not live:
+            return {"saveData": ""}
+        if is_terrain:
+            # Serve the mirrored CW terrain layer (so the room has ground); its
+            # own version (real-Yeeps terrain = 1), empty if the world has none.
+            return {"mapDataVersion": live.get("terrainVersion", 1) or 1,
+                    "saveData": live.get("saveTerrainSpam") or ""}
+        return {"mapDataVersion": 3, "saveData": live.get("saveDataSpam") or "",
+                "saveInternalStates": ""}
+
+    from services import big_patterns as _bp
+    _big = _bp.is_big(body.get("_clientBuildTag"))
+
+    # PRIVATE WORLDS: a biglive player loads their EXISTING 1.31 private world
+    # (CARRYOVER_DB) instead of a separate empty 2.31.4 one -- ONE pw per player,
+    # not a bunch (Blaze: "make pw load the same map their 1.31.0 pw is").
+    # Prefer a real build already saved on 2.31.4 (so biglive edits persist);
+    # otherwise serve the 1.31 pw when it is SPAM (the 2.31.4 client's format).
+    # Old .NET-binary / missing 1.31 maps fall through to the local doc.
+    doc = None
+    if room_key.startswith("p_"):
+        # ONE shared pw copy (1.31 DB) for both servers; a leftover live-only doc
+        # is only a fallback until the migration has moved it over.
+        from services.db import maps_for as _maps_for
+        doc = await _maps_for(room_key).find_one({"mapKey": f"{room_key}$current"}, {"_id": 0})
+        _sd = str((doc or {}).get("saveData") or "")
+        if _big and _sd and not _sd.startswith("U1BBTQ"):
+            doc = None    # old pre-2.x (.NET binary) pw: the live client can't read it
+        if not doc:
+            doc = await maps.find_one({"mapKey": f"{room_key}$current"}, {"_id": 0})
+
+    if doc is None:
+        doc = await maps.find_one({"mapKey": f"{room_key}$current"}, {"_id": 0})
+    # nexus (the live client's default spawn) falls back to the Starter House
+    # blocks only when the real nexus map hasn't been mirrored in.
+    if not doc and room_key == "nexus":
+        doc = await maps.find_one({"mapKey": "official_1$current"}, {"_id": 0})
     if not doc:
-        return {"saveData": ""}
+        # Never-saved room (e.g. a brand-new private world). The live client reads
+        # a bare {"saveData": ""} (no mapDataVersion) as "Master player is host
+        # with a null map: OUTDATED_CLIENT" and retries forever -> stuck/crash
+        # entering a new pw (Drast + 2 others, 2026-10-18). Send a versioned EMPTY
+        # map instead so it loads blank. An empty STRING is rejected too
+        # (INVALID_FORMAT -> "Fatal Error: Failed to load map"); the blob must be a
+        # real empty SPAM save: "SPAM" v1 + four zero counts (patterns, colors,
+        # owners, objects) -- byte-identical to what the game saves for an empty pw.
+        if is_terrain:
+            return {"mapDataVersion": 1, "saveData": ""}
+        return {"mapDataVersion": 2, "saveData": EMPTY_SPAM_MAP,
+                "saveInternalStates": EMPTY_SPAM_INTERNAL}
+
+    # Big / live-base clients are 2.x and read the SPAM blob. Our maps were
+    # saved by 1.31-blaze with mapDataVersion 3, which the live 2.31.4 client
+    # rejects as "created on a newer version"; cap it at the 2.x value so it
+    # loads. (Stock 1.19 clients still get the old-format guard below.)
+    # Maps mirrored from REAL Yeeps (liveMirror) keep their real version: that
+    # is exactly what the real client reads.
+    # A mirrored REAL live-Yeeps map keeps its real block version (3): the live
+    # 2.31.4 client reads real Yeeps maps at version 3 and parses the blocks
+    # (serving it as 2 made the client parse 0 objects -> empty room, no spawn).
+    # Our OWN 1.31-blaze saves are also written as "3" but are really 2.x data
+    # the live client rejects as "newer version", so those stay capped at 2.
+    _ver = doc.get("mapDataVersion", 2)
+    if _big and isinstance(_ver, int) and _ver > 2 and not doc.get("liveMirror"):
+        _ver = 2
 
     if is_terrain:
+        # Terrain has its OWN format/version, separate from the block save.
+        # A mirrored real-Yeeps terrain blob (liveMirror) is version 1; serving
+        # it under the block version (3) makes the client reject it with
+        # "Failed to load terrain save data: INVALID_FORMAT".
+        _tver = doc.get("terrainDataVersion")
+        if not isinstance(_tver, int):
+            _tver = 1 if doc.get("liveMirror") else _ver
         return {
-            "mapDataVersion": doc.get("mapDataVersion", 2),
+            "mapDataVersion": _tver,
             "saveData": doc.get("terrainSaveData", ""),
         }
 
     save_data = doc.get("saveData", "") or ""
     # Don't serve a 2.x SPAM blob to a 1.19 client (INVALID_FORMAT / brick).
-    if save_data.startswith("U1BBTQ") and not IS_BUDDY:
+    # Big / live-base clients are 2.x and must receive it.
+    if save_data.startswith("U1BBTQ") and not _big:
         return {"saveData": ""}
 
+    # Serve the real block internal states (sign text, teleporter targets, etc.).
+    # The earlier "internal states break the render" symptom was actually the
+    # missing lastValidSaveOffset field, now fixed, so these are safe to serve.
+    _internal = doc.get("saveInternalStates", "")
+    if _MDBG:
+        print(f"[mapdbg] RES room={room_key} ver={_ver} blocks={len(save_data)}b "
+              f"internal={len(_internal)}b magic={save_data[:6]} liveMirror={doc.get('liveMirror')}")
     return {
-        "mapDataVersion": doc.get("mapDataVersion", 2),
+        "mapDataVersion": _ver,
         "saveData": save_data,
-        "saveInternalStates": doc.get("saveInternalStates", ""),
+        "saveInternalStates": _internal,
     }

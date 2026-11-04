@@ -19,8 +19,6 @@ _FAIL_LIMIT = 3            # ban after MORE THAN this many wrong passwords (i.e.
 _FAIL_WINDOW = 3600        # seconds; failures older than this don't count toward the streak
 
 _cache = None             # set[str] | None  -- banned IPs, lazily loaded from DB
-_cache_ts: float = 0.0     # when _cache was last loaded
-_CACHE_TTL = 30.0         # seconds before reloading from DB
 _fails: dict = {}         # ip -> [count, first_ts]
 
 
@@ -42,42 +40,27 @@ def client_ip(request) -> str:
         return ""
 
 
+_cache_at = 0.0
+_CACHE_TTL = 60            # re-read the list every minute so an unban made from the
+                           # other server's editor (both share one unban button) applies
+
+
 async def _load() -> set:
-    global _cache, _cache_ts
-    import time as _t
-    now = _t.monotonic()
-    if _cache is None or (now - _cache_ts) > _CACHE_TTL:
+    global _cache, _cache_at
+    if _cache is None or time.time() - _cache_at > _CACHE_TTL:
+        _cache_at = time.time()
         try:
             doc = await globals_col.find_one({"key": _GLOBALS_KEY}, {"_id": 0, "ips": 1})
             _cache = set((doc or {}).get("ips") or [])
         except Exception:
-            _cache = set() if _cache is None else _cache
-        _cache_ts = now
+            _cache = set()
     return _cache
 
 
 async def is_banned(ip: str) -> bool:
     if not ip or ip == "?":
         return False
-    bans = await _load()
-    if ip in bans:
-        return True
-    # Whole-network entries ("2a00:23c4:dc82:2401::/64"): home IPv6 addresses
-    # rotate inside their /64, so a ban on one address alone is easy to dodge.
-    nets = [b for b in bans if "/" in b]
-    if nets:
-        try:
-            import ipaddress
-            a = ipaddress.ip_address(ip)
-            for n in nets:
-                try:
-                    if a in ipaddress.ip_network(n, strict=False):
-                        return True
-                except ValueError:
-                    continue
-        except ValueError:
-            pass
-    return False
+    return ip in await _load()
 
 
 async def ban_ip(ip: str, reason: str = "") -> None:
@@ -127,11 +110,6 @@ async def record_failed_login(ip: str) -> bool:
         return False
     now = time.time()
     rec = _fails.get(ip)
-    # If the IP was unbanned (no longer in the ban list), reset the streak
-    # so a single wrong attempt doesn't immediately re-ban.
-    if not await is_banned(ip):
-        _fails.pop(ip, None)
-        rec = None
     if rec is None or now - rec[1] > _FAIL_WINDOW:
         _fails[ip] = [1, now]
     else:
@@ -143,6 +121,19 @@ async def record_failed_login(ip: str) -> bool:
     count = _fails[ip][0]
     if count > _FAIL_LIMIT:
         await ban_ip(ip, f"auto: {count} wrong editor passwords")
+        # owner 2026-10-18: a password spammer is banned in game too, on BOTH servers
+        # (live + 1.31 share the editor code); the other server picks it up within a minute
+        try:
+            for tag, d in _dbs():
+                if tag != "this":
+                    await d["globals"].update_one(
+                        {"key": _GLOBALS_KEY},
+                        {"$addToSet": {"ips": ip},
+                         "$set": {f"reasons.{ip.replace('.', '_')}": {"reason": f"auto: {count} wrong editor passwords",
+                                                                      "at": int(time.time())}}},
+                        upsert=True)
+        except Exception as e:
+            print(f"[ip_bans] cross-server ban failed for {ip}: {e}")
         return True
     return False
 
@@ -150,3 +141,81 @@ async def record_failed_login(ip: str) -> bool:
 def clear_failures(ip: str) -> None:
     """Forget an IP's failed-attempt streak (call on a successful login)."""
     _fails.pop(ip, None)
+
+
+# ─── Owner unban tool (2026-10-18): one list of every IP ban on BOTH servers (live
+# Yeeps240 + 1.31 Yeeps119 share the editor code, so a password spammer can be banned
+# on either) with the names typed from that IP, and an unban that clears both.
+def _other_db_name() -> str:
+    import os
+    return os.getenv("CARRYOVER_DB") or os.getenv("ANNOUNCE_OTHER_DB", "Yeeps240")
+
+
+def _dbs():
+    from services.db import db, client
+    out = [("this", db)]
+    other = _other_db_name()
+    if other and other != db.name:
+        out.append(("other", client[other]))
+    return out
+
+
+def _label(name: str) -> str:
+    return "live" if name == "Yeeps240" else ("1.31" if name == "Yeeps119" else name)
+
+
+async def list_bans_everywhere() -> list:
+    rows = {}
+    for _tag, d in _dbs():
+        doc = await d["globals"].find_one({"key": _GLOBALS_KEY}, {"_id": 0}) or {}
+        reasons = doc.get("reasons") or {}
+        for ip in doc.get("ips") or []:
+            r = reasons.get(ip.replace(".", "_")) or {}
+            row = rows.setdefault(ip, {"ip": ip, "servers": [], "reason": r.get("reason", ""), "at": r.get("at", 0),
+                                       "names": set(), "tries": []})
+            row["servers"].append(_label(d.name))
+            if r.get("at", 0) > row["at"]:
+                row["at"], row["reason"] = r.get("at", 0), r.get("reason", "")
+    for _tag, d in _dbs():
+        if not rows:
+            break
+        async for e in d["editor_logins"].find({"ip": {"$in": list(rows)}},
+                                               {"_id": 0, "ip": 1, "name": 1, "kind": 1, "typed": 1, "at": 1}):
+            if e.get("name"):
+                rows[e["ip"]]["names"].add(e["name"])
+            if e.get("kind") == "wrong-code":
+                rows[e["ip"]]["tries"].append({"at": e.get("at", ""), "name": e.get("name") or "",
+                                               "typed": e.get("typed") or "(not recorded)"})
+    out = []
+    for r in rows.values():
+        r["names"] = sorted(r["names"])[:8]
+        r["tries"] = sorted(r["tries"], key=lambda t: t["at"], reverse=True)[:8]
+        out.append(r)
+    out.sort(key=lambda r: -r["at"])
+    return out
+
+
+async def unban_everywhere(ip: str) -> list:
+    """Unban on this server (cache too) and in the other server's list."""
+    done = []
+    if await unban_ip(ip):
+        from services.db import db
+        done.append(_label(db.name))
+    for tag, d in _dbs():
+        if tag == "this":
+            continue
+        r = await d["globals"].update_one({"key": _GLOBALS_KEY},
+                                          {"$pull": {"ips": ip}, "$unset": {f"reasons.{ip.replace('.', '_')}": ""}})
+        if r.modified_count:
+            done.append(_label(d.name))
+    _fails.pop(ip, None)
+    return done
+
+
+async def ban_reason(ip: str) -> str:
+    """The stored reason for a banned IP ("" if none)."""
+    try:
+        doc = await globals_col.find_one({"key": _GLOBALS_KEY}, {"_id": 0, "reasons": 1}) or {}
+        return str(((doc.get("reasons") or {}).get(ip.replace(".", "_")) or {}).get("reason") or "")
+    except Exception:
+        return ""

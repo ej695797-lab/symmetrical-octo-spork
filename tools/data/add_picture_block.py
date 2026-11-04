@@ -3,8 +3,7 @@
 Add your own picture block to the Yeeps 1.31 game data: a 1x1x1 cotton cube
 (0.5 m) with your picture on all six faces, listed next to the 1x1 Pillow.
 
-    python tools/data/add_picture_block.py data/data.unity3d data/data.unity3d \
-        --key 1x1_stuffedMyDog --name "My Dog" --image dog.png [--cost 0]
+    python add_picture_block.py data/data.unity3d data/data.unity3d --key 1x1_larpgng --name "LARPGNG" --image LARPGNG.png --cost 0
 
 - Texture2D: the picture (center-cropped square, RGBA32, 512 px).
 - Material: clone of the textured sign material with that picture.

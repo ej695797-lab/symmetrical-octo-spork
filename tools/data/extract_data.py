@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Copy game data and streamed resources out of a legacy or Buddy APK.
 
-    python tools/data/extract_data.py Yeeps-1.31.0-blaze-kit2.apk data
+    python tools/data/extract_data.py Yeeps-2.32.0-yeeper.apk data
 
 Writes data.unity3d and every top-level .resource/.resS streamed resource.
 See tools/data/README.md for Buddy script tests. Legacy APK packaging uses

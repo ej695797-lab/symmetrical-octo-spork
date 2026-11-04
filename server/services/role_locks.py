@@ -7,18 +7,29 @@ stripped from the roleKeys the client sees.
 
 Grant: add the role to the account's roleKeys (editor / Mongo), e.g. "blaze".
 """
-import os
 
-ROLE_LOCKED_PATTERNS = {}
-from config import IS_BUDDY
-if IS_BUDDY:
-    pass
+ROLE_LOCKED_PATTERNS = {"1x5x2_stuffedTextBlaze": "blaze",
+                        "3x2x1_blazeScreenRole": "blaze",
+                        # FrostOverYeti (owner 2026-10-17: only Blaze + Staff Member A own it).
+                        # The live APK swaps these four cosmetics to the Frost bundle.
+                        "yetiHead": "frost", "yetiBody": "frost", "yetiArms": "frost",
+                        "alienBundleBackpack": "frost",
+                        # Frost Over backpack (owner 2026-10-18): the live APK (live54+) swaps
+                        # the lifeguard backpack to frostpack.bundle. Only Staff Member A and the
+                        # people he allows (role "frostpack").
+                        "lifeguardBackpack": "frostpack",
+                        # (Icy Magnifying Glass dropped by the owner 2026-10-18: both normal glasses are owned by everyone again)
+                        # (dev trading cards dropped by the owner 2026-10-18)
+                        }
 # Roles hidden from the client. "blaze" is NOT hidden any more: the BLAZE blocks
 # carry MapObject.requiredRoleKey = "blaze" (APK 131b4+), and the game checks
 # that against the roleKeys it sees, so it must see the role.
-SERVER_ONLY_ROLES: set = set()
+SERVER_ONLY_ROLES: set = {"frost", "frostpack", "icyglass", "carddev"}  # icyglass/carddev: dropped features, still hidden    # not game roles: hidden from the client
 # Custom blocks every account owns (creative build menu). Kept out of the
 # techweb list so survival players can't craft them.
+# 3x3x1_blazeScreen REMOVED 2026-10-06: a placed 3x3 Screen in a big public room
+# (official_1) crashed every client that loaded the room (SIGSEGV after the
+# screen-material swap). Not owned by anyone until the APK is fixed.
 ALWAYS_OWNED_PATTERNS: list = []
 # Never served to anyone, even if stored on an account.
 DISABLED_PATTERNS = {"3x3x1_blazeScreen",
@@ -31,52 +42,11 @@ DISABLED_PATTERNS = {"3x3x1_blazeScreen",
                      "decoration_desert_cactus3", "decoration_desert_cactus4",
                      "16x16x4_desertRock", "16x16x8_desertRock",
                      "2x2x2_desertRock", "8x8x4_desertRock"}
-if IS_BUDDY:
-    DISABLED_PATTERNS = {"1x5x2_stuffedTextBlaze", "3x2x1_blazeScreenRole", "3x3x1_blazeScreen"}
 
 
-# Who may hold the "blaze" role (it unlocks the BLAZE blocks and saving shared
-# maps in game). Stored in globals {"key": "blaze_holders", "ids": [...]}; giving
-# or taking the role in the editor keeps it in step. Anyone else with "blaze" on
-# their account has it stripped (login + every account read). Env BLAZE_HOLDERS
-# seeds it (comma-separated account IDs).
-BLAZE_ROLE = "blaze"
-_DEFAULT_BLAZE_HOLDERS = set(filter(None, (os.getenv("BLAZE_HOLDERS") or "").replace(" ", "").split(",")))
-_blaze = {"ids": set(_DEFAULT_BLAZE_HOLDERS), "ts": 0.0}
-
-
-async def load_blaze_holders() -> set:
-    import time
-    if time.monotonic() - _blaze["ts"] > 30:
-        try:
-            from services.db import globals_col
-            doc = await globals_col.find_one({"key": "blaze_holders"}, {"_id": 0, "ids": 1})
-            if doc and isinstance(doc.get("ids"), list):
-                _blaze["ids"] = set(doc["ids"])
-        except Exception:
-            pass
-        _blaze["ts"] = time.monotonic()
-    return _blaze["ids"]
-
-
-async def set_blaze_holder(account_id: str, on: bool) -> None:
-    from services.db import globals_col
-    ids = set(await load_blaze_holders())
-    (ids.add if on else ids.discard)(account_id)
-    await globals_col.update_one({"key": "blaze_holders"}, {"$set": {"key": "blaze_holders", "ids": sorted(ids)}},
-                                 upsert=True)
-    _blaze["ids"], _blaze["ts"] = ids, 0.0
-
-
-def is_blaze_holder(account_id) -> bool:
-    return account_id in _blaze["ids"]
-
-
-def apply(owned, roles, account_id=None) -> tuple[list, list]:
+def apply(owned, roles) -> tuple[list, list]:
     """(ownedPatterns, roleKeys) as the client should see them."""
     roles = list(roles or [])
-    if account_id is not None and BLAZE_ROLE in roles and not is_blaze_holder(account_id):
-        roles = [r for r in roles if r != BLAZE_ROLE]
     owned = list(owned or [])
     have = set(roles)
     owned = [p for p in owned if p not in DISABLED_PATTERNS]
@@ -90,3 +60,18 @@ def apply(owned, roles, account_id=None) -> tuple[list, list]:
         elif pattern in owned:
             owned.remove(pattern)
     return owned, [r for r in roles if r not in SERVER_ONLY_ROLES]
+
+
+# Cosmetic bundles unlock every piece in them, so the Frost pieces' bundles are
+# role-locked too (bundle_yeti: hood/suit/sleeves; bundle_alien: the backpack).
+ROLE_LOCKED_BUNDLES = {"bundle_yeti": "frost", "bundle_alien": "frost"}
+
+
+def apply_bundles(bundles, roles) -> list:
+    """ownedBundles as the client should see them (locked bundles only for role holders)."""
+    have = set(roles or [])
+    out = [b for b in (bundles or []) if ROLE_LOCKED_BUNDLES.get(b) in (None, *have)]
+    for b, role in ROLE_LOCKED_BUNDLES.items():
+        if role in have and b not in out:
+            out.append(b)
+    return out

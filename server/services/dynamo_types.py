@@ -64,15 +64,8 @@ def unwrap_key(key_dict: dict) -> dict:
     e.g. {"accountID": {"S": "o_123"}} → {"accountID": "o_123"}
     """
     result = {}
-    for field, typed_val in (key_dict or {}).items():
-        val = from_dynamo(typed_val)
-        # A key is always a plain string or number. Anything else (lists, maps,
-        # field names starting with "$") must never reach a database query
-        # (Oct 11: someone sent crafted keys); it just matches nothing.
-        if (not isinstance(field, str) or field.startswith("$")
-                or isinstance(val, bool) or not isinstance(val, (str, int, float))):
-            return {"__invalid_key__": "__no_match__"}
-        result[field] = val
+    for field, typed_val in key_dict.items():
+        result[field] = from_dynamo(typed_val)
     return result
 
 

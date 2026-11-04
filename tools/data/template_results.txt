@@ -1,0 +1,2465 @@
+CONTAINER: mapobjects/bombs/1x1_woodenpillowbomb
+CONTAINER: mapobjects/complexdecoration/1x1_alarmspeaker
+CONTAINER: mapobjects/complexdecoration/1x1_audiodistortioneffect
+CONTAINER: mapobjects/complexdecoration/1x1_audioechoeffect
+CONTAINER: mapobjects/complexdecoration/1x1_audioincreasegaineffect
+CONTAINER: mapobjects/complexdecoration/1x1_audiolowpasseffect
+CONTAINER: mapobjects/complexdecoration/1x1_audioreverbeffect
+CONTAINER: mapobjects/complexdecoration/1x1_audioslowdowneffect
+CONTAINER: mapobjects/complexdecoration/1x1_audiospeedupeffect
+CONTAINER: mapobjects/complexdecoration/1x1_bell
+CONTAINER: mapobjects/complexdecoration/1x1_candybowl
+CONTAINER: mapobjects/complexdecoration/1x1_cardshardbutton_ghost
+CONTAINER: mapobjects/complexdecoration/1x1_drumsnare
+CONTAINER: mapobjects/complexdecoration/1x1_drumtom
+CONTAINER: mapobjects/complexdecoration/1x1_forbidden_frog
+CONTAINER: mapobjects/complexdecoration/1x1_forbidden_frogmusic
+CONTAINER: mapobjects/complexdecoration/1x1_hohohoblock
+CONTAINER: mapobjects/complexdecoration/1x1_landmine
+CONTAINER: mapobjects/complexdecoration/1x1_magnetizedblock
+CONTAINER: mapobjects/complexdecoration/1x1_mistletoe
+CONTAINER: mapobjects/complexdecoration/1x1_noteblock
+CONTAINER: mapobjects/complexdecoration/1x1_noteblockbass
+CONTAINER: mapobjects/complexdecoration/1x1_noteblocksynth
+CONTAINER: mapobjects/complexdecoration/1x1_partybutton
+CONTAINER: mapobjects/complexdecoration/1x1_petbed
+CONTAINER: mapobjects/complexdecoration/1x1_propeller
+CONTAINER: mapobjects/complexdecoration/1x1_puzzlepiecebutton
+CONTAINER: mapobjects/complexdecoration/1x1_screamingskull
+CONTAINER: mapobjects/complexdecoration/1x1_soundtap
+CONTAINER: mapobjects/complexdecoration/1x1_speaker
+CONTAINER: mapobjects/complexdecoration/1x1_tapeplayer
+CONTAINER: mapobjects/complexdecoration/1x1_tapeplayerbroadcaster
+CONTAINER: mapobjects/complexdecoration/1x1_target
+CONTAINER: mapobjects/complexdecoration/1x1_textsign
+CONTAINER: mapobjects/complexdecoration/1x1_worldtokencrate
+CONTAINER: mapobjects/complexdecoration/1x1_ziplinepylon_flags
+CONTAINER: mapobjects/complexdecoration/1x1_ziplinepylon_flagsanniversary
+CONTAINER: mapobjects/complexdecoration/1x1_ziplinepylon_flagshalloween
+CONTAINER: mapobjects/complexdecoration/1x1_ziplinepylon_lightshalloween
+CONTAINER: mapobjects/complexdecoration/1x1_ziplinepylon_lightsholiday
+CONTAINER: mapobjects/complexdecoration/1x1_ziplinepylon_lightsyellow
+CONTAINER: mapobjects/complexdecoration/1x1x1_ammoboxes
+CONTAINER: mapobjects/complexdecoration/1x1x1_prisonsink
+CONTAINER: mapobjects/complexdecoration/1x1x2_arrowsign_forward
+CONTAINER: mapobjects/complexdecoration/1x1x2_arrowsign_forward45
+CONTAINER: mapobjects/complexdecoration/1x1x2_arrowsign_up
+CONTAINER: mapobjects/complexdecoration/1x1x2_arrowsign_up45
+CONTAINER: mapobjects/complexdecoration/1x1x2_confetticannon
+CONTAINER: mapobjects/complexdecoration/1x1x2_confetticannon_powered
+CONTAINER: mapobjects/complexdecoration/1x1x2_dangersign
+CONTAINER: mapobjects/complexdecoration/1x1x2_drumcrash
+CONTAINER: mapobjects/complexdecoration/1x1x2_drumhihat
+CONTAINER: mapobjects/complexdecoration/1x1x2_pipeorganblock
+CONTAINER: mapobjects/complexdecoration/1x1x2_recordplayer
+CONTAINER: mapobjects/complexdecoration/1x1x2_recordplayerbroadcaster
+CONTAINER: mapobjects/complexdecoration/1x1x2_redeyedgnome
+CONTAINER: mapobjects/complexdecoration/1x1x2_textsign
+CONTAINER: mapobjects/complexdecoration/1x1x2_wirelessreceiver
+CONTAINER: mapobjects/complexdecoration/1x1x2_wirelesstransmitter
+CONTAINER: mapobjects/complexdecoration/1x1x2_workoutbench
+CONTAINER: mapobjects/complexdecoration/1x1x2_ziplinepylon
+CONTAINER: mapobjects/complexdecoration/1x2_forbidden_lemon
+CONTAINER: mapobjects/complexdecoration/1x2_textsign
+CONTAINER: mapobjects/complexdecoration/1x2_textsign_explosion
+CONTAINER: mapobjects/complexdecoration/1x2_textsign_speechbubble
+CONTAINER: mapobjects/complexdecoration/2x1x3_statue_applab
+CONTAINER: mapobjects/complexdecoration/2x2_breakable_rock
+CONTAINER: mapobjects/complexdecoration/2x2_breakable_server
+CONTAINER: mapobjects/complexdecoration/2x2_drumbass
+CONTAINER: mapobjects/complexdecoration/2x2_forbidden_cheese
+CONTAINER: mapobjects/complexdecoration/2x2_magnetizedblock
+CONTAINER: mapobjects/complexdecoration/2x2_mobspawner_zone
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_joinleastpopulatedteam
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_jointeam
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_leaveteam
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_maxstuffing
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_pulse
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_revive
+CONTAINER: mapobjects/complexdecoration/2x2_playergate_worldtokenset
+CONTAINER: mapobjects/complexdecoration/2x2_rift
+CONTAINER: mapobjects/complexdecoration/2x2_rift_team
+CONTAINER: mapobjects/complexdecoration/2x2_speaker
+CONTAINER: mapobjects/complexdecoration/2x2_target
+CONTAINER: mapobjects/complexdecoration/2x2_ventoneway
+CONTAINER: mapobjects/complexdecoration/2x2_worldmap
+CONTAINER: mapobjects/complexdecoration/2x2x2_cauldron
+CONTAINER: mapobjects/complexdecoration/2x2x2_moblure
+CONTAINER: mapobjects/complexdecoration/2x2x2_mobspawner_multi
+CONTAINER: mapobjects/complexdecoration/2x2x2_mobspawner_singleton
+CONTAINER: mapobjects/complexdecoration/2x2x2_oven
+CONTAINER: mapobjects/complexdecoration/2x2x2_stove
+CONTAINER: mapobjects/complexdecoration/2x4x2_smokestack
+CONTAINER: mapobjects/complexdecoration/2x8x2_smokestack
+CONTAINER: mapobjects/complexdecoration/4x4_breakable_rock
+CONTAINER: mapobjects/complexdecoration/4x4_breakable_server
+CONTAINER: mapobjects/complexdecoration/4x4_clock
+CONTAINER: mapobjects/complexdecoration/4x4_magnetizedblock
+CONTAINER: mapobjects/complexdecoration/4x4_petarena
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_joinleastpopulatedteam
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_jointeam
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_leaveteam
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_maxstuffing
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_pulse
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_revive
+CONTAINER: mapobjects/complexdecoration/4x4_playergate_worldtokenset
+CONTAINER: mapobjects/complexdecoration/4x4_speaker
+CONTAINER: mapobjects/complexdecoration/4x4_tractorbeam
+CONTAINER: mapobjects/complexdecoration/4x4_warpportal
+CONTAINER: mapobjects/complexdecoration/4x4_worldmap
+CONTAINER: mapobjects/complexdecoration/4x8x6_hedge
+CONTAINER: mapobjects/complexdecoration/6x1x4_anniversarypuzzleboard
+CONTAINER: mapobjects/complexdecoration/6x1x4_horror2puzzleboard
+CONTAINER: mapobjects/complexdecoration/6x6_boostring
+CONTAINER: mapobjects/complexdecoration/6x6_boostring_directional
+CONTAINER: mapobjects/complexdecoration/6x6_stuffingring
+CONTAINER: mapobjects/complexdecoration/adventurearch
+CONTAINER: mapobjects/complexdecoration/atmblock
+CONTAINER: mapobjects/complexdecoration/autopitcher
+CONTAINER: mapobjects/complexdecoration/bannerdisplay
+CONTAINER: mapobjects/complexdecoration/basketballhoop
+CONTAINER: mapobjects/complexdecoration/buildingarch
+CONTAINER: mapobjects/complexdecoration/bundleconsoleblocka
+CONTAINER: mapobjects/complexdecoration/bundleconsoleblockb
+CONTAINER: mapobjects/complexdecoration/cheerfulchimpstorelogo
+CONTAINER: mapobjects/complexdecoration/communityworldsportal
+CONTAINER: mapobjects/complexdecoration/crabcrowntrader
+CONTAINER: mapobjects/complexdecoration/decoration_beach_arch0
+CONTAINER: mapobjects/complexdecoration/decoration_beach_clam0
+CONTAINER: mapobjects/complexdecoration/decoration_beach_clam0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_beach_crab0
+CONTAINER: mapobjects/complexdecoration/decoration_beach_crab0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_beach_pillar0
+CONTAINER: mapobjects/complexdecoration/decoration_beach_pillar1
+CONTAINER: mapobjects/complexdecoration/decoration_beach_pillar2
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_gnome1
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_gnome2
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_ornament0
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_ornament1
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_ornament2
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_reindeer0
+CONTAINER: mapobjects/complexdecoration/decoration_christmas_wreath0
+CONTAINER: mapobjects/complexdecoration/decoration_desert_cactus0
+CONTAINER: mapobjects/complexdecoration/decoration_desert_cactus1
+CONTAINER: mapobjects/complexdecoration/decoration_desert_cactus2
+CONTAINER: mapobjects/complexdecoration/decoration_desert_cactus3
+CONTAINER: mapobjects/complexdecoration/decoration_desert_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_easteregg_stash
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_arch0
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_frog0
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_frog1
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_gnome1
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_mushroom0
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_mushroom1
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_mushroom2
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_mushroom3
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_pillar0
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_pillar1
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_rock0
+CONTAINER: mapobjects/complexdecoration/decoration_fantasy_unicorn0
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_gnome1
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_gnome2
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_gnome3
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_gnome4
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_jackolantern0
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_pumpkin0
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_spider0
+CONTAINER: mapobjects/complexdecoration/decoration_halloween_tombstone0
+CONTAINER: mapobjects/complexdecoration/decoration_heart_stash
+CONTAINER: mapobjects/complexdecoration/decoration_present_stash
+CONTAINER: mapobjects/complexdecoration/decoration_researchfacility_hazmat
+CONTAINER: mapobjects/complexdecoration/decoration_researchfacility_radioactivesymbol0
+CONTAINER: mapobjects/complexdecoration/decoration_researchfacility_radioactivesymbol1
+CONTAINER: mapobjects/complexdecoration/decoration_snow_snowman0
+CONTAINER: mapobjects/complexdecoration/decoration_snow_snowman0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_space_arch0
+CONTAINER: mapobjects/complexdecoration/decoration_space_eggs0
+CONTAINER: mapobjects/complexdecoration/decoration_space_eyeball
+CONTAINER: mapobjects/complexdecoration/decoration_space_flower0
+CONTAINER: mapobjects/complexdecoration/decoration_space_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_space_spore0
+CONTAINER: mapobjects/complexdecoration/decoration_space_spore1
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_chest0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_flower0
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_flower0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_flower1
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_flower1_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_flower2
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_flower2_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnome0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnomebouncer
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnomefish
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnomefish_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnomegraduation
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_gnomegraduation_stash
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_mushroom0
+CONTAINER: mapobjects/complexdecoration/decoration_suburb_mushroom0_stash
+CONTAINER: mapobjects/complexdecoration/decoration_valentines_gnome0
+CONTAINER: mapobjects/complexdecoration/decoration_valentines_snowman0
+CONTAINER: mapobjects/complexdecoration/dephysicalized/dephysicalized_decoration_0
+CONTAINER: mapobjects/complexdecoration/dephysicalized/dephysicalized_decoration_1
+CONTAINER: mapobjects/complexdecoration/experimenttube_broken
+CONTAINER: mapobjects/complexdecoration/featuredarch
+CONTAINER: mapobjects/complexdecoration/fieldgoal
+CONTAINER: mapobjects/complexdecoration/fishcrowntrader
+CONTAINER: mapobjects/complexdecoration/fishdisplay
+CONTAINER: mapobjects/complexdecoration/gamemodesign_arenaffa
+CONTAINER: mapobjects/complexdecoration/gamemodesign_arenateams
+CONTAINER: mapobjects/complexdecoration/gamemodesign_custom
+CONTAINER: mapobjects/complexdecoration/gamemodesign_goblin
+CONTAINER: mapobjects/complexdecoration/gamemodesign_hangout
+CONTAINER: mapobjects/complexdecoration/gamemodesign_hangoutteams
+CONTAINER: mapobjects/complexdecoration/gamemodesign_hideandseek
+CONTAINER: mapobjects/complexdecoration/gamemodesign_impostor
+CONTAINER: mapobjects/complexdecoration/gamemodesign_infection
+CONTAINER: mapobjects/complexdecoration/gamemodesign_lasertag
+CONTAINER: mapobjects/complexdecoration/gamemodesign_monster
+CONTAINER: mapobjects/complexdecoration/gamemodesign_outlaw
+CONTAINER: mapobjects/complexdecoration/gamemodesign_paintwars
+CONTAINER: mapobjects/complexdecoration/gamemodesign_prophunt
+CONTAINER: mapobjects/complexdecoration/gamemodesign_sheriff
+CONTAINER: mapobjects/complexdecoration/gamemodesign_survival
+CONTAINER: mapobjects/complexdecoration/gamemodesign_sus
+CONTAINER: mapobjects/complexdecoration/gamemodesign_tag
+CONTAINER: mapobjects/complexdecoration/graffiti_0
+CONTAINER: mapobjects/complexdecoration/graffiti_1
+CONTAINER: mapobjects/complexdecoration/graffiti_2
+CONTAINER: mapobjects/complexdecoration/gravityzone
+CONTAINER: mapobjects/complexdecoration/horrorloreposter_chimphero
+CONTAINER: mapobjects/complexdecoration/horrorloreposter_chimphero_evil
+CONTAINER: mapobjects/complexdecoration/horrorloreposter_sewingmachine
+CONTAINER: mapobjects/complexdecoration/horrorloreposter_sewingmachine_evil
+CONTAINER: mapobjects/complexdecoration/horrormobpatrolpoint
+CONTAINER: mapobjects/complexdecoration/hungryhippo
+CONTAINER: mapobjects/complexdecoration/iconblock_achievements
+CONTAINER: mapobjects/complexdecoration/iconblock_cosmeticsstore
+CONTAINER: mapobjects/complexdecoration/iconblock_creativemode
+CONTAINER: mapobjects/complexdecoration/iconblock_dressingroom
+CONTAINER: mapobjects/complexdecoration/iconblock_hideandseek
+CONTAINER: mapobjects/complexdecoration/iconblock_mob
+CONTAINER: mapobjects/complexdecoration/iconblock_monster
+CONTAINER: mapobjects/complexdecoration/iconblock_music
+CONTAINER: mapobjects/complexdecoration/iconblock_pet
+CONTAINER: mapobjects/complexdecoration/iconblock_rare
+CONTAINER: mapobjects/complexdecoration/iconblock_record
+CONTAINER: mapobjects/complexdecoration/iconblock_spectate
+CONTAINER: mapobjects/complexdecoration/iconblock_staff
+CONTAINER: mapobjects/complexdecoration/iconblock_techweb
+CONTAINER: mapobjects/complexdecoration/iconblock_vip
+CONTAINER: mapobjects/complexdecoration/iconblock_wiring
+CONTAINER: mapobjects/complexdecoration/itemcannon
+CONTAINER: mapobjects/complexdecoration/lightingzone
+CONTAINER: mapobjects/complexdecoration/monsterbeararch
+CONTAINER: mapobjects/complexdecoration/newarch
+CONTAINER: mapobjects/complexdecoration/npcspawner_frog_king
+CONTAINER: mapobjects/complexdecoration/npcspawner_frog_suit
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_beach_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_christmas_elf
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_christmas_santa
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_city_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_city_1
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_city_2
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_city_3
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_desert_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_desert_1
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_desert_2
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_desert_3
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_fantasy_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_halloween_ghost
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_halloween_mummy
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_halloween_pumpkin
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_halloween_trickortreat
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_halloween_witch
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_hazmat_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_jeff
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_snow_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_space_0
+CONTAINER: mapobjects/complexdecoration/npcspawner_gnome_suburb_0
+CONTAINER: mapobjects/complexdecoration/numberonearch
+CONTAINER: mapobjects/complexdecoration/numberthreearch
+CONTAINER: mapobjects/complexdecoration/numbertwoarch
+CONTAINER: mapobjects/complexdecoration/playerlistblock
+CONTAINER: mapobjects/complexdecoration/potioncannon
+CONTAINER: mapobjects/complexdecoration/potionteaminfuser
+CONTAINER: mapobjects/complexdecoration/privateworldsportal
+CONTAINER: mapobjects/complexdecoration/prop_1x1x1_surveillancecamera
+CONTAINER: mapobjects/complexdecoration/prop_1x1x2_controlpanel
+CONTAINER: mapobjects/complexdecoration/prop_1x2_lightstrip
+CONTAINER: mapobjects/complexdecoration/prop_1x2x1_captainchair
+CONTAINER: mapobjects/complexdecoration/prop_1x2x4_sleepingbag
+CONTAINER: mapobjects/complexdecoration/prop_2x2_controlpanel
+CONTAINER: mapobjects/complexdecoration/prop_2x2painting0
+CONTAINER: mapobjects/complexdecoration/prop_2x2painting1
+CONTAINER: mapobjects/complexdecoration/prop_2x2painting2
+CONTAINER: mapobjects/complexdecoration/prop_2x2painting3
+CONTAINER: mapobjects/complexdecoration/prop_2x2x1_crater
+CONTAINER: mapobjects/complexdecoration/prop_2x2x2_oxygentanks
+CONTAINER: mapobjects/complexdecoration/prop_2x2x2_spacecrate
+CONTAINER: mapobjects/complexdecoration/prop_2x2x2_statellitedish
+CONTAINER: mapobjects/complexdecoration/prop_2x3painting0
+CONTAINER: mapobjects/complexdecoration/prop_2x3painting1
+CONTAINER: mapobjects/complexdecoration/prop_2x3painting2
+CONTAINER: mapobjects/complexdecoration/prop_2x3painting3
+CONTAINER: mapobjects/complexdecoration/prop_2x3painting4
+CONTAINER: mapobjects/complexdecoration/prop_2x3x2_bigscreen
+CONTAINER: mapobjects/complexdecoration/prop_3x2painting0
+CONTAINER: mapobjects/complexdecoration/prop_3x2x1_screenmonitor
+CONTAINER: mapobjects/complexdecoration/prop_4x4x1_crater
+CONTAINER: mapobjects/complexdecoration/prop_4x6x1_solarpanel
+CONTAINER: mapobjects/complexdecoration/prop_6x6_spacering
+CONTAINER: mapobjects/complexdecoration/prop_astronauthelmet
+CONTAINER: mapobjects/complexdecoration/prop_beaker
+CONTAINER: mapobjects/complexdecoration/prop_bookcluster
+CONTAINER: mapobjects/complexdecoration/prop_bookshelf1
+CONTAINER: mapobjects/complexdecoration/prop_bookshelf2
+CONTAINER: mapobjects/complexdecoration/prop_booksingle
+CONTAINER: mapobjects/complexdecoration/prop_bookstack
+CONTAINER: mapobjects/complexdecoration/prop_briefcase
+CONTAINER: mapobjects/complexdecoration/prop_candlemultiple
+CONTAINER: mapobjects/complexdecoration/prop_candlesingle
+CONTAINER: mapobjects/complexdecoration/prop_cashregister
+CONTAINER: mapobjects/complexdecoration/prop_ceilinglight
+CONTAINER: mapobjects/complexdecoration/prop_chefhat
+CONTAINER: mapobjects/complexdecoration/prop_chimptoybox
+CONTAINER: mapobjects/complexdecoration/prop_cog
+CONTAINER: mapobjects/complexdecoration/prop_cog2
+CONTAINER: mapobjects/complexdecoration/prop_colorfulflower
+CONTAINER: mapobjects/complexdecoration/prop_comicarrow
+CONTAINER: mapobjects/complexdecoration/prop_comicarrow45
+CONTAINER: mapobjects/complexdecoration/prop_comicexclamation
+CONTAINER: mapobjects/complexdecoration/prop_comicquestion
+CONTAINER: mapobjects/complexdecoration/prop_controlpanel
+CONTAINER: mapobjects/complexdecoration/prop_cowskull
+CONTAINER: mapobjects/complexdecoration/prop_cushionchair
+CONTAINER: mapobjects/complexdecoration/prop_desk
+CONTAINER: mapobjects/complexdecoration/prop_dragonhead
+CONTAINER: mapobjects/complexdecoration/prop_dragonnest
+CONTAINER: mapobjects/complexdecoration/prop_dresser
+CONTAINER: mapobjects/complexdecoration/prop_firehydrant
+CONTAINER: mapobjects/complexdecoration/prop_grandfatherclock
+CONTAINER: mapobjects/complexdecoration/prop_hospitalchair
+CONTAINER: mapobjects/complexdecoration/prop_lantern
+CONTAINER: mapobjects/complexdecoration/prop_laptop
+CONTAINER: mapobjects/complexdecoration/prop_largechandelier
+CONTAINER: mapobjects/complexdecoration/prop_laundrybasket
+CONTAINER: mapobjects/complexdecoration/prop_locker
+CONTAINER: mapobjects/complexdecoration/prop_microscope
+CONTAINER: mapobjects/complexdecoration/prop_microwave
+CONTAINER: mapobjects/complexdecoration/prop_milk
+CONTAINER: mapobjects/complexdecoration/prop_monitor
+CONTAINER: mapobjects/complexdecoration/prop_movingboxclosed
+CONTAINER: mapobjects/complexdecoration/prop_movingboxopen
+CONTAINER: mapobjects/complexdecoration/prop_nuggets
+CONTAINER: mapobjects/complexdecoration/prop_officechair
+CONTAINER: mapobjects/complexdecoration/prop_oillantern
+CONTAINER: mapobjects/complexdecoration/prop_operationtable
+CONTAINER: mapobjects/complexdecoration/prop_paintbucket
+CONTAINER: mapobjects/complexdecoration/prop_parkingmeter
+CONTAINER: mapobjects/complexdecoration/prop_popcorn
+CONTAINER: mapobjects/complexdecoration/prop_poweroutlet
+CONTAINER: mapobjects/complexdecoration/prop_pumashoebox
+CONTAINER: mapobjects/complexdecoration/prop_radio
+CONTAINER: mapobjects/complexdecoration/prop_rocketship
+CONTAINER: mapobjects/complexdecoration/prop_rubberduck
+CONTAINER: mapobjects/complexdecoration/prop_schooldesk
+CONTAINER: mapobjects/complexdecoration/prop_sciencetable
+CONTAINER: mapobjects/complexdecoration/prop_sewingmachine
+CONTAINER: mapobjects/complexdecoration/prop_shoppingcart
+CONTAINER: mapobjects/complexdecoration/prop_smallchandelier
+CONTAINER: mapobjects/complexdecoration/prop_sock
+CONTAINER: mapobjects/complexdecoration/prop_sodacan
+CONTAINER: mapobjects/complexdecoration/prop_space_tunnel
+CONTAINER: mapobjects/complexdecoration/prop_spraycans
+CONTAINER: mapobjects/complexdecoration/prop_standinglamp
+CONTAINER: mapobjects/complexdecoration/prop_statueangel0
+CONTAINER: mapobjects/complexdecoration/prop_statueangel1
+CONTAINER: mapobjects/complexdecoration/prop_statueangel2
+CONTAINER: mapobjects/complexdecoration/prop_statueangel3
+CONTAINER: mapobjects/complexdecoration/prop_stickclutter
+CONTAINER: mapobjects/complexdecoration/prop_stool
+CONTAINER: mapobjects/complexdecoration/prop_storebasketball
+CONTAINER: mapobjects/complexdecoration/prop_storebear
+CONTAINER: mapobjects/complexdecoration/prop_storebox0
+CONTAINER: mapobjects/complexdecoration/prop_storebox1
+CONTAINER: mapobjects/complexdecoration/prop_storecar
+CONTAINER: mapobjects/complexdecoration/prop_tablelarge
+CONTAINER: mapobjects/complexdecoration/prop_tablelargecloth
+CONTAINER: mapobjects/complexdecoration/prop_teacup
+CONTAINER: mapobjects/complexdecoration/prop_teacupplate
+CONTAINER: mapobjects/complexdecoration/prop_teaplate
+CONTAINER: mapobjects/complexdecoration/prop_teapot
+CONTAINER: mapobjects/complexdecoration/prop_testtuberack
+CONTAINER: mapobjects/complexdecoration/prop_threadspools
+CONTAINER: mapobjects/complexdecoration/prop_toilet
+CONTAINER: mapobjects/complexdecoration/prop_toycar
+CONTAINER: mapobjects/complexdecoration/prop_trafficcone
+CONTAINER: mapobjects/complexdecoration/prop_trafficlight
+CONTAINER: mapobjects/complexdecoration/prop_vendingmachine
+CONTAINER: mapobjects/complexdecoration/prop_wallcandledouble
+CONTAINER: mapobjects/complexdecoration/prop_wallcandlesingle
+CONTAINER: mapobjects/complexdecoration/prop_wallclock
+CONTAINER: mapobjects/complexdecoration/prop_watercooler
+CONTAINER: mapobjects/complexdecoration/prop_wetfloorsign
+CONTAINER: mapobjects/complexdecoration/prop_wetpaint
+CONTAINER: mapobjects/complexdecoration/prop_whippedcream
+CONTAINER: mapobjects/complexdecoration/prop_woodenbed
+CONTAINER: mapobjects/complexdecoration/prop_woodenlamp
+CONTAINER: mapobjects/complexdecoration/publicworldcodeblock
+CONTAINER: mapobjects/complexdecoration/roompassageway_rocket
+CONTAINER: mapobjects/complexdecoration/safezone
+CONTAINER: mapobjects/complexdecoration/shoerack
+CONTAINER: mapobjects/complexdecoration/snowmachine
+CONTAINER: mapobjects/complexdecoration/solid/solid_decoration_0
+CONTAINER: mapobjects/complexdecoration/solid/solid_decoration_1
+CONTAINER: mapobjects/complexdecoration/stagebeam
+CONTAINER: mapobjects/complexdecoration/stagesmokecannon
+CONTAINER: mapobjects/complexdecoration/textbroadcaster
+CONTAINER: mapobjects/complexdecoration/textbroadcaster_fullscreen
+CONTAINER: mapobjects/complexdecoration/textbroadcaster_fullscreen_team
+CONTAINER: mapobjects/complexdecoration/textbroadcaster_team
+CONTAINER: mapobjects/complexdecoration/timemachinemanagementblock
+CONTAINER: mapobjects/complexdecoration/votebroadcaster
+CONTAINER: mapobjects/complexdecoration/wishlistconsole
+CONTAINER: mapobjects/complexdecoration/woodenasteroidcannon
+CONTAINER: mapobjects/complexdecoration/woodenautoturret
+CONTAINER: mapobjects/complexdecoration/woodencannon
+CONTAINER: mapobjects/complexdecoration/woodenexplosivefirebarrel
+CONTAINER: mapobjects/complexdecoration/woodenfirejet
+CONTAINER: mapobjects/complexdecoration/woodenfishcatalog
+CONTAINER: mapobjects/complexdecoration/woodenlaserturret
+CONTAINER: mapobjects/complexdecoration/woodenmissileturret
+CONTAINER: mapobjects/complexdecoration/woodenmortarturret
+CONTAINER: mapobjects/complexdecoration/woodensawbladetrap
+CONTAINER: mapobjects/complexdecoration/worldfuelconsoleblock
+CONTAINER: mapobjects/complexdecoration/worldtokendisplay
+CONTAINER: mapobjects/complexdecoration/worldtokenleaderboard
+CONTAINER: mapobjects/complexdecoration/worldtokenleaderboard_gamemode
+CONTAINER: mapobjects/complexdecoration/worldtokennamer
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_corner_railstuffed
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_drum
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_slope_railstuffed
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_stuffedlandmine
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_stuffedtrophie_starcreator
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_stuffedtrophie_superstar
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_stuffedtrophie_youtube100k
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_stuffingstorage
+CONTAINER: mapobjects/complexdecorationstuffed/1x1x1_stuffedclaymore
+CONTAINER: mapobjects/complexdecorationstuffed/1x1x2_recordplayerstuffed
+CONTAINER: mapobjects/complexdecorationstuffed/1x1x2_recordplayerstuffed_boombox
+CONTAINER: mapobjects/complexdecorationstuffed/1x1x2_stuffedtrophie_horror
+CONTAINER: mapobjects/complexdecorationstuffed/1x1x2_stuffedtrophie_horror2
+CONTAINER: mapobjects/complexdecorationstuffed/1x2_stuffingplant
+CONTAINER: mapobjects/complexdecorationstuffed/1x4_straight_railstuffed
+CONTAINER: mapobjects/complexdecorationstuffed/2x2_applabpie
+CONTAINER: mapobjects/complexdecorationstuffed/2x2_cakeblock
+CONTAINER: mapobjects/complexdecorationstuffed/2x2x2_stuffedpresent
+CONTAINER: mapobjects/complexdecorationstuffed/2x2x2_stuffedpumpkin
+CONTAINER: mapobjects/complexdecorationstuffed/2x2x2_stuffedtrophie_bam2
+CONTAINER: mapobjects/complexdecorationstuffed/2x2x4_stuffedrocketship
+CONTAINER: mapobjects/complexdecorationstuffed/4x4_stuffedpetarena
+CONTAINER: mapobjects/complexdecorationstuffed/dephysicalized/dephysicalized_decorationstuffed_0
+CONTAINER: mapobjects/complexdecorationstuffed/dephysicalized/dephysicalized_decorationstuffed_1
+CONTAINER: mapobjects/complexdecorationstuffed/solid/solid_decorationstuffed_0
+CONTAINER: mapobjects/complexdecorationstuffed/solid/solid_decorationstuffed_1
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedautoturret
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedcannon
+CONTAINER: mapobjects/complexdecorationstuffed/stuffeddomino
+CONTAINER: mapobjects/complexdecorationstuffed/stuffeddomino45
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedfishcatalog
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedlaserturret
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedminiturret
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedmissileturret
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedmortarturret
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedplayingcard
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedplayingcard45
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedsawbladeturret
+CONTAINER: mapobjects/complexdecorationstuffed/stuffedtradingtable
+CONTAINER: mapobjects/decoration/1x4x2_forbidden_textyeep
+CONTAINER: mapobjects/decoration/1x6x2_forbidden_texterror
+CONTAINER: mapobjects/stuffed/1x1_beartrap
+CONTAINER: mapobjects/stuffed/1x1_cheapstuffed
+CONTAINER: mapobjects/stuffed/1x1_plushpad
+CONTAINER: mapobjects/stuffed/1x1_stuffed
+CONTAINER: mapobjects/stuffed/1x2_stuffed
+CONTAINER: mapobjects/stuffed/1x4_stuffed
+CONTAINER: mapobjects/stuffed/2x2_stuffednavalmine
+CONTAINER: mapobjects/stuffed/2x2x2_slope_stuffed
+CONTAINER: mapobjects/stuffed/2x2x2_stuffed
+CONTAINER: mapobjects/stuffed/2x4_stuffed
+CONTAINER: mapobjects/stuffed/4x4_stuffed
+CONTAINER: mapobjects/stuffed/dephysicalized_stuffed
+CONTAINER: mapobjects/stuffed/hovered_stuffed
+CONTAINER: mapobjects/stuffed/solid_stuffed
+CONTAINER: mapobjects/stuffedmachine/stuffedcopier
+CONTAINER: mapobjectstemp lol/stuffed/2x2_stuffed
+CONTAINER: mapobjects/complexdecorationstuffed/1x1_stuffedcucumbercat
+GAMEOBJECT 6308: NonStuffedIcon
+GAMEOBJECT 6360: NonStuffedIcon
+GAMEOBJECT 6372: NonStuffedIcon
+GAMEOBJECT 6381: NonStuffedIcon
+GAMEOBJECT 6392: NonStuffedIcon
+GAMEOBJECT 6393: NonStuffedIcon
+GAMEOBJECT 6398: NonStuffedIcon
+GAMEOBJECT 6399: NonStuffedIcon
+GAMEOBJECT 6603: NonStuffedIcon
+GAMEOBJECT 6684: NonStuffedIcon
+GAMEOBJECT 6687: NonStuffedIcon
+GAMEOBJECT 6733: NonStuffedIcon
+GAMEOBJECT 6763: NonStuffedIcon
+GAMEOBJECT 6764: NonStuffedIcon
+GAMEOBJECT 6765: NonStuffedIcon
+GAMEOBJECT 6766: NonStuffedIcon
+GAMEOBJECT 6778: NonStuffedIcon
+GAMEOBJECT 6803: NonStuffedIcon
+GAMEOBJECT 6807: NonStuffedIcon
+GAMEOBJECT 6808: NonStuffedIcon
+GAMEOBJECT 6809: NonStuffedIcon
+GAMEOBJECT 6810: NonStuffedIcon
+GAMEOBJECT 6824: NonStuffedIcon
+GAMEOBJECT 6846: NonStuffedIcon
+GAMEOBJECT 6870: NonStuffedIcon
+GAMEOBJECT 6912: NonStuffedIcon
+GAMEOBJECT 6915: NonStuffedIcon
+GAMEOBJECT 6930: NonStuffedIcon
+GAMEOBJECT 6945: NonStuffedIcon
+GAMEOBJECT 6946: NonStuffedIcon
+GAMEOBJECT 6955: NonStuffedIcon
+GAMEOBJECT 6957: NonStuffedIcon
+GAMEOBJECT 6970: NonStuffedIcon
+GAMEOBJECT 6982: NonStuffedIcon
+GAMEOBJECT 6983: NonStuffedIcon
+GAMEOBJECT 7088: NonStuffedIcon
+GAMEOBJECT 7106: NonStuffedIcon
+GAMEOBJECT 7107: NonStuffedIcon
+GAMEOBJECT 7108: NonStuffedIcon
+GAMEOBJECT 7109: NonStuffedIcon
+GAMEOBJECT 7172: NonStuffedIcon
+GAMEOBJECT 7236: NonStuffedIcon
+GAMEOBJECT 7246: NonStuffedIcon
+GAMEOBJECT 7270: NonStuffedIcon
+GAMEOBJECT 7271: NonStuffedIcon
+GAMEOBJECT 7314: NonStuffedIcon
+GAMEOBJECT 7341: NonStuffedIcon
+GAMEOBJECT 7414: NonStuffedIcon
+GAMEOBJECT 7415: NonStuffedIcon
+GAMEOBJECT 7450: NonStuffedIcon
+GAMEOBJECT 7464: NonStuffedIcon
+GAMEOBJECT 7476: NonStuffedIcon
+GAMEOBJECT 7514: NonStuffedIcon
+GAMEOBJECT 7584: NonStuffedIcon
+GAMEOBJECT 7624: NonStuffedIcon
+GAMEOBJECT 7765: NonStuffedIcon
+GAMEOBJECT 7819: NonStuffedIcon
+GAMEOBJECT 7829: NonStuffedIcon
+GAMEOBJECT 7838: NonStuffedIcon
+GAMEOBJECT 7855: NonStuffedIcon
+GAMEOBJECT 7974: NonStuffedIcon
+GAMEOBJECT 8049: NonStuffedIcon
+GAMEOBJECT 8072: NonStuffedIcon
+GAMEOBJECT 8079: NonStuffedIcon
+GAMEOBJECT 8080: NonStuffedIcon
+GAMEOBJECT 8093: NonStuffedIcon
+GAMEOBJECT 8107: NonStuffedIcon
+GAMEOBJECT 8110: NonStuffedIcon
+GAMEOBJECT 8167: NonStuffedIcon
+GAMEOBJECT 8169: NonStuffedIcon
+GAMEOBJECT 8257: NonStuffedIcon
+GAMEOBJECT 8258: NonStuffedIcon
+GAMEOBJECT 8302: NonStuffedIcon
+GAMEOBJECT 8347: NonStuffedIcon
+GAMEOBJECT 8395: NonStuffedIcon
+GAMEOBJECT 8420: NonStuffedIcon
+GAMEOBJECT 8421: NonStuffedIcon
+GAMEOBJECT 8424: NonStuffedIcon
+GAMEOBJECT 8451: NonStuffedIcon
+GAMEOBJECT 8467: NonStuffedIcon
+GAMEOBJECT 8618: NonStuffedIcon
+GAMEOBJECT 8622: NonStuffedIcon
+GAMEOBJECT 8633: NonStuffedIcon
+GAMEOBJECT 8636: NonStuffedIcon
+GAMEOBJECT 8645: NonStuffedIcon
+GAMEOBJECT 8655: NonStuffedIcon
+GAMEOBJECT 8699: NonStuffedIcon
+GAMEOBJECT 8718: NonStuffedIcon
+GAMEOBJECT 8719: NonStuffedIcon
+GAMEOBJECT 8720: NonStuffedIcon
+GAMEOBJECT 8721: NonStuffedIcon
+GAMEOBJECT 8787: NonStuffedIcon
+GAMEOBJECT 8809: NonStuffedIcon
+GAMEOBJECT 8878: NonStuffedIcon
+GAMEOBJECT 8972: NonStuffedIcon
+GAMEOBJECT 9057: NonStuffedIcon
+GAMEOBJECT 9059: NonStuffedIcon
+GAMEOBJECT 9123: NonStuffedIcon
+GAMEOBJECT 9218: NonStuffedIcon
+GAMEOBJECT 9219: NonStuffedIcon
+GAMEOBJECT 9222: NonStuffedIcon
+GAMEOBJECT 9223: NonStuffedIcon
+GAMEOBJECT 9224: NonStuffedIcon
+GAMEOBJECT 9225: NonStuffedIcon
+GAMEOBJECT 9226: NonStuffedIcon
+GAMEOBJECT 9309: NonStuffedIcon
+GAMEOBJECT 9311: NonStuffedIcon
+GAMEOBJECT 9313: NonStuffedIcon
+GAMEOBJECT 9367: NonStuffedIcon
+GAMEOBJECT 9383: NonStuffedIcon
+GAMEOBJECT 9440: NonStuffedIcon
+GAMEOBJECT 9446: NonStuffedIcon
+GAMEOBJECT 9510: NonStuffedIcon
+GAMEOBJECT 9551: NonStuffedIcon
+GAMEOBJECT 9600: NonStuffedIcon
+GAMEOBJECT 9634: NonStuffedIcon
+GAMEOBJECT 9646: NonStuffedIcon
+GAMEOBJECT 9686: NonStuffedIcon
+GAMEOBJECT 9720: NonStuffedIcon
+GAMEOBJECT 9721: NonStuffedIcon
+GAMEOBJECT 9722: NonStuffedIcon
+GAMEOBJECT 9723: NonStuffedIcon
+GAMEOBJECT 9724: NonStuffedIcon
+GAMEOBJECT 9725: NonStuffedIcon
+GAMEOBJECT 9802: NonStuffedIcon
+GAMEOBJECT 9819: NonStuffedIcon
+GAMEOBJECT 9835: NonStuffedIcon
+GAMEOBJECT 9839: NonStuffedIcon
+GAMEOBJECT 9840: NonStuffedIcon
+GAMEOBJECT 9899: NonStuffedIcon
+GAMEOBJECT 9943: NonStuffedIcon
+GAMEOBJECT 9944: NonStuffedIcon
+GAMEOBJECT 9945: NonStuffedIcon
+GAMEOBJECT 9979: NonStuffedIcon
+GAMEOBJECT 10209: NonStuffedIcon
+GAMEOBJECT 10790: NonStuffedIcon
+GAMEOBJECT 10791: NonStuffedIcon
+GAMEOBJECT 10792: NonStuffedIcon
+GAMEOBJECT 10793: NonStuffedIcon
+GAMEOBJECT 10794: NonStuffedIcon
+GAMEOBJECT 10815: NonStuffedIcon
+GAMEOBJECT 10826: NonStuffedIcon
+GAMEOBJECT 10845: NonStuffedIcon
+GAMEOBJECT 10862: NonStuffedIcon
+GAMEOBJECT 10864: NonStuffedIcon
+GAMEOBJECT 10929: NonStuffedIcon
+GAMEOBJECT 10943: NonStuffedIcon
+GAMEOBJECT 10951: NonStuffedIcon
+GAMEOBJECT 11044: NonStuffedIcon
+GAMEOBJECT 11052: NonStuffedIcon
+GAMEOBJECT 11057: NonStuffedIcon
+GAMEOBJECT 11058: NonStuffedIcon
+GAMEOBJECT 11059: NonStuffedIcon
+GAMEOBJECT 11060: NonStuffedIcon
+GAMEOBJECT 11080: NonStuffedIcon
+GAMEOBJECT 11143: NonStuffedIcon
+GAMEOBJECT 11181: NonStuffedIcon
+GAMEOBJECT 11182: NonStuffedIcon
+GAMEOBJECT 11185: NonStuffedIcon
+GAMEOBJECT 11228: NonStuffedIcon
+GAMEOBJECT 11230: NonStuffedIcon
+GAMEOBJECT 11232: NonStuffedIcon
+GAMEOBJECT 11250: NonStuffedIcon
+GAMEOBJECT 11380: NonStuffedIcon
+GAMEOBJECT 11556: NonStuffedIcon
+GAMEOBJECT 11557: NonStuffedIcon
+GAMEOBJECT 11571: NonStuffedIcon
+GAMEOBJECT 11578: NonStuffedIcon
+GAMEOBJECT 11581: NonStuffedIcon
+GAMEOBJECT 11582: NonStuffedIcon
+GAMEOBJECT 11641: NonStuffedIcon
+GAMEOBJECT 11650: NonStuffedIcon
+GAMEOBJECT 11651: NonStuffedIcon
+GAMEOBJECT 11660: NonStuffedIcon
+GAMEOBJECT 11693: NonStuffedIcon
+GAMEOBJECT 11738: NonStuffedIcon
+GAMEOBJECT 11753: NonStuffedIcon
+GAMEOBJECT 11759: NonStuffedIcon
+GAMEOBJECT 11808: NonStuffedIcon
+GAMEOBJECT 11827: NonStuffedIcon
+GAMEOBJECT 11884: NonStuffedIcon
+GAMEOBJECT 11912: NonStuffedIcon
+GAMEOBJECT 11913: NonStuffedIcon
+GAMEOBJECT 11976: NonStuffedIcon
+GAMEOBJECT 12001: NonStuffedIcon
+GAMEOBJECT 12024: NonStuffedIcon
+GAMEOBJECT 12033: NonStuffedIcon
+GAMEOBJECT 12072: NonStuffedIcon
+GAMEOBJECT 12073: NonStuffedIcon
+GAMEOBJECT 12076: NonStuffedIcon
+GAMEOBJECT 12084: NonStuffedIcon
+GAMEOBJECT 12094: NonStuffedIcon
+GAMEOBJECT 12105: NonStuffedIcon
+GAMEOBJECT 12117: NonStuffedIcon
+GAMEOBJECT 12119: NonStuffedIcon
+GAMEOBJECT 12129: NonStuffedIcon
+GAMEOBJECT 12173: NonStuffedIcon
+GAMEOBJECT 12204: NonStuffedIcon
+GAMEOBJECT 12224: NonStuffedIcon
+GAMEOBJECT 12225: NonStuffedIcon
+GAMEOBJECT 12283: NonStuffedIcon
+GAMEOBJECT 12372: NonStuffedIcon
+GAMEOBJECT 12481: NonStuffedIcon
+GAMEOBJECT 12550: NonStuffedIcon
+GAMEOBJECT 12560: NonStuffedIcon
+GAMEOBJECT 12562: NonStuffedIcon
+GAMEOBJECT 12573: NonStuffedIcon
+GAMEOBJECT 12588: NonStuffedIcon
+GAMEOBJECT 12664: NonStuffedIcon
+GAMEOBJECT 12674: NonStuffedIcon
+GAMEOBJECT 12680: NonStuffedIcon
+GAMEOBJECT 12694: NonStuffedIcon
+GAMEOBJECT 12795: NonStuffedIcon
+GAMEOBJECT 12826: NonStuffedIcon
+GAMEOBJECT 12827: NonStuffedIcon
+GAMEOBJECT 12828: NonStuffedIcon
+GAMEOBJECT 12829: NonStuffedIcon
+GAMEOBJECT 12830: NonStuffedIcon
+GAMEOBJECT 12831: NonStuffedIcon
+GAMEOBJECT 12832: NonStuffedIcon
+GAMEOBJECT 12833: NonStuffedIcon
+GAMEOBJECT 12834: NonStuffedIcon
+GAMEOBJECT 12835: NonStuffedIcon
+GAMEOBJECT 12836: NonStuffedIcon
+GAMEOBJECT 12837: NonStuffedIcon
+GAMEOBJECT 12838: NonStuffedIcon
+GAMEOBJECT 12839: NonStuffedIcon
+GAMEOBJECT 12840: NonStuffedIcon
+GAMEOBJECT 12841: NonStuffedIcon
+GAMEOBJECT 12842: NonStuffedIcon
+GAMEOBJECT 12843: NonStuffedIcon
+GAMEOBJECT 12844: NonStuffedIcon
+GAMEOBJECT 12845: NonStuffedIcon
+GAMEOBJECT 12846: NonStuffedIcon
+GAMEOBJECT 12847: NonStuffedIcon
+GAMEOBJECT 12848: NonStuffedIcon
+GAMEOBJECT 12849: NonStuffedIcon
+GAMEOBJECT 12850: NonStuffedIcon
+GAMEOBJECT 12851: NonStuffedIcon
+GAMEOBJECT 12852: NonStuffedIcon
+GAMEOBJECT 12853: NonStuffedIcon
+GAMEOBJECT 12854: NonStuffedIcon
+GAMEOBJECT 12855: NonStuffedIcon
+GAMEOBJECT 12856: NonStuffedIcon
+GAMEOBJECT 12857: NonStuffedIcon
+GAMEOBJECT 12858: NonStuffedIcon
+GAMEOBJECT 12859: NonStuffedIcon
+GAMEOBJECT 12860: NonStuffedIcon
+GAMEOBJECT 12861: NonStuffedIcon
+GAMEOBJECT 12862: NonStuffedIcon
+GAMEOBJECT 12863: NonStuffedIcon
+GAMEOBJECT 12864: NonStuffedIcon
+GAMEOBJECT 12865: NonStuffedIcon
+GAMEOBJECT 12866: NonStuffedIcon
+GAMEOBJECT 12867: NonStuffedIcon
+GAMEOBJECT 12868: NonStuffedIcon
+GAMEOBJECT 12869: NonStuffedIcon
+GAMEOBJECT 12870: NonStuffedIcon
+GAMEOBJECT 12871: NonStuffedIcon
+GAMEOBJECT 12872: NonStuffedIcon
+GAMEOBJECT 12873: NonStuffedIcon
+GAMEOBJECT 12874: NonStuffedIcon
+GAMEOBJECT 12875: NonStuffedIcon
+GAMEOBJECT 12876: NonStuffedIcon
+GAMEOBJECT 12877: NonStuffedIcon
+GAMEOBJECT 12878: NonStuffedIcon
+GAMEOBJECT 12879: NonStuffedIcon
+GAMEOBJECT 12880: NonStuffedIcon
+GAMEOBJECT 12881: NonStuffedIcon
+GAMEOBJECT 12882: NonStuffedIcon
+GAMEOBJECT 12883: NonStuffedIcon
+GAMEOBJECT 12884: NonStuffedIcon
+GAMEOBJECT 12885: NonStuffedIcon
+GAMEOBJECT 12886: NonStuffedIcon
+GAMEOBJECT 12887: NonStuffedIcon
+GAMEOBJECT 12888: NonStuffedIcon
+GAMEOBJECT 12889: NonStuffedIcon
+GAMEOBJECT 12890: NonStuffedIcon
+GAMEOBJECT 12891: NonStuffedIcon
+GAMEOBJECT 12892: NonStuffedIcon
+GAMEOBJECT 12893: NonStuffedIcon
+GAMEOBJECT 12894: NonStuffedIcon
+GAMEOBJECT 12895: NonStuffedIcon
+GAMEOBJECT 12896: NonStuffedIcon
+GAMEOBJECT 12897: NonStuffedIcon
+GAMEOBJECT 12898: NonStuffedIcon
+GAMEOBJECT 12899: NonStuffedIcon
+GAMEOBJECT 12900: NonStuffedIcon
+GAMEOBJECT 12901: NonStuffedIcon
+GAMEOBJECT 12902: NonStuffedIcon
+GAMEOBJECT 12903: NonStuffedIcon
+GAMEOBJECT 12904: NonStuffedIcon
+GAMEOBJECT 12905: NonStuffedIcon
+GAMEOBJECT 12906: NonStuffedIcon
+GAMEOBJECT 12907: NonStuffedIcon
+GAMEOBJECT 12908: NonStuffedIcon
+GAMEOBJECT 12909: NonStuffedIcon
+GAMEOBJECT 12911: NonStuffedIcon
+GAMEOBJECT 12927: NonStuffedIcon
+GAMEOBJECT 12935: NonStuffedIcon
+GAMEOBJECT 12958: NonStuffedIcon
+GAMEOBJECT 12973: NonStuffedIcon
+GAMEOBJECT 13002: NonStuffedIcon
+GAMEOBJECT 13032: NonStuffedIcon
+GAMEOBJECT 13100: NonStuffedIcon
+GAMEOBJECT 13147: MapObjectGuide_2x4_stuffed (1)
+GAMEOBJECT 13164: NonStuffedIcon
+GAMEOBJECT 13167: NonStuffedIcon
+GAMEOBJECT 13237: NonStuffedIcon
+GAMEOBJECT 13303: NonStuffedIcon
+GAMEOBJECT 13328: NonStuffedIcon
+GAMEOBJECT 13340: NonStuffedIcon
+GAMEOBJECT 13385: NonStuffedIcon
+GAMEOBJECT 13389: NonStuffedIcon
+GAMEOBJECT 13409: NonStuffedIcon
+GAMEOBJECT 13427: NonStuffedIcon
+GAMEOBJECT 13457: NonStuffedIcon
+GAMEOBJECT 13514: MapObjectGuide_1x4_stuffed (3)
+GAMEOBJECT 13544: NonStuffedIcon
+GAMEOBJECT 13545: NonStuffedIcon
+GAMEOBJECT 13546: NonStuffedIcon
+GAMEOBJECT 13547: NonStuffedIcon
+GAMEOBJECT 13656: NonStuffedIcon
+GAMEOBJECT 13665: NonStuffedIcon
+GAMEOBJECT 13830: NonStuffedIcon
+GAMEOBJECT 13856: NonStuffedIcon
+GAMEOBJECT 13858: NonStuffedIcon
+GAMEOBJECT 13895: NonStuffedIcon
+GAMEOBJECT 13903: NonStuffedIcon
+GAMEOBJECT 13908: NonStuffedIcon
+GAMEOBJECT 13910: NonStuffedIcon
+GAMEOBJECT 13932: NonStuffedIcon
+GAMEOBJECT 13970: NonStuffedIcon
+GAMEOBJECT 13984: NonStuffedIcon
+GAMEOBJECT 14001: NonStuffedIcon
+GAMEOBJECT 14035: NonStuffedIcon
+GAMEOBJECT 14068: NonStuffedIcon
+GAMEOBJECT 14190: NonStuffedIcon
+GAMEOBJECT 14288: NonStuffedIcon
+GAMEOBJECT 14353: NonStuffedIcon
+GAMEOBJECT 14361: NonStuffedIcon
+GAMEOBJECT 14410: NonStuffedIcon
+GAMEOBJECT 14411: NonStuffedIcon
+GAMEOBJECT 14455: NonStuffedIcon
+GAMEOBJECT 14469: NonStuffedIcon
+GAMEOBJECT 14479: NonStuffedIcon
+GAMEOBJECT 14481: NonStuffedIcon
+GAMEOBJECT 14509: NonStuffedIcon
+GAMEOBJECT 14510: NonStuffedIcon
+GAMEOBJECT 14521: NonStuffedIcon
+GAMEOBJECT 14522: NonStuffedIcon
+GAMEOBJECT 14527: NonStuffedIcon
+GAMEOBJECT 14544: NonStuffedIcon
+GAMEOBJECT 14559: NonStuffedIcon
+GAMEOBJECT 14563: NonStuffedIcon
+GAMEOBJECT 14582: NonStuffedIcon
+GAMEOBJECT 14685: NonStuffedIcon
+GAMEOBJECT 14699: NonStuffedIcon
+GAMEOBJECT 14778: NonStuffedIcon
+GAMEOBJECT 14780: NonStuffedIcon
+GAMEOBJECT 14798: NonStuffedIcon
+GAMEOBJECT 14799: NonStuffedIcon
+GAMEOBJECT 14890: NonStuffedIcon
+GAMEOBJECT 14982: NonStuffedIcon
+GAMEOBJECT 15040: NonStuffedIcon
+GAMEOBJECT 15052: NonStuffedIcon
+GAMEOBJECT 15068: NonStuffedIcon
+GAMEOBJECT 15244: NonStuffedIcon
+GAMEOBJECT 15290: NonStuffedIcon
+GAMEOBJECT 15331: NonStuffedIcon
+GAMEOBJECT 15405: NonStuffedIcon
+GAMEOBJECT 15433: NonStuffedIcon
+GAMEOBJECT 15463: NonStuffedIcon
+GAMEOBJECT 15578: NonStuffedIcon
+GAMEOBJECT 15581: NonStuffedIcon
+GAMEOBJECT 15696: NonStuffedIcon
+GAMEOBJECT 15857: NonStuffedIcon
+GAMEOBJECT 15862: NonStuffedIcon
+GAMEOBJECT 15933: NonStuffedIcon
+GAMEOBJECT 15948: NonStuffedIcon
+GAMEOBJECT 15999: NonStuffedIcon
+GAMEOBJECT 16000: NonStuffedIcon
+GAMEOBJECT 16033: NonStuffedIcon
+GAMEOBJECT 16170: NonStuffedIcon
+GAMEOBJECT 16220: NonStuffedIcon
+GAMEOBJECT 16234: NonStuffedIcon
+GAMEOBJECT 16289: NonStuffedIcon
+GAMEOBJECT 16321: NonStuffedIcon
+GAMEOBJECT 16351: NonStuffedIcon
+GAMEOBJECT 16368: NonStuffedIcon
+GAMEOBJECT 16429: NonStuffedIcon
+GAMEOBJECT 16497: NonStuffedIcon
+GAMEOBJECT 16568: NonStuffedIcon
+GAMEOBJECT 16621: NonStuffedIcon
+GAMEOBJECT 16652: NonStuffedIcon
+GAMEOBJECT 16772: NonStuffedIcon
+GAMEOBJECT 16778: NonStuffedIcon
+GAMEOBJECT 16822: NonStuffedIcon
+GAMEOBJECT 16824: NonStuffedIcon
+GAMEOBJECT 16837: NonStuffedIcon
+GAMEOBJECT 16890: NonStuffedIcon
+GAMEOBJECT 17000: NonStuffedIcon
+GAMEOBJECT 17007: NonStuffedIcon
+GAMEOBJECT 17019: NonStuffedIcon
+GAMEOBJECT 17038: NonStuffedIcon
+GAMEOBJECT 17039: NonStuffedIcon
+GAMEOBJECT 17098: NonStuffedIcon
+GAMEOBJECT 17142: NonStuffedIcon
+GAMEOBJECT 17192: NonStuffedIcon
+GAMEOBJECT 17203: NonStuffedIcon
+GAMEOBJECT 17256: NonStuffedIcon
+GAMEOBJECT 17257: NonStuffedIcon
+GAMEOBJECT 17283: NonStuffedIcon
+GAMEOBJECT 17284: NonStuffedIcon
+GAMEOBJECT 17290: NonStuffedIcon
+GAMEOBJECT 17457: NonStuffedIcon
+GAMEOBJECT 17477: NonStuffedIcon
+GAMEOBJECT 17506: NonStuffedIcon
+GAMEOBJECT 17523: NonStuffedIcon
+GAMEOBJECT 17537: NonStuffedIcon
+GAMEOBJECT 17574: NonStuffedIcon
+GAMEOBJECT 17742: ImaginationPageSelector_Stuffed
+GAMEOBJECT 17823: NonStuffedIcon
+GAMEOBJECT 17862: NonStuffedIcon
+GAMEOBJECT 17974: NonStuffedIcon
+GAMEOBJECT 17975: NonStuffedIcon
+GAMEOBJECT 17988: NonStuffedIcon
+GAMEOBJECT 18046: NonStuffedIcon
+GAMEOBJECT 18065: NonStuffedIcon
+GAMEOBJECT 18088: NonStuffedIcon
+GAMEOBJECT 18173: NonStuffedIcon
+GAMEOBJECT 18211: NonStuffedIcon
+GAMEOBJECT 18279: NonStuffedIcon
+GAMEOBJECT 18294: NonStuffedIcon
+GAMEOBJECT 18382: NonStuffedIcon
+GAMEOBJECT 18401: NonStuffedIcon
+GAMEOBJECT 18433: NonStuffedIcon
+GAMEOBJECT 18472: NonStuffedIcon
+GAMEOBJECT 18533: NonStuffedIcon
+GAMEOBJECT 18582: NonStuffedIcon
+GAMEOBJECT 18583: NonStuffedIcon
+GAMEOBJECT 18589: NonStuffedIcon
+GAMEOBJECT 18665: NonStuffedIcon
+GAMEOBJECT 18669: NonStuffedIcon
+GAMEOBJECT 18693: NonStuffedIcon
+GAMEOBJECT 18722: NonStuffedIcon
+GAMEOBJECT 18764: NonStuffedIcon
+GAMEOBJECT 18790: NonStuffedIcon
+GAMEOBJECT 18825: NonStuffedIcon
+GAMEOBJECT 18826: NonStuffedIcon
+GAMEOBJECT 18883: NonStuffedIcon
+GAMEOBJECT 18885: NonStuffedIcon
+GAMEOBJECT 18894: Item_StuffedFlashlight_lich
+GAMEOBJECT 18895: NonStuffedIcon
+GAMEOBJECT 18926: NonStuffedIcon
+GAMEOBJECT 18930: NonStuffedIcon
+GAMEOBJECT 19149: NonStuffedIcon
+GAMEOBJECT 19187: NonStuffedIcon
+GAMEOBJECT 19212: NonStuffedIcon
+GAMEOBJECT 19262: NonStuffedIcon
+GAMEOBJECT 19263: NonStuffedIcon
+GAMEOBJECT 19264: NonStuffedIcon
+GAMEOBJECT 19265: NonStuffedIcon
+GAMEOBJECT 19321: NonStuffedIcon
+GAMEOBJECT 19322: NonStuffedIcon
+GAMEOBJECT 19356: NonStuffedIcon
+GAMEOBJECT 19358: NonStuffedIcon
+GAMEOBJECT 19415: NonStuffedIcon
+GAMEOBJECT 19424: NonStuffedIcon
+GAMEOBJECT 19425: NonStuffedIcon
+GAMEOBJECT 19427: NonStuffedIcon
+GAMEOBJECT 19442: NonStuffedIcon
+GAMEOBJECT 19452: NonStuffedIcon
+GAMEOBJECT 19465: NonStuffedIcon
+GAMEOBJECT 19475: NonStuffedIcon
+GAMEOBJECT 19564: NonStuffedIcon
+GAMEOBJECT 19570: NonStuffedIcon
+GAMEOBJECT 19574: NonStuffedIcon
+GAMEOBJECT 19588: NonStuffedIcon
+GAMEOBJECT 19589: NonStuffedIcon
+GAMEOBJECT 19610: NonStuffedIcon
+GAMEOBJECT 19623: NonStuffedIcon
+GAMEOBJECT 19704: NonStuffedIcon
+GAMEOBJECT 19741: NonStuffedIcon
+GAMEOBJECT 19742: NonStuffedIcon
+GAMEOBJECT 19756: NonStuffedIcon
+GAMEOBJECT 19766: NonStuffedIcon
+GAMEOBJECT 19813: NonStuffedIcon
+GAMEOBJECT 19824: NonStuffedIcon
+GAMEOBJECT 19856: NonStuffedIcon
+GAMEOBJECT 19917: NonStuffedIcon
+GAMEOBJECT 19948: NonStuffedIcon
+GAMEOBJECT 19976: NonStuffedIcon
+GAMEOBJECT 20018: NonStuffedIcon
+GAMEOBJECT 20047: NonStuffedIcon
+GAMEOBJECT 20048: NonStuffedIcon
+GAMEOBJECT 20049: NonStuffedIcon
+GAMEOBJECT 20050: NonStuffedIcon
+GAMEOBJECT 20098: NonStuffedIcon
+GAMEOBJECT 20191: NonStuffedIcon
+GAMEOBJECT 20236: NonStuffedIcon
+GAMEOBJECT 20261: NonStuffedIcon
+GAMEOBJECT 20262: NonStuffedIcon
+GAMEOBJECT 20263: NonStuffedIcon
+GAMEOBJECT 20338: NonStuffedIcon
+GAMEOBJECT 20434: NonStuffedIcon
+GAMEOBJECT 20444: NonStuffedIcon
+GAMEOBJECT 20468: NonStuffedIcon
+GAMEOBJECT 20469: NonStuffedIcon
+GAMEOBJECT 20509: NonStuffedIcon
+GAMEOBJECT 20510: NonStuffedIcon
+GAMEOBJECT 20511: NonStuffedIcon
+GAMEOBJECT 20513: NonStuffedIcon
+GAMEOBJECT 20570: NonStuffedIcon
+GAMEOBJECT 20571: NonStuffedIcon
+GAMEOBJECT 20608: NonStuffedIcon
+GAMEOBJECT 20625: NonStuffedIcon
+GAMEOBJECT 20694: NonStuffedIcon
+GAMEOBJECT 20714: NonStuffedIcon
+GAMEOBJECT 20755: NonStuffedIcon
+GAMEOBJECT 20768: stuffedItemInputZone
+GAMEOBJECT 20798: NonStuffedIcon
+GAMEOBJECT 20820: NonStuffedIcon
+GAMEOBJECT 20831: NonStuffedIcon
+GAMEOBJECT 20911: NonStuffedIcon
+GAMEOBJECT 21003: NonStuffedIcon
+GAMEOBJECT 21102: NonStuffedIcon
+GAMEOBJECT 21220: NonStuffedIcon
+GAMEOBJECT 21245: NonStuffedIcon
+GAMEOBJECT 21436: NonStuffedIcon
+GAMEOBJECT 21456: NonStuffedIcon
+GAMEOBJECT 21479: NonStuffedIcon
+GAMEOBJECT 21531: NonStuffedIcon
+GAMEOBJECT 21537: NonStuffedIcon
+GAMEOBJECT 21621: NonStuffedIcon
+GAMEOBJECT 21622: NonStuffedIcon
+GAMEOBJECT 21623: NonStuffedIcon
+GAMEOBJECT 21624: NonStuffedIcon
+GAMEOBJECT 21625: NonStuffedIcon
+GAMEOBJECT 21652: NonStuffedIcon
+GAMEOBJECT 21657: NonStuffedIcon
+GAMEOBJECT 21665: NonStuffedIcon
+GAMEOBJECT 21670: NonStuffedIcon
+GAMEOBJECT 21803: NonStuffedIcon
+GAMEOBJECT 21852: NonStuffedIcon
+GAMEOBJECT 21878: NonStuffedIcon
+GAMEOBJECT 21881: NonStuffedIcon
+GAMEOBJECT 21895: NonStuffedIcon
+GAMEOBJECT 21941: NonStuffedIcon
+GAMEOBJECT 21942: NonStuffedIcon
+GAMEOBJECT 21968: NonStuffedIcon
+GAMEOBJECT 21996: NonStuffedIcon
+GAMEOBJECT 21997: NonStuffedIcon
+GAMEOBJECT 21998: NonStuffedIcon
+GAMEOBJECT 21999: NonStuffedIcon
+GAMEOBJECT 22000: NonStuffedIcon
+GAMEOBJECT 22001: NonStuffedIcon
+GAMEOBJECT 22002: NonStuffedIcon
+GAMEOBJECT 22003: NonStuffedIcon
+GAMEOBJECT 22004: NonStuffedIcon
+GAMEOBJECT 22005: NonStuffedIcon
+GAMEOBJECT 22006: NonStuffedIcon
+GAMEOBJECT 22007: NonStuffedIcon
+GAMEOBJECT 22008: NonStuffedIcon
+GAMEOBJECT 22036: NonStuffedIcon
+GAMEOBJECT 22040: NonStuffedIcon
+GAMEOBJECT 22107: NonStuffedIcon
+GAMEOBJECT 22110: NonStuffedIcon
+GAMEOBJECT 22112: NonStuffedIcon
+GAMEOBJECT 22127: NonStuffedIcon
+GAMEOBJECT 22147: NonStuffedIcon
+GAMEOBJECT 22148: NonStuffedIcon
+GAMEOBJECT 22155: NonStuffedIcon
+GAMEOBJECT 22222: NonStuffedIcon
+GAMEOBJECT 22238: NonStuffedIcon
+GAMEOBJECT 22335: NonStuffedIcon
+GAMEOBJECT 22336: NonStuffedIcon
+GAMEOBJECT 22405: NonStuffedIcon
+GAMEOBJECT 22464: NonStuffedIcon
+GAMEOBJECT 22477: NonStuffedIcon
+GAMEOBJECT 22493: NonStuffedIcon
+GAMEOBJECT 22505: NonStuffedIcon
+GAMEOBJECT 22542: NonStuffedIcon
+GAMEOBJECT 22588: NonStuffedIcon
+GAMEOBJECT 22664: NonStuffedIcon
+GAMEOBJECT 22676: NonStuffedIcon
+GAMEOBJECT 22677: NonStuffedIcon
+GAMEOBJECT 22679: NonStuffedIcon
+GAMEOBJECT 22708: NonStuffedIcon
+GAMEOBJECT 22747: NonStuffedIcon
+GAMEOBJECT 22780: NonStuffedIcon
+GAMEOBJECT 22790: NonStuffedIcon
+GAMEOBJECT 22794: NonStuffedIcon
+GAMEOBJECT 22798: NonStuffedIcon
+GAMEOBJECT 22832: NonStuffedIcon
+GAMEOBJECT 22843: NonStuffedIcon
+GAMEOBJECT 22845: NonStuffedIcon
+GAMEOBJECT 22857: NonStuffedIcon
+GAMEOBJECT 22959: NonStuffedIcon
+GAMEOBJECT 23027: NonStuffedIcon
+GAMEOBJECT 23048: NonStuffedIcon
+GAMEOBJECT 23119: NonStuffedIcon
+GAMEOBJECT 23124: NonStuffedIcon
+GAMEOBJECT 23205: NonStuffedIcon
+GAMEOBJECT 23236: NonStuffedIcon
+GAMEOBJECT 23262: NonStuffedIcon
+GAMEOBJECT 23268: NonStuffedIcon
+GAMEOBJECT 23294: NonStuffedIcon
+GAMEOBJECT 23295: NonStuffedIcon
+GAMEOBJECT 23308: NonStuffedIcon
+GAMEOBJECT 23391: NonStuffedIcon
+GAMEOBJECT 23446: NonStuffedIcon
+GAMEOBJECT 23450: NonStuffedIcon
+GAMEOBJECT 23453: NonStuffedIcon
+GAMEOBJECT 23508: NonStuffedIcon
+GAMEOBJECT 23550: NonStuffedIcon
+GAMEOBJECT 23571: NonStuffedIcon
+GAMEOBJECT 23593: NonStuffedIcon
+GAMEOBJECT 23820: NonStuffedIcon
+GAMEOBJECT 23825: NonStuffedIcon
+GAMEOBJECT 23840: NonStuffedIcon
+GAMEOBJECT 23849: NonStuffedIcon
+GAMEOBJECT 24164: NonStuffedIcon
+GAMEOBJECT 24185: NonStuffedIcon
+GAMEOBJECT 24310: NonStuffedIcon
+GAMEOBJECT 24312: NonStuffedIcon
+GAMEOBJECT 24326: NonStuffedIcon
+GAMEOBJECT 24331: NonStuffedIcon
+GAMEOBJECT 24367: NonStuffedIcon
+GAMEOBJECT 24373: NonStuffedIcon
+GAMEOBJECT 24374: NonStuffedIcon
+GAMEOBJECT 24377: NonStuffedIcon
+GAMEOBJECT 24378: NonStuffedIcon
+GAMEOBJECT 24379: NonStuffedIcon
+GAMEOBJECT 24409: NonStuffedIcon
+GAMEOBJECT 24453: NonStuffedIcon
+GAMEOBJECT 24460: NonStuffedIcon
+GAMEOBJECT 24469: NonStuffedIcon
+GAMEOBJECT 24472: NonStuffedIcon
+GAMEOBJECT 24479: NonStuffedIcon
+GAMEOBJECT 24490: NonStuffedIcon
+GAMEOBJECT 24519: NonStuffedIcon
+GAMEOBJECT 24537: NonStuffedIcon
+GAMEOBJECT 24558: NonStuffedIcon
+GAMEOBJECT 24614: NonStuffedIcon
+GAMEOBJECT 24620: NonStuffedIcon
+GAMEOBJECT 24658: NonStuffedIcon
+GAMEOBJECT 24703: NonStuffedIcon
+GAMEOBJECT 24707: NonStuffedIcon
+GAMEOBJECT 24721: NonStuffedIcon
+GAMEOBJECT 24744: NonStuffedIcon
+GAMEOBJECT 24779: NonStuffedIcon
+GAMEOBJECT 24786: NonStuffedIcon
+GAMEOBJECT 24863: NonStuffedIcon
+GAMEOBJECT 24912: NonStuffedIcon
+GAMEOBJECT 25047: NonStuffedIcon
+GAMEOBJECT 25048: NonStuffedIcon
+GAMEOBJECT 25059: NonStuffedIcon
+GAMEOBJECT 25080: NonStuffedIcon
+GAMEOBJECT 25084: NonStuffedIcon
+GAMEOBJECT 25095: NonStuffedIcon
+GAMEOBJECT 25147: NonStuffedIcon
+GAMEOBJECT 25199: NonStuffedIcon
+GAMEOBJECT 25204: NonStuffedIcon
+GAMEOBJECT 25231: NonStuffedIcon
+GAMEOBJECT 25232: NonStuffedIcon
+GAMEOBJECT 25233: NonStuffedIcon
+GAMEOBJECT 25242: NonStuffedIcon
+GAMEOBJECT 25245: NonStuffedIcon
+GAMEOBJECT 25318: NonStuffedIcon
+GAMEOBJECT 25466: NonStuffedIcon
+GAMEOBJECT 25508: NonStuffedIcon
+GAMEOBJECT 25532: NonStuffedIcon
+GAMEOBJECT 25535: NonStuffedIcon
+GAMEOBJECT 25580: NonStuffedIcon
+GAMEOBJECT 25592: NonStuffedIcon
+GAMEOBJECT 25601: NonStuffedIcon
+GAMEOBJECT 25622: NonStuffedIcon
+GAMEOBJECT 25665: NonStuffedIcon
+GAMEOBJECT 25688: NonStuffedIcon
+GAMEOBJECT 25709: NonStuffedIcon
+GAMEOBJECT 25722: NonStuffedIcon
+GAMEOBJECT 25741: NonStuffedIcon
+GAMEOBJECT 25882: NonStuffedIcon
+GAMEOBJECT 25918: NonStuffedIcon
+GAMEOBJECT 25930: NonStuffedIcon
+GAMEOBJECT 25931: NonStuffedIcon
+GAMEOBJECT 25957: NonStuffedIcon
+GAMEOBJECT 25958: NonStuffedIcon
+GAMEOBJECT 25959: NonStuffedIcon
+GAMEOBJECT 25997: NonStuffedIcon
+GAMEOBJECT 26001: NonStuffedIcon
+GAMEOBJECT 26012: NonStuffedIcon
+GAMEOBJECT 26046: NonStuffedIcon
+GAMEOBJECT 26082: NonStuffedIcon
+GAMEOBJECT 26096: NonStuffedIcon
+GAMEOBJECT 26097: NonStuffedIcon
+GAMEOBJECT 26187: NonStuffedIcon
+GAMEOBJECT 26191: NonStuffedIcon
+GAMEOBJECT 26193: NonStuffedIcon
+GAMEOBJECT 26276: NonStuffedIcon
+GAMEOBJECT 26335: NonStuffedIcon
+GAMEOBJECT 26351: NonStuffedIcon
+GAMEOBJECT 26352: NonStuffedIcon
+GAMEOBJECT 26353: NonStuffedIcon
+GAMEOBJECT 26364: NonStuffedIcon
+GAMEOBJECT 26404: NonStuffedIcon
+GAMEOBJECT 26420: NonStuffedIcon
+GAMEOBJECT 26477: NonStuffedIcon
+GAMEOBJECT 26478: NonStuffedIcon
+GAMEOBJECT 26529: NonStuffedIcon
+GAMEOBJECT 26538: NonStuffedIcon
+GAMEOBJECT 26568: NonStuffedIcon
+GAMEOBJECT 26623: NonStuffedIcon
+GAMEOBJECT 26659: NonStuffedIcon
+GAMEOBJECT 26660: NonStuffedIcon
+GAMEOBJECT 26661: NonStuffedIcon
+GAMEOBJECT 26672: NonStuffedIcon
+GAMEOBJECT 26678: NonStuffedIcon
+GAMEOBJECT 26683: NonStuffedIcon
+GAMEOBJECT 26706: NonStuffedIcon
+GAMEOBJECT 26765: NonStuffedIcon
+GAMEOBJECT 26766: MapObjectGuide_1x1_stuffed
+GAMEOBJECT 26776: NonStuffedIcon
+GAMEOBJECT 26850: NonStuffedIcon
+GAMEOBJECT 26871: NonStuffedIcon
+GAMEOBJECT 27003: NonStuffedIcon
+GAMEOBJECT 27220: NonStuffedIcon
+GAMEOBJECT 27221: NonStuffedIcon
+GAMEOBJECT 27222: NonStuffedIcon
+GAMEOBJECT 27223: NonStuffedIcon
+GAMEOBJECT 27225: NonStuffedIcon
+GAMEOBJECT 27287: stuffedItemInputZone
+GAMEOBJECT 27392: NonStuffedIcon
+GAMEOBJECT 27395: NonStuffedIcon
+GAMEOBJECT 27410: NonStuffedIcon
+GAMEOBJECT 27418: NonStuffedIcon
+GAMEOBJECT 27463: NonStuffedIcon
+GAMEOBJECT 27512: NonStuffedIcon
+GAMEOBJECT 27543: NonStuffedIcon
+GAMEOBJECT 27559: NonStuffedIcon
+GAMEOBJECT 27561: NonStuffedIcon
+GAMEOBJECT 27565: NonStuffedIcon
+GAMEOBJECT 27566: NonStuffedIcon
+GAMEOBJECT 27567: NonStuffedIcon
+GAMEOBJECT 27568: NonStuffedIcon
+GAMEOBJECT 27569: NonStuffedIcon
+GAMEOBJECT 27570: NonStuffedIcon
+GAMEOBJECT 27571: NonStuffedIcon
+GAMEOBJECT 27572: NonStuffedIcon
+GAMEOBJECT 27573: NonStuffedIcon
+GAMEOBJECT 27574: NonStuffedIcon
+GAMEOBJECT 27575: NonStuffedIcon
+GAMEOBJECT 27576: NonStuffedIcon
+GAMEOBJECT 27577: NonStuffedIcon
+GAMEOBJECT 27578: NonStuffedIcon
+GAMEOBJECT 27579: NonStuffedIcon
+GAMEOBJECT 27580: NonStuffedIcon
+GAMEOBJECT 27581: NonStuffedIcon
+GAMEOBJECT 27582: NonStuffedIcon
+GAMEOBJECT 27583: NonStuffedIcon
+GAMEOBJECT 27584: NonStuffedIcon
+GAMEOBJECT 27585: NonStuffedIcon
+GAMEOBJECT 27586: NonStuffedIcon
+GAMEOBJECT 27590: NonStuffedIcon
+GAMEOBJECT 27618: NonStuffedIcon
+GAMEOBJECT 27636: NonStuffedIcon
+GAMEOBJECT 27655: NonStuffedIcon
+GAMEOBJECT 27713: NonStuffedIcon
+GAMEOBJECT 27714: NonStuffedIcon
+GAMEOBJECT 27730: NonStuffedIcon
+GAMEOBJECT 27774: NonStuffedIcon
+GAMEOBJECT 27834: NonStuffedIcon
+GAMEOBJECT 27859: NonStuffedIcon
+GAMEOBJECT 27876: NonStuffedIcon
+GAMEOBJECT 27905: NonStuffedIcon
+GAMEOBJECT 27909: NonStuffedIcon
+GAMEOBJECT 27936: NonStuffedIcon
+GAMEOBJECT 27965: NonStuffedIcon
+GAMEOBJECT 27970: NonStuffedIcon
+GAMEOBJECT 27994: NonStuffedIcon
+GAMEOBJECT 28018: NonStuffedIcon
+GAMEOBJECT 28036: NonStuffedIcon
+GAMEOBJECT 28038: NonStuffedIcon
+GAMEOBJECT 28042: NonStuffedIcon
+GAMEOBJECT 28057: NonStuffedIcon
+GAMEOBJECT 28124: NonStuffedIcon
+GAMEOBJECT 28158: NonStuffedIcon
+GAMEOBJECT 28179: NonStuffedIcon
+GAMEOBJECT 28213: NonStuffedIcon
+GAMEOBJECT 28214: NonStuffedIcon
+GAMEOBJECT 28239: NonStuffedIcon
+GAMEOBJECT 28242: NonStuffedIcon
+GAMEOBJECT 28256: NonStuffedIcon
+GAMEOBJECT 28274: NonStuffedIcon
+GAMEOBJECT 28276: MapObjectGuide_2x4_stuffed
+GAMEOBJECT 28290: NonStuffedIcon
+GAMEOBJECT 28339: NonStuffedIcon
+GAMEOBJECT 28394: NonStuffedIcon
+GAMEOBJECT 28404: NonStuffedIcon
+GAMEOBJECT 28463: NonStuffedIcon
+GAMEOBJECT 28488: NonStuffedIcon
+GAMEOBJECT 28497: NonStuffedIcon
+GAMEOBJECT 28518: NonStuffedIcon
+GAMEOBJECT 28594: NonStuffedIcon
+GAMEOBJECT 28660: NonStuffedIcon
+GAMEOBJECT 28671: NonStuffedIcon
+GAMEOBJECT 28672: NonStuffedIcon
+GAMEOBJECT 28673: NonStuffedIcon
+GAMEOBJECT 28687: NonStuffedIcon
+GAMEOBJECT 28693: NonStuffedIcon
+GAMEOBJECT 28727: NonStuffedIcon
+GAMEOBJECT 28772: NonStuffedIcon
+GAMEOBJECT 28773: NonStuffedIcon
+GAMEOBJECT 28829: NonStuffedIcon
+GAMEOBJECT 28830: NonStuffedIcon
+GAMEOBJECT 28851: NonStuffedIcon
+GAMEOBJECT 28855: NonStuffedIcon
+GAMEOBJECT 28860: NonStuffedIcon
+GAMEOBJECT 28891: NonStuffedIcon
+GAMEOBJECT 28906: NonStuffedIcon
+GAMEOBJECT 28931: NonStuffedIcon
+GAMEOBJECT 28959: NonStuffedIcon
+GAMEOBJECT 28966: NonStuffedIcon
+GAMEOBJECT 29019: NonStuffedIcon
+GAMEOBJECT 29065: NonStuffedIcon
+GAMEOBJECT 29068: NonStuffedIcon
+GAMEOBJECT 29160: NonStuffedIcon
+GAMEOBJECT 29266: MapObjectGuide_4x4_stuffed (1)
+GAMEOBJECT 29270: NonStuffedIcon
+GAMEOBJECT 29271: NonStuffedIcon
+GAMEOBJECT 29282: NonStuffedIcon
+GAMEOBJECT 29284: NonStuffedIcon
+GAMEOBJECT 29348: NonStuffedIcon
+GAMEOBJECT 29361: NonStuffedIcon
+GAMEOBJECT 29392: NonStuffedIcon
+GAMEOBJECT 29406: NonStuffedIcon
+GAMEOBJECT 29408: NonStuffedIcon
+GAMEOBJECT 29412: NonStuffedIcon
+GAMEOBJECT 29498: NonStuffedIcon
+GAMEOBJECT 29540: NonStuffedIcon
+GAMEOBJECT 29544: NonStuffedIcon
+GAMEOBJECT 29584: NonStuffedIcon
+GAMEOBJECT 29639: NonStuffedIcon
+GAMEOBJECT 29655: NonStuffedIcon
+GAMEOBJECT 29662: NonStuffedIcon
+GAMEOBJECT 29689: NonStuffedIcon
+GAMEOBJECT 29820: NonStuffedIcon
+GAMEOBJECT 29839: NonStuffedIcon
+GAMEOBJECT 29841: NonStuffedIcon
+GAMEOBJECT 29855: NonStuffedIcon
+GAMEOBJECT 29899: NonStuffedIcon
+GAMEOBJECT 29935: NonStuffedIcon
+GAMEOBJECT 29952: NonStuffedIcon
+GAMEOBJECT 29955: NonStuffedIcon
+GAMEOBJECT 30041: NonStuffedIcon
+GAMEOBJECT 30093: NonStuffedIcon
+GAMEOBJECT 30110: NonStuffedIcon
+GAMEOBJECT 30173: NonStuffedIcon
+GAMEOBJECT 30206: NonStuffedIcon
+GAMEOBJECT 30226: NonStuffedIcon
+GAMEOBJECT 30227: NonStuffedIcon
+GAMEOBJECT 30231: NonStuffedIcon
+GAMEOBJECT 30259: NonStuffedIcon
+GAMEOBJECT 30370: NonStuffedIcon
+GAMEOBJECT 30381: NonStuffedIcon
+GAMEOBJECT 30407: NonStuffedIcon
+GAMEOBJECT 30410: NonStuffedIcon
+GAMEOBJECT 30456: NonStuffedIcon
+GAMEOBJECT 30502: NonStuffedIcon
+GAMEOBJECT 30586: NonStuffedIcon
+GAMEOBJECT 30596: NonStuffedIcon
+GAMEOBJECT 30706: NonStuffedIcon
+GAMEOBJECT 30711: NonStuffedIcon
+GAMEOBJECT 30712: NonStuffedIcon
+GAMEOBJECT 30713: NonStuffedIcon
+GAMEOBJECT 30714: NonStuffedIcon
+GAMEOBJECT 30715: NonStuffedIcon
+GAMEOBJECT 30737: NonStuffedIcon
+GAMEOBJECT 30740: NonStuffedIcon
+GAMEOBJECT 30799: NonStuffedIcon
+GAMEOBJECT 30852: NonStuffedIcon
+GAMEOBJECT 30877: NonStuffedIcon
+GAMEOBJECT 30893: NonStuffedIcon
+GAMEOBJECT 30904: NonStuffedIcon
+GAMEOBJECT 30906: NonStuffedIcon
+GAMEOBJECT 30907: NonStuffedIcon
+GAMEOBJECT 30916: NonStuffedIcon
+GAMEOBJECT 30924: NonStuffedIcon
+GAMEOBJECT 30984: NonStuffedIcon
+GAMEOBJECT 31008: NonStuffedIcon
+GAMEOBJECT 31009: NonStuffedIcon
+GAMEOBJECT 31010: NonStuffedIcon
+GAMEOBJECT 31011: NonStuffedIcon
+GAMEOBJECT 31014: NonStuffedIcon
+GAMEOBJECT 31050: NonStuffedIcon
+GAMEOBJECT 31088: NonStuffedIcon
+GAMEOBJECT 31089: NonStuffedIcon
+GAMEOBJECT 31102: NonStuffedIcon
+GAMEOBJECT 31121: NonStuffedIcon
+GAMEOBJECT 31154: NonStuffedIcon
+GAMEOBJECT 31164: NonStuffedIcon
+GAMEOBJECT 31222: NonStuffedIcon
+GAMEOBJECT 31224: NonStuffedIcon
+GAMEOBJECT 31234: NonStuffedIcon
+GAMEOBJECT 31279: NonStuffedIcon
+GAMEOBJECT 31292: NonStuffedIcon
+GAMEOBJECT 31311: NonStuffedIcon
+GAMEOBJECT 31327: NonStuffedIcon
+GAMEOBJECT 31348: NonStuffedIcon
+GAMEOBJECT 31350: NonStuffedIcon
+GAMEOBJECT 31355: NonStuffedIcon
+GAMEOBJECT 31369: NonStuffedIcon
+GAMEOBJECT 31372: NonStuffedIcon
+GAMEOBJECT 31398: NonStuffedIcon
+GAMEOBJECT 31399: NonStuffedIcon
+GAMEOBJECT 31478: NonStuffedIcon
+GAMEOBJECT 31512: NonStuffedIcon
+GAMEOBJECT 31648: NonStuffedIcon
+GAMEOBJECT 31676: NonStuffedIcon
+GAMEOBJECT 31768: NonStuffedIcon
+GAMEOBJECT 31803: NonStuffedIcon
+GAMEOBJECT 31818: NonStuffedIcon
+GAMEOBJECT 31822: NonStuffedIcon
+GAMEOBJECT 31848: NonStuffedIcon
+GAMEOBJECT 31865: NonStuffedIcon
+GAMEOBJECT 31868: NonStuffedIcon
+GAMEOBJECT 31869: NonStuffedIcon
+GAMEOBJECT 31870: NonStuffedIcon
+GAMEOBJECT 31898: NonStuffedIcon
+GAMEOBJECT 32025: NonStuffedIcon
+GAMEOBJECT 32066: NonStuffedIcon
+GAMEOBJECT 32153: NonStuffedIcon
+GAMEOBJECT 32165: NonStuffedIcon
+GAMEOBJECT 32188: NonStuffedIcon
+GAMEOBJECT 32191: NonStuffedIcon
+GAMEOBJECT 32214: NonStuffedIcon
+GAMEOBJECT 32222: NonStuffedIcon
+GAMEOBJECT 32249: NonStuffedIcon
+GAMEOBJECT 32279: NonStuffedIcon
+GAMEOBJECT 32283: NonStuffedIcon
+GAMEOBJECT 32433: NonStuffedIcon
+GAMEOBJECT 32451: NonStuffedIcon
+GAMEOBJECT 32601: NonStuffedIcon
+GAMEOBJECT 32613: NonStuffedIcon
+GAMEOBJECT 32731: NonStuffedIcon
+GAMEOBJECT 32747: NonStuffedIcon
+GAMEOBJECT 32766: NonStuffedIcon
+GAMEOBJECT 32784: NonStuffedIcon
+GAMEOBJECT 32825: NonStuffedIcon
+GAMEOBJECT 32860: NonStuffedIcon
+GAMEOBJECT 32865: NonStuffedIcon
+GAMEOBJECT 32880: NonStuffedIcon
+GAMEOBJECT 32887: NonStuffedIcon
+GAMEOBJECT 32920: NonStuffedIcon
+GAMEOBJECT 32955: NonStuffedIcon
+GAMEOBJECT 32956: NonStuffedIcon
+GAMEOBJECT 32957: NonStuffedIcon
+GAMEOBJECT 32958: NonStuffedIcon
+GAMEOBJECT 32977: NonStuffedIcon
+GAMEOBJECT 33036: NonStuffedIcon
+GAMEOBJECT 33060: NonStuffedIcon
+GAMEOBJECT 33061: NonStuffedIcon
+GAMEOBJECT 33065: NonStuffedIcon
+GAMEOBJECT 33073: NonStuffedIcon
+GAMEOBJECT 33105: NonStuffedIcon
+GAMEOBJECT 33187: NonStuffedIcon
+GAMEOBJECT 33194: NonStuffedIcon
+GAMEOBJECT 33200: NonStuffedIcon
+GAMEOBJECT 33208: NonStuffedIcon
+GAMEOBJECT 33209: NonStuffedIcon
+GAMEOBJECT 33214: NonStuffedIcon
+GAMEOBJECT 33228: NonStuffedIcon
+GAMEOBJECT 33305: NonStuffedIcon
+GAMEOBJECT 33392: NonStuffedIcon
+GAMEOBJECT 33409: NonStuffedIcon
+GAMEOBJECT 33445: NonStuffedIcon
+GAMEOBJECT 33464: NonStuffedIcon
+GAMEOBJECT 33486: NonStuffedIcon
+GAMEOBJECT 33508: NonStuffedIcon
+GAMEOBJECT 33510: NonStuffedIcon
+GAMEOBJECT 33554: NonStuffedIcon
+GAMEOBJECT 33575: NonStuffedIcon
+GAMEOBJECT 33591: Item_StuffedFlashlight
+GAMEOBJECT 33663: NonStuffedIcon
+GAMEOBJECT 33711: NonStuffedIcon
+GAMEOBJECT 33758: NonStuffedIcon
+GAMEOBJECT 33793: NonStuffedIcon
+GAMEOBJECT 33806: NonStuffedIcon
+GAMEOBJECT 33807: NonStuffedIcon
+GAMEOBJECT 33808: NonStuffedIcon
+GAMEOBJECT 33809: NonStuffedIcon
+GAMEOBJECT 33810: NonStuffedIcon
+GAMEOBJECT 34036: NonStuffedIcon
+GAMEOBJECT 34037: NonStuffedIcon
+GAMEOBJECT 34038: NonStuffedIcon
+GAMEOBJECT 34039: NonStuffedIcon
+GAMEOBJECT 34040: NonStuffedIcon
+GAMEOBJECT 34041: NonStuffedIcon
+GAMEOBJECT 34058: NonStuffedIcon
+GAMEOBJECT 34060: NonStuffedIcon
+GAMEOBJECT 34067: NonStuffedIcon
+GAMEOBJECT 34084: NonStuffedIcon
+GAMEOBJECT 34097: NonStuffedIcon
+GAMEOBJECT 34170: NonStuffedIcon
+GAMEOBJECT 34190: NonStuffedIcon
+GAMEOBJECT 34192: NonStuffedIcon
+GAMEOBJECT 34198: NonStuffedIcon
+GAMEOBJECT 34211: NonStuffedIcon
+GAMEOBJECT 34222: NonStuffedIcon
+GAMEOBJECT 34241: NonStuffedIcon
+GAMEOBJECT 34335: NonStuffedIcon
+GAMEOBJECT 34338: NonStuffedIcon
+GAMEOBJECT 34346: NonStuffedIcon
+GAMEOBJECT 34455: NonStuffedIcon
+GAMEOBJECT 34494: NonStuffedIcon
+GAMEOBJECT 34540: NonStuffedIcon
+GAMEOBJECT 34541: NonStuffedIcon
+GAMEOBJECT 34564: NonStuffedIcon
+GAMEOBJECT 34660: NonStuffedIcon
+GAMEOBJECT 34681: NonStuffedIcon
+GAMEOBJECT 34708: NonStuffedIcon
+GAMEOBJECT 34737: NonStuffedIcon
+GAMEOBJECT 34778: NonStuffedIcon
+GAMEOBJECT 34780: NonStuffedIcon
+GAMEOBJECT 34797: NonStuffedIcon
+GAMEOBJECT 34799: NonStuffedIcon
+GAMEOBJECT 34824: NonStuffedIcon
+GAMEOBJECT 34840: NonStuffedIcon
+GAMEOBJECT 34984: NonStuffedIcon
+GAMEOBJECT 35030: NonStuffedIcon
+GAMEOBJECT 35032: NonStuffedIcon
+GAMEOBJECT 35094: NonStuffedIcon
+GAMEOBJECT 35160: NonStuffedIcon
+GAMEOBJECT 35184: MapObjectGuide_4x4_stuffed
+GAMEOBJECT 35232: NonStuffedIcon
+GAMEOBJECT 35346: NonStuffedIcon
+GAMEOBJECT 35361: NonStuffedIcon
+GAMEOBJECT 35371: NonStuffedIcon
+GAMEOBJECT 35372: NonStuffedIcon
+GAMEOBJECT 35373: NonStuffedIcon
+GAMEOBJECT 35374: NonStuffedIcon
+GAMEOBJECT 35375: NonStuffedIcon
+GAMEOBJECT 35376: NonStuffedIcon
+GAMEOBJECT 35521: NonStuffedIcon
+GAMEOBJECT 35534: NonStuffedIcon
+GAMEOBJECT 35554: NonStuffedIcon
+GAMEOBJECT 35729: NonStuffedIcon
+GAMEOBJECT 35730: NonStuffedIcon
+GAMEOBJECT 35742: NonStuffedIcon
+GAMEOBJECT 35775: NonStuffedIcon
+GAMEOBJECT 35777: NonStuffedIcon
+GAMEOBJECT 35934: NonStuffedIcon
+GAMEOBJECT 35953: MapObjectGuide_2x4_stuffed (2)
+GAMEOBJECT 36008: NonStuffedIcon
+GAMEOBJECT 36033: NonStuffedIcon
+GAMEOBJECT 36045: NonStuffedIcon
+GAMEOBJECT 36061: NonStuffedIcon
+GAMEOBJECT 36078: MapObjectGuide_1x2_stuffed
+GAMEOBJECT 36124: NonStuffedIcon
+GAMEOBJECT 36168: NonStuffedIcon
+GAMEOBJECT 36252: NonStuffedIcon
+GAMEOBJECT 36253: NonStuffedIcon
+GAMEOBJECT 36309: NonStuffedIcon
+GAMEOBJECT 36348: NonStuffedIcon
+GAMEOBJECT 36407: NonStuffedIcon
+GAMEOBJECT 36413: NonStuffedIcon
+GAMEOBJECT 36524: MapObjectGuide_4x4_stuffed
+GAMEOBJECT 36545: NonStuffedIcon
+GAMEOBJECT 36631: NonStuffedIcon
+GAMEOBJECT 36648: NonStuffedIcon
+GAMEOBJECT 36656: NonStuffedIcon
+GAMEOBJECT 36657: NonStuffedIcon
+GAMEOBJECT 36658: NonStuffedIcon
+GAMEOBJECT 36659: NonStuffedIcon
+GAMEOBJECT 36660: NonStuffedIcon
+GAMEOBJECT 36661: NonStuffedIcon
+GAMEOBJECT 36718: NonStuffedIcon
+GAMEOBJECT 36733: NonStuffedIcon
+GAMEOBJECT 36751: NonStuffedIcon
+GAMEOBJECT 36752: NonStuffedIcon
+GAMEOBJECT 36761: NonStuffedIcon
+GAMEOBJECT 36773: NonStuffedIcon
+GAMEOBJECT 36806: NonStuffedIcon
+GAMEOBJECT 36807: NonStuffedIcon
+GAMEOBJECT 36874: NonStuffedIcon
+GAMEOBJECT 36932: NonStuffedIcon
+GAMEOBJECT 36951: NonStuffedIcon
+GAMEOBJECT 36968: NonStuffedIcon
+GAMEOBJECT 36972: NonStuffedIcon
+GAMEOBJECT 37023: NonStuffedIcon
+GAMEOBJECT 37100: NonStuffedIcon
+GAMEOBJECT 37268: CreatePillowsEffect
+GAMEOBJECT 37270: NonStuffedIcon
+GAMEOBJECT 37311: NonStuffedIcon
+GAMEOBJECT 37341: NonStuffedIcon
+GAMEOBJECT 37361: NonStuffedIcon
+GAMEOBJECT 37364: NonStuffedIcon
+GAMEOBJECT 37369: NonStuffedIcon
+GAMEOBJECT 37372: NonStuffedIcon
+GAMEOBJECT 37397: NonStuffedIcon
+GAMEOBJECT 37413: NonStuffedIcon
+GAMEOBJECT 37423: NonStuffedIcon
+GAMEOBJECT 37482: NonStuffedIcon
+GAMEOBJECT 37661: NonStuffedIcon
+GAMEOBJECT 37705: NonStuffedIcon
+GAMEOBJECT 37757: NonStuffedIcon
+GAMEOBJECT 37758: NonStuffedIcon
+GAMEOBJECT 37798: NonStuffedIcon
+GAMEOBJECT 37814: NonStuffedIcon
+GAMEOBJECT 37827: NonStuffedIcon
+GAMEOBJECT 37865: NonStuffedIcon
+GAMEOBJECT 37885: NonStuffedIcon
+GAMEOBJECT 37891: NonStuffedIcon
+GAMEOBJECT 37894: NonStuffedIcon
+GAMEOBJECT 37979: NonStuffedIcon
+GAMEOBJECT 38019: NonStuffedIcon
+GAMEOBJECT 38030: NonStuffedIcon
+GAMEOBJECT 38032: NonStuffedIcon
+GAMEOBJECT 38048: NonStuffedIcon
+GAMEOBJECT 38062: NonStuffedIcon
+GAMEOBJECT 38135: NonStuffedIcon
+GAMEOBJECT 38163: NonStuffedIcon
+GAMEOBJECT 38167: NonStuffedIcon
+GAMEOBJECT 38204: NonStuffedIcon
+GAMEOBJECT 38242: NonStuffedIcon
+GAMEOBJECT 38290: NonStuffedIcon
+GAMEOBJECT 38301: NonStuffedIcon
+GAMEOBJECT 38302: NonStuffedIcon
+GAMEOBJECT 38315: NonStuffedIcon
+GAMEOBJECT 38330: NonStuffedIcon
+GAMEOBJECT 38367: NonStuffedIcon
+GAMEOBJECT 38374: NonStuffedIcon
+GAMEOBJECT 38383: NonStuffedIcon
+GAMEOBJECT 38388: NonStuffedIcon
+GAMEOBJECT 38473: NonStuffedIcon
+GAMEOBJECT 38475: NonStuffedIcon
+GAMEOBJECT 38505: NonStuffedIcon
+GAMEOBJECT 38506: NonStuffedIcon
+GAMEOBJECT 38508: NonStuffedIcon
+GAMEOBJECT 38514: NonStuffedIcon
+GAMEOBJECT 38542: NonStuffedIcon
+GAMEOBJECT 38544: NonStuffedIcon
+GAMEOBJECT 38661: NonStuffedIcon
+GAMEOBJECT 38672: NonStuffedIcon
+GAMEOBJECT 38727: NonStuffedIcon
+GAMEOBJECT 38728: NonStuffedIcon
+GAMEOBJECT 38733: NonStuffedIcon
+GAMEOBJECT 38744: NonStuffedIcon
+GAMEOBJECT 38745: NonStuffedIcon
+GAMEOBJECT 38853: NonStuffedIcon
+GAMEOBJECT 38957: NonStuffedIcon
+GAMEOBJECT 39055: NonStuffedIcon
+GAMEOBJECT 39057: NonStuffedIcon
+GAMEOBJECT 39067: NonStuffedIcon
+GAMEOBJECT 39097: NonStuffedIcon
+GAMEOBJECT 39098: NonStuffedIcon
+GAMEOBJECT 39099: NonStuffedIcon
+GAMEOBJECT 39100: NonStuffedIcon
+GAMEOBJECT 39101: NonStuffedIcon
+GAMEOBJECT 39123: NonStuffedIcon
+GAMEOBJECT 39131: NonStuffedIcon
+GAMEOBJECT 39132: NonStuffedIcon
+GAMEOBJECT 39133: NonStuffedIcon
+GAMEOBJECT 39185: NonStuffedIcon
+GAMEOBJECT 39190: NonStuffedIcon
+GAMEOBJECT 39191: NonStuffedIcon
+GAMEOBJECT 39209: NonStuffedIcon
+GAMEOBJECT 39214: NonStuffedIcon
+GAMEOBJECT 39225: NonStuffedIcon
+GAMEOBJECT 39227: NonStuffedIcon
+GAMEOBJECT 39322: NonStuffedIcon
+GAMEOBJECT 39392: NonStuffedIcon
+GAMEOBJECT 39410: NonStuffedIcon
+GAMEOBJECT 39434: NonStuffedIcon
+GAMEOBJECT 39447: NonStuffedIcon
+GAMEOBJECT 39499: NonStuffedIcon
+GAMEOBJECT 39515: NonStuffedIcon
+GAMEOBJECT 39552: NonStuffedIcon
+GAMEOBJECT 39560: NonStuffedIcon
+GAMEOBJECT 39610: MapObjectGuide_1x4_stuffed (4)
+GAMEOBJECT 39624: NonStuffedIcon
+GAMEOBJECT 39645: NonStuffedIcon
+GAMEOBJECT 39646: NonStuffedIcon
+GAMEOBJECT 39776: NonStuffedIcon
+GAMEOBJECT 39825: NonStuffedIcon
+GAMEOBJECT 39832: NonStuffedIcon
+GAMEOBJECT 39847: NonStuffedIcon
+GAMEOBJECT 39895: NonStuffedIcon
+GAMEOBJECT 39896: NonStuffedIcon
+GAMEOBJECT 39897: NonStuffedIcon
+GAMEOBJECT 39900: NonStuffedIcon
+GAMEOBJECT 39901: NonStuffedIcon
+GAMEOBJECT 39902: NonStuffedIcon
+GAMEOBJECT 39942: NonStuffedIcon
+GAMEOBJECT 39947: NonStuffedIcon
+GAMEOBJECT 39954: NonStuffedIcon
+GAMEOBJECT 40012: NonStuffedIcon
+GAMEOBJECT 40052: NonStuffedIcon
+GAMEOBJECT 40064: NonStuffedIcon
+GAMEOBJECT 40067: NonStuffedIcon
+GAMEOBJECT 40153: NonStuffedIcon
+GAMEOBJECT 40651: NonStuffedIcon
+GAMEOBJECT 40672: NonStuffedIcon
+GAMEOBJECT 40802: NonStuffedIcon
+GAMEOBJECT 40944: NonStuffedIcon
+GAMEOBJECT 41008: NonStuffedIcon
+GAMEOBJECT 41017: NonStuffedIcon
+GAMEOBJECT 41021: NonStuffedIcon
+GAMEOBJECT 41026: NonStuffedIcon
+GAMEOBJECT 41035: NonStuffedIcon
+GAMEOBJECT 41059: NonStuffedIcon
+GAMEOBJECT 41127: NonStuffedIcon
+GAMEOBJECT 41129: NonStuffedIcon
+GAMEOBJECT 41139: NonStuffedIcon
+GAMEOBJECT 41146: NonStuffedIcon
+GAMEOBJECT 41188: NonStuffedIcon
+GAMEOBJECT 41211: NonStuffedIcon
+GAMEOBJECT 41229: NonStuffedIcon
+GAMEOBJECT 41237: NonStuffedIcon
+GAMEOBJECT 41306: NonStuffedIcon
+GAMEOBJECT 41307: NonStuffedIcon
+GAMEOBJECT 41316: NonStuffedIcon
+GAMEOBJECT 41319: NonStuffedIcon
+GAMEOBJECT 41333: NonStuffedIcon
+GAMEOBJECT 41338: NonStuffedIcon
+GAMEOBJECT 41343: NonStuffedIcon
+GAMEOBJECT 41359: NonStuffedIcon
+GAMEOBJECT 41360: NonStuffedIcon
+GAMEOBJECT 41361: NonStuffedIcon
+GAMEOBJECT 41372: NonStuffedIcon
+GAMEOBJECT 41396: NonStuffedIcon
+GAMEOBJECT 41527: NonStuffedIcon
+GAMEOBJECT 41680: NonStuffedIcon
+GAMEOBJECT 41683: NonStuffedIcon
+GAMEOBJECT 41692: NonStuffedIcon
+GAMEOBJECT 41719: NonStuffedIcon
+GAMEOBJECT 41720: NonStuffedIcon
+GAMEOBJECT 41721: NonStuffedIcon
+GAMEOBJECT 41722: NonStuffedIcon
+GAMEOBJECT 41723: NonStuffedIcon
+GAMEOBJECT 41724: NonStuffedIcon
+GAMEOBJECT 41729: NonStuffedIcon
+GAMEOBJECT 41745: NonStuffedIcon
+GAMEOBJECT 41757: NonStuffedIcon
+GAMEOBJECT 41783: NonStuffedIcon
+GAMEOBJECT 41790: NonStuffedIcon
+GAMEOBJECT 41796: NonStuffedIcon
+GAMEOBJECT 41828: NonStuffedIcon
+GAMEOBJECT 41874: NonStuffedIcon
+GAMEOBJECT 41877: NonStuffedIcon
+GAMEOBJECT 41887: NonStuffedIcon
+GAMEOBJECT 41948: NonStuffedIcon
+GAMEOBJECT 41965: NonStuffedIcon
+GAMEOBJECT 41990: NonStuffedIcon
+GAMEOBJECT 41993: NonStuffedIcon
+GAMEOBJECT 41995: NonStuffedIcon
+GAMEOBJECT 42006: NonStuffedIcon
+GAMEOBJECT 42140: NonStuffedIcon
+GAMEOBJECT 42151: NonStuffedIcon
+GAMEOBJECT 42152: NonStuffedIcon
+GAMEOBJECT 42170: NonStuffedIcon
+GAMEOBJECT 42175: NonStuffedIcon
+GAMEOBJECT 42243: NonStuffedIcon
+GAMEOBJECT 42254: NonStuffedIcon
+GAMEOBJECT 42326: NonStuffedIcon
+GAMEOBJECT 42331: NonStuffedIcon
+GAMEOBJECT 42333: NonStuffedIcon
+GAMEOBJECT 42354: NonStuffedIcon
+GAMEOBJECT 42381: NonStuffedIcon
+GAMEOBJECT 42519: NonStuffedIcon
+GAMEOBJECT 42639: NonStuffedIcon
+GAMEOBJECT 42654: MapObjectGuide_1x4_stuffed (1)
+GAMEOBJECT 42668: NonStuffedIcon
+GAMEOBJECT 42707: NonStuffedIcon
+GAMEOBJECT 42715: NonStuffedIcon
+GAMEOBJECT 42745: NonStuffedIcon
+GAMEOBJECT 42746: NonStuffedIcon
+GAMEOBJECT 42759: NonStuffedIcon
+GAMEOBJECT 42760: NonStuffedIcon
+GAMEOBJECT 42761: NonStuffedIcon
+GAMEOBJECT 42786: NonStuffedIcon
+GAMEOBJECT 42787: NonStuffedIcon
+GAMEOBJECT 42788: NonStuffedIcon
+GAMEOBJECT 42789: NonStuffedIcon
+GAMEOBJECT 42790: NonStuffedIcon
+GAMEOBJECT 42791: NonStuffedIcon
+GAMEOBJECT 42792: NonStuffedIcon
+GAMEOBJECT 42845: NonStuffedIcon
+GAMEOBJECT 42924: NonStuffedIcon
+GAMEOBJECT 42951: NonStuffedIcon
+GAMEOBJECT 42983: NonStuffedIcon
+GAMEOBJECT 42984: NonStuffedIcon
+GAMEOBJECT 43024: NonStuffedIcon
+GAMEOBJECT 43026: NonStuffedIcon
+GAMEOBJECT 43057: NonStuffedIcon
+GAMEOBJECT 43086: NonStuffedIcon
+GAMEOBJECT 43113: NonStuffedIcon
+GAMEOBJECT 43115: NonStuffedIcon
+GAMEOBJECT 43129: NonStuffedIcon
+GAMEOBJECT 43154: NonStuffedIcon
+GAMEOBJECT 43172: NonStuffedIcon
+GAMEOBJECT 43266: NonStuffedIcon
+GAMEOBJECT 43271: NonStuffedIcon
+GAMEOBJECT 43297: NonStuffedIcon
+GAMEOBJECT 43316: NonStuffedIcon
+GAMEOBJECT 43349: NonStuffedIcon
+GAMEOBJECT 43354: NonStuffedIcon
+GAMEOBJECT 43361: NonStuffedIcon
+GAMEOBJECT 43389: NonStuffedIcon
+GAMEOBJECT 43400: NonStuffedIcon
+GAMEOBJECT 43403: NonStuffedIcon
+GAMEOBJECT 43435: NonStuffedIcon
+GAMEOBJECT 43438: NonStuffedIcon
+GAMEOBJECT 43442: NonStuffedIcon
+GAMEOBJECT 43453: NonStuffedIcon
+GAMEOBJECT 43481: NonStuffedIcon
+GAMEOBJECT 43537: NonStuffedIcon
+GAMEOBJECT 43542: NonStuffedIcon
+GAMEOBJECT 43543: NonStuffedIcon
+GAMEOBJECT 43605: NonStuffedIcon
+GAMEOBJECT 43685: NonStuffedIcon
+GAMEOBJECT 43717: NonStuffedIcon
+GAMEOBJECT 43720: NonStuffedIcon
+GAMEOBJECT 43724: NonStuffedIcon
+GAMEOBJECT 43727: NonStuffedIcon
+GAMEOBJECT 43729: NonStuffedIcon
+GAMEOBJECT 43845: NonStuffedIcon
+GAMEOBJECT 43992: NonStuffedIcon
+GAMEOBJECT 44024: NonStuffedIcon
+GAMEOBJECT 44040: NonStuffedIcon
+GAMEOBJECT 44073: NonStuffedIcon
+GAMEOBJECT 44161: NonStuffedIcon
+GAMEOBJECT 44173: NonStuffedIcon
+GAMEOBJECT 44184: NonStuffedIcon
+GAMEOBJECT 44185: NonStuffedIcon
+GAMEOBJECT 44186: NonStuffedIcon
+GAMEOBJECT 44187: NonStuffedIcon
+GAMEOBJECT 44221: NonStuffedIcon
+GAMEOBJECT 44223: NonStuffedIcon
+GAMEOBJECT 44252: NonStuffedIcon
+GAMEOBJECT 44280: NonStuffedIcon
+GAMEOBJECT 44281: NonStuffedIcon
+GAMEOBJECT 44287: NonStuffedIcon
+GAMEOBJECT 44334: NonStuffedIcon
+GAMEOBJECT 44335: NonStuffedIcon
+GAMEOBJECT 44336: NonStuffedIcon
+GAMEOBJECT 44340: NonStuffedIcon
+GAMEOBJECT 44440: NonStuffedIcon
+GAMEOBJECT 44577: NonStuffedIcon
+GAMEOBJECT 44625: NonStuffedIcon
+GAMEOBJECT 44626: NonStuffedIcon
+GAMEOBJECT 44640: NonStuffedIcon
+GAMEOBJECT 44656: MapObjectGuide_1x2_stuffed (1)
+GAMEOBJECT 44668: NonStuffedIcon
+GAMEOBJECT 44689: NonStuffedIcon
+GAMEOBJECT 44690: NonStuffedIcon
+GAMEOBJECT 44691: NonStuffedIcon
+GAMEOBJECT 44752: NonStuffedIcon
+GAMEOBJECT 44849: NonStuffedIcon
+GAMEOBJECT 44855: NonStuffedIcon
+GAMEOBJECT 44858: NonStuffedIcon
+GAMEOBJECT 44870: NonStuffedIcon
+GAMEOBJECT 44871: NonStuffedIcon
+GAMEOBJECT 44884: NonStuffedIcon
+GAMEOBJECT 44892: NonStuffedIcon
+GAMEOBJECT 44897: NonStuffedIcon
+GAMEOBJECT 44913: NonStuffedIcon
+GAMEOBJECT 44917: NonStuffedIcon
+GAMEOBJECT 44918: NonStuffedIcon
+GAMEOBJECT 44921: NonStuffedIcon
+GAMEOBJECT 44990: NonStuffedIcon
+GAMEOBJECT 45006: MapObjectGuide_4x4_stuffed (1)
+GAMEOBJECT 45064: NonStuffedIcon
+GAMEOBJECT 45070: NonStuffedIcon
+GAMEOBJECT 45079: NonStuffedIcon
+GAMEOBJECT 45086: NonStuffedIcon
+GAMEOBJECT 45176: NonStuffedIcon
+GAMEOBJECT 45195: NonStuffedIcon
+GAMEOBJECT 45203: NonStuffedIcon
+GAMEOBJECT 45213: NonStuffedIcon
+GAMEOBJECT 45324: NonStuffedIcon
+GAMEOBJECT 45330: NonStuffedIcon
+GAMEOBJECT 45464: NonStuffedIcon
+GAMEOBJECT 45481: NonStuffedIcon
+GAMEOBJECT 45499: NonStuffedIcon
+GAMEOBJECT 45541: NonStuffedIcon
+GAMEOBJECT 45542: NonStuffedIcon
+GAMEOBJECT 45543: NonStuffedIcon
+GAMEOBJECT 45544: NonStuffedIcon
+GAMEOBJECT 45563: NonStuffedIcon
+GAMEOBJECT 45570: NonStuffedIcon
+GAMEOBJECT 45620: NonStuffedIcon
+GAMEOBJECT 45693: NonStuffedIcon
+GAMEOBJECT 45694: NonStuffedIcon
+GAMEOBJECT 45885: NonStuffedIcon
+GAMEOBJECT 45886: NonStuffedIcon
+GAMEOBJECT 45905: NonStuffedIcon
+GAMEOBJECT 45920: NonStuffedIcon
+GAMEOBJECT 45962: NonStuffedIcon
+GAMEOBJECT 45966: NonStuffedIcon
+GAMEOBJECT 45982: NonStuffedIcon
+GAMEOBJECT 45988: NonStuffedIcon
+GAMEOBJECT 46083: NonStuffedIcon
+GAMEOBJECT 46166: NonStuffedIcon
+GAMEOBJECT 46203: NonStuffedIcon
+GAMEOBJECT 46210: Item_PillowGrenade
+GAMEOBJECT 46237: NonStuffedIcon
+GAMEOBJECT 46244: NonStuffedIcon
+GAMEOBJECT 46264: NonStuffedIcon
+GAMEOBJECT 46276: NonStuffedIcon
+GAMEOBJECT 46300: NonStuffedIcon
+GAMEOBJECT 46301: NonStuffedIcon
+GAMEOBJECT 46312: NonStuffedIcon
+GAMEOBJECT 46338: NonStuffedIcon
+GAMEOBJECT 46345: NonStuffedIcon
+GAMEOBJECT 46408: NonStuffedIcon
+GAMEOBJECT 46410: NonStuffedIcon
+GAMEOBJECT 46561: NonStuffedIcon
+GAMEOBJECT 46563: NonStuffedIcon
+GAMEOBJECT 46696: NonStuffedIcon
+GAMEOBJECT 46716: NonStuffedIcon
+GAMEOBJECT 46736: NonStuffedIcon
+GAMEOBJECT 46841: NonStuffedIcon
+GAMEOBJECT 46847: NonStuffedIcon
+GAMEOBJECT 46854: NonStuffedIcon
+GAMEOBJECT 46858: NonStuffedIcon
+GAMEOBJECT 46957: NonStuffedIcon
+GAMEOBJECT 46966: NonStuffedIcon
+GAMEOBJECT 47085: NonStuffedIcon
+GAMEOBJECT 47101: NonStuffedIcon
+GAMEOBJECT 47137: NonStuffedIcon
+GAMEOBJECT 47149: NonStuffedIcon
+GAMEOBJECT 47225: NonStuffedIcon
+GAMEOBJECT 47226: NonStuffedIcon
+GAMEOBJECT 47232: NonStuffedIcon
+GAMEOBJECT 47245: NonStuffedIcon
+GAMEOBJECT 47247: NonStuffedIcon
+GAMEOBJECT 47249: NonStuffedIcon
+GAMEOBJECT 47340: NonStuffedIcon
+GAMEOBJECT 47350: NonStuffedIcon
+GAMEOBJECT 47357: NonStuffedIcon
+GAMEOBJECT 47362: NonStuffedIcon
+GAMEOBJECT 47425: NonStuffedIcon
+GAMEOBJECT 47442: NonStuffedIcon
+GAMEOBJECT 47453: NonStuffedIcon
+GAMEOBJECT 47464: NonStuffedIcon
+GAMEOBJECT 47499: NonStuffedIcon
+GAMEOBJECT 47578: NonStuffedIcon
+GAMEOBJECT 47692: NonStuffedIcon
+GAMEOBJECT 47699: NonStuffedIcon
+GAMEOBJECT 48038: NonStuffedIcon
+GAMEOBJECT 48049: NonStuffedIcon
+GAMEOBJECT 48050: NonStuffedIcon
+GAMEOBJECT 48152: NonStuffedIcon
+GAMEOBJECT 48197: NonStuffedIcon
+GAMEOBJECT 48210: NonStuffedIcon
+GAMEOBJECT 48220: NonStuffedIcon
+GAMEOBJECT 48230: NonStuffedIcon
+GAMEOBJECT 48231: NonStuffedIcon
+GAMEOBJECT 48232: NonStuffedIcon
+GAMEOBJECT 48233: NonStuffedIcon
+GAMEOBJECT 48234: NonStuffedIcon
+GAMEOBJECT 48235: NonStuffedIcon
+GAMEOBJECT 48236: NonStuffedIcon
+GAMEOBJECT 48237: NonStuffedIcon
+GAMEOBJECT 48238: NonStuffedIcon
+GAMEOBJECT 48239: NonStuffedIcon
+GAMEOBJECT 48240: NonStuffedIcon
+GAMEOBJECT 48241: NonStuffedIcon
+GAMEOBJECT 48242: NonStuffedIcon
+GAMEOBJECT 48243: NonStuffedIcon
+GAMEOBJECT 48244: NonStuffedIcon
+GAMEOBJECT 48245: NonStuffedIcon
+GAMEOBJECT 48246: NonStuffedIcon
+GAMEOBJECT 48247: NonStuffedIcon
+GAMEOBJECT 48248: NonStuffedIcon
+GAMEOBJECT 48249: NonStuffedIcon
+GAMEOBJECT 48250: NonStuffedIcon
+GAMEOBJECT 48251: NonStuffedIcon
+GAMEOBJECT 48252: NonStuffedIcon
+GAMEOBJECT 48253: NonStuffedIcon
+GAMEOBJECT 48254: NonStuffedIcon
+GAMEOBJECT 48255: NonStuffedIcon
+GAMEOBJECT 48256: NonStuffedIcon
+GAMEOBJECT 48257: NonStuffedIcon
+GAMEOBJECT 48258: NonStuffedIcon
+GAMEOBJECT 48259: NonStuffedIcon
+GAMEOBJECT 48260: NonStuffedIcon
+GAMEOBJECT 48261: NonStuffedIcon
+GAMEOBJECT 48262: NonStuffedIcon
+GAMEOBJECT 48263: NonStuffedIcon
+GAMEOBJECT 48264: NonStuffedIcon
+GAMEOBJECT 48265: NonStuffedIcon
+GAMEOBJECT 48266: NonStuffedIcon
+GAMEOBJECT 48267: NonStuffedIcon
+GAMEOBJECT 48268: NonStuffedIcon
+GAMEOBJECT 48269: NonStuffedIcon
+GAMEOBJECT 48270: NonStuffedIcon
+GAMEOBJECT 48271: NonStuffedIcon
+GAMEOBJECT 48272: NonStuffedIcon
+GAMEOBJECT 48273: NonStuffedIcon
+GAMEOBJECT 48274: NonStuffedIcon
+GAMEOBJECT 48275: NonStuffedIcon
+GAMEOBJECT 48276: NonStuffedIcon
+GAMEOBJECT 48277: NonStuffedIcon
+GAMEOBJECT 48278: NonStuffedIcon
+GAMEOBJECT 48279: NonStuffedIcon
+GAMEOBJECT 48280: NonStuffedIcon
+GAMEOBJECT 48281: NonStuffedIcon
+GAMEOBJECT 48282: NonStuffedIcon
+GAMEOBJECT 48283: NonStuffedIcon
+GAMEOBJECT 48284: NonStuffedIcon
+GAMEOBJECT 48285: NonStuffedIcon
+GAMEOBJECT 48286: NonStuffedIcon
+GAMEOBJECT 48287: NonStuffedIcon
+GAMEOBJECT 48288: NonStuffedIcon
+GAMEOBJECT 48289: NonStuffedIcon
+GAMEOBJECT 48290: NonStuffedIcon
+GAMEOBJECT 48291: NonStuffedIcon
+GAMEOBJECT 48292: NonStuffedIcon
+GAMEOBJECT 48303: NonStuffedIcon
+GAMEOBJECT 48347: NonStuffedIcon
+GAMEOBJECT 48391: NonStuffedIcon
+GAMEOBJECT 48398: NonStuffedIcon
+GAMEOBJECT 48428: NonStuffedIcon
+GAMEOBJECT 48436: MapObjectGuide_1x4_stuffed (2)
+GAMEOBJECT 48437: NonStuffedIcon
+GAMEOBJECT 48448: NonStuffedIcon
+GAMEOBJECT 48456: NonStuffedIcon
+GAMEOBJECT 48457: NonStuffedIcon
+GAMEOBJECT 48498: NonStuffedIcon
+GAMEOBJECT 48518: NonStuffedIcon
+GAMEOBJECT 48547: NonStuffedIcon
+GAMEOBJECT 48561: NonStuffedIcon
+GAMEOBJECT 48618: NonStuffedIcon
+GAMEOBJECT 48661: NonStuffedIcon
+GAMEOBJECT 48687: NonStuffedIcon
+GAMEOBJECT 48712: NonStuffedIcon
+GAMEOBJECT 48732: MapObjectGuide_1x4_stuffed
+GAMEOBJECT 48842: NonStuffedIcon
+GAMEOBJECT 48858: NonStuffedIcon
+GAMEOBJECT 48895: NonStuffedIcon
+GAMEOBJECT 48955: NonStuffedIcon
+GAMEOBJECT 49004: NonStuffedIcon
+GAMEOBJECT 49013: NonStuffedIcon
+GAMEOBJECT 49014: NonStuffedIcon
+GAMEOBJECT 49035: Item_ThrowingPillowBomb
+GAMEOBJECT 49042: NonStuffedIcon
+GAMEOBJECT 49051: NonStuffedIcon
+GAMEOBJECT 49058: NonStuffedIcon
+GAMEOBJECT 49132: NonStuffedIcon
+GAMEOBJECT 49191: NonStuffedIcon
+GAMEOBJECT 49216: NonStuffedIcon
+GAMEOBJECT 49220: NonStuffedIcon
+GAMEOBJECT 49255: NonStuffedIcon
+GAMEOBJECT 49277: NonStuffedIcon
+GAMEOBJECT 49289: NonStuffedIcon
+GAMEOBJECT 49292: NonStuffedIcon
+GAMEOBJECT 49314: NonStuffedIcon
+GAMEOBJECT 49338: NonStuffedIcon
+GAMEOBJECT 49415: NonStuffedIcon
+GAMEOBJECT 49471: NonStuffedIcon
+GAMEOBJECT 49477: NonStuffedIcon
+GAMEOBJECT 49528: NonStuffedIcon
+GAMEOBJECT 49544: NonStuffedIcon
+GAMEOBJECT 49574: NonStuffedIcon
+GAMEOBJECT 49623: NonStuffedIcon
+GAMEOBJECT 49645: NonStuffedIcon
+GAMEOBJECT 4071: stuffedTradingTable
+GAMEOBJECT 4085: NonStuffedIcon
+GAMEOBJECT 4428: NonStuffedIcon
+GAMEOBJECT 4429: 2x2_stuffedNavalMine_LOD1
+GAMEOBJECT 4537: NonStuffedIcon
+GAMEOBJECT 4538: NonStuffedIcon
+GAMEOBJECT 4718: NonStuffedIcon
+GAMEOBJECT 4821: NonStuffedIcon
+GAMEOBJECT 4894: NonStuffedIcon
+GAMEOBJECT 5003: NonStuffedIcon
+GAMEOBJECT 5153: NonStuffedIcon
+GAMEOBJECT 5337: NonStuffedIcon
+GAMEOBJECT 5366: NonStuffedIcon
+GAMEOBJECT 5868: NonStuffedIcon
+GAMEOBJECT 5876: 2x2x2_stuffed
+GAMEOBJECT 5917: NonStuffedIcon
+GAMEOBJECT 6241: NonStuffedIcon
+GAMEOBJECT 6507: 1x4_straight_railStuffed_LOD0
+GAMEOBJECT 6821: NonStuffedIcon
+GAMEOBJECT 6959: NonStuffedIcon
+GAMEOBJECT 6960: NonStuffedIcon
+GAMEOBJECT 6961: NonStuffedIcon
+GAMEOBJECT 7026: 1x1_slope_railStuffed_LOD0
+GAMEOBJECT 7174: NonStuffedIcon
+GAMEOBJECT 7757: NonStuffedIcon
+GAMEOBJECT 7774: NonStuffedIcon
+GAMEOBJECT 7853: NonStuffedIcon
+GAMEOBJECT 8606: NonStuffedIcon
+GAMEOBJECT 8751: 1x1_stuffedTrophie_youtube100k
+GAMEOBJECT 8752: 1x1x2_stuffedTrophie_horror2
+GAMEOBJECT 8753: 1x1_stuffedTrophie_starCreator
+GAMEOBJECT 8754: 1x1x2_stuffedTrophie_horror
+GAMEOBJECT 9081: NonStuffedIcon
+GAMEOBJECT 9175: NonStuffedIcon
+GAMEOBJECT 9380: NonStuffedIcon
+GAMEOBJECT 9579: NonStuffedIcon
+GAMEOBJECT 9626: NonStuffedIcon
+GAMEOBJECT 9639: 1x1x1_stuffedClaymore
+GAMEOBJECT 10072: 1x4_straight_railStuffed
+GAMEOBJECT 10268: NonStuffedIcon
+GAMEOBJECT 10281: NonStuffedIcon
+GAMEOBJECT 10478: NonStuffedIcon
+GAMEOBJECT 10482: NonStuffedIcon
+GAMEOBJECT 10922: NonStuffedIcon
+GAMEOBJECT 11012: NonStuffedIcon
+GAMEOBJECT 11013: NonStuffedIcon
+GAMEOBJECT 11178: NonStuffedIcon
+GAMEOBJECT 11379: 1x2_forbidden_lemon
+GAMEOBJECT 11473: NonStuffedIcon
+GAMEOBJECT 11594: NonStuffedIcon
+GAMEOBJECT 11595: NonStuffedIcon
+GAMEOBJECT 11624: NonStuffedIcon
+GAMEOBJECT 11625: NonStuffedIcon
+GAMEOBJECT 11626: NonStuffedIcon
+GAMEOBJECT 11662: 2x2x4_stuffedRocketShip
+GAMEOBJECT 11663: NonStuffedIcon
+GAMEOBJECT 11725: NonStuffedIcon
+GAMEOBJECT 11729: 2x2_stuffedNavalMine_LOD0
+GAMEOBJECT 12120: NonStuffedIcon
+GAMEOBJECT 12144: NonStuffedIcon
+GAMEOBJECT 12394: NonStuffedIcon
+GAMEOBJECT 12760: NonStuffedIcon
+GAMEOBJECT 12810: NonStuffedIcon
+GAMEOBJECT 12820: NonStuffedIcon
+GAMEOBJECT 12928: NonStuffedIcon
+GAMEOBJECT 13134: NonStuffedIcon
+GAMEOBJECT 13315: NonStuffedIcon
+GAMEOBJECT 13613: NonStuffedIcon
+GAMEOBJECT 13771: NonStuffedIcon
+GAMEOBJECT 13775: NonStuffedIcon
+GAMEOBJECT 13978: NonStuffedIcon
+GAMEOBJECT 14257: 1x1_corner_railStuffed_LOD1
+GAMEOBJECT 14463: 2x2x2_stuffedTrophie_BAM2
+GAMEOBJECT 14836: NonStuffedIcon
+GAMEOBJECT 14837: NonStuffedIcon
+GAMEOBJECT 14838: NonStuffedIcon
+GAMEOBJECT 15310: NonStuffedIcon
+GAMEOBJECT 15515: NonStuffedIcon
+GAMEOBJECT 15673: NonStuffedIcon
+GAMEOBJECT 16142: StuffedItemInputZone
+GAMEOBJECT 16155: NonStuffedIcon
+GAMEOBJECT 16686: NonStuffedIcon
+GAMEOBJECT 16766: NonStuffedIcon
+GAMEOBJECT 16819: NonStuffedIcon
+GAMEOBJECT 16845: NonStuffedIcon
+GAMEOBJECT 16942: NonStuffedIcon
+GAMEOBJECT 16943: NonStuffedIcon
+GAMEOBJECT 17263: 1x1_slope_railStuffed
+GAMEOBJECT 17382: NonStuffedIcon
+GAMEOBJECT 17414: NonStuffedIcon
+GAMEOBJECT 17484: NonStuffedIcon
+GAMEOBJECT 17821: NonStuffedIcon
+GAMEOBJECT 18169: NonStuffedIcon
+GAMEOBJECT 18174: NonStuffedIcon
+GAMEOBJECT 18193: 2x2_forbidden_cheese
+GAMEOBJECT 18201: NonStuffedIcon
+GAMEOBJECT 18422: NonStuffedIcon
+GAMEOBJECT 18523: NonStuffedIcon
+GAMEOBJECT 18701: NonStuffedIcon
+GAMEOBJECT 19054: NonStuffedIcon
+GAMEOBJECT 19067: 1x1_corner_railStuffed_LOD2
+GAMEOBJECT 19233: NonStuffedIcon
+GAMEOBJECT 19438: NonStuffedIcon
+GAMEOBJECT 19454: NonStuffedIcon
+GAMEOBJECT 19561: NonStuffedIcon
+GAMEOBJECT 19731: NonStuffedIcon
+GAMEOBJECT 19746: 1x1_corner_railStuffed
+GAMEOBJECT 20097: NonStuffedIcon
+GAMEOBJECT 20252: NonStuffedIcon
+GAMEOBJECT 20383: NonStuffedIcon
+GAMEOBJECT 20488: NonStuffedIcon
+GAMEOBJECT 20591: NonStuffedIcon
+GAMEOBJECT 20687: NonStuffedIcon
+GAMEOBJECT 20688: NonStuffedIcon
+GAMEOBJECT 20732: NonStuffedIcon
+GAMEOBJECT 20767: NonStuffedIcon
+GAMEOBJECT 20768: NonStuffedIcon
+GAMEOBJECT 20807: NonStuffedIcon
+GAMEOBJECT 20842: NonStuffedIcon
+GAMEOBJECT 20843: NonStuffedIcon
+GAMEOBJECT 20847: NonStuffedIcon
+GAMEOBJECT 20894: NonStuffedIcon
+GAMEOBJECT 21029: stuffedFishCatalog
+GAMEOBJECT 21091: NonStuffedIcon
+GAMEOBJECT 21428: NonStuffedIcon
+GAMEOBJECT 21632: NonStuffedIcon
+GAMEOBJECT 21862: NonStuffedIcon
+GAMEOBJECT 22018: NonStuffedIcon
+GAMEOBJECT 22120: NonStuffedIcon
+GAMEOBJECT 22246: NonStuffedIcon
+GAMEOBJECT 22262: NonStuffedIcon
+GAMEOBJECT 22358: NonStuffedIcon
+GAMEOBJECT 22532: NonStuffedIcon
+GAMEOBJECT 22587: 2x2_stuffed
+GAMEOBJECT 22671: NonStuffedIcon
+GAMEOBJECT 23231: NonStuffedIcon
+GAMEOBJECT 23558: NonStuffedIcon
+GAMEOBJECT 23795: NonStuffedIcon
+GAMEOBJECT 23959: 1x1_woodenPillowBomb
+GAMEOBJECT 24002: NonStuffedIcon
+GAMEOBJECT 24013: NonStuffedIcon
+GAMEOBJECT 24016: NonStuffedIcon
+GAMEOBJECT 24029: NonStuffedIcon
+GAMEOBJECT 24229: NonStuffedIcon
+GAMEOBJECT 24277: NonStuffedIcon
+GAMEOBJECT 24590: NonStuffedIcon
+GAMEOBJECT 24591: NonStuffedIcon
+GAMEOBJECT 25045: 1x1_forbidden_steeringWheel
+GAMEOBJECT 25050: NonStuffedIcon
+GAMEOBJECT 25258: NonStuffedIcon
+GAMEOBJECT 25521: NonStuffedIcon
+GAMEOBJECT 25692: 2x2_stuffedNavalMine
+GAMEOBJECT 25699: 1x1x2_recordPlayerStuffed
+GAMEOBJECT 25764: 1x1_stuffed
+GAMEOBJECT 25919: NonStuffedIcon
+GAMEOBJECT 26150: NonStuffedIcon
+GAMEOBJECT 26233: NonStuffedIcon
+GAMEOBJECT 26278: NonStuffedIcon
+GAMEOBJECT 26433: NonStuffedIcon
+GAMEOBJECT 26434: NonStuffedIcon
+GAMEOBJECT 26552: NonStuffedIcon
+GAMEOBJECT 26590: NonStuffedIcon
+GAMEOBJECT 26601: NonStuffedIcon
+GAMEOBJECT 27111: NonStuffedIcon
+GAMEOBJECT 27165: NonStuffedIcon
+GAMEOBJECT 27235: 1x4_straight_railStuffed_LOD2
+GAMEOBJECT 27290: stuffedCannon
+GAMEOBJECT 27475: NonStuffedIcon
+GAMEOBJECT 27673: NonStuffedIcon
+GAMEOBJECT 27772: NonStuffedIcon
+GAMEOBJECT 27802: NonStuffedIcon
+GAMEOBJECT 28062: NonStuffedIcon
+GAMEOBJECT 28063: NonStuffedIcon
+GAMEOBJECT 28080: NonStuffedIcon
+GAMEOBJECT 28239: NonStuffedIcon
+GAMEOBJECT 28307: NonStuffedIcon
+GAMEOBJECT 28317: NonStuffedIcon
+GAMEOBJECT 28608: NonStuffedIcon
+GAMEOBJECT 28786: NonStuffedIcon
+GAMEOBJECT 29335: NonStuffedIcon
+GAMEOBJECT 29401: NonStuffedIcon
+GAMEOBJECT 29552: NonStuffedIcon
+GAMEOBJECT 29553: NonStuffedIcon
+GAMEOBJECT 29564: NonStuffedIcon
+GAMEOBJECT 29633: NonStuffedIcon
+GAMEOBJECT 29668: NonStuffedIcon
+GAMEOBJECT 29813: NonStuffedIcon
+GAMEOBJECT 29886: NonStuffedIcon
+GAMEOBJECT 29887: NonStuffedIcon
+GAMEOBJECT 29988: NonStuffedIcon
+GAMEOBJECT 30294: NonStuffedIcon
+GAMEOBJECT 30425: NonStuffedIcon
+GAMEOBJECT 30911: NonStuffedIcon
+GAMEOBJECT 30958: NonStuffedIcon
+GAMEOBJECT 31441: NonStuffedIcon
+GAMEOBJECT 31448: NonStuffedIcon
+GAMEOBJECT 31714: NonStuffedIcon
+GAMEOBJECT 32021: NonStuffedIcon
+GAMEOBJECT 32089: stuffedMissileTurret
+GAMEOBJECT 32090: stuffedLaserTurret
+GAMEOBJECT 32091: stuffedMortarTurret
+GAMEOBJECT 32092: stuffedMiniTurret
+GAMEOBJECT 32093: stuffedAutoTurret
+GAMEOBJECT 32094: stuffedSawbladeTurret
+GAMEOBJECT 32170: 4x4_stuffedPetArena_LOD0
+GAMEOBJECT 32184: NonStuffedIcon
+GAMEOBJECT 32385: NonStuffedIcon
+GAMEOBJECT 32429: 1x4_straight_railStuffed_LOD1
+GAMEOBJECT 32431: NonStuffedIcon
+GAMEOBJECT 32790: NonStuffedIcon
+GAMEOBJECT 32858: 1x1_corner_railStuffed_LOD0
+GAMEOBJECT 32932: NonStuffedIcon
+GAMEOBJECT 33026: NonStuffedIcon
+GAMEOBJECT 33041: NonStuffedIcon
+GAMEOBJECT 33152: NonStuffedIcon
+GAMEOBJECT 33154: NonStuffedIcon
+GAMEOBJECT 33298: 1x6x2_forbidden_textError
+GAMEOBJECT 33301: NonStuffedIcon
+GAMEOBJECT 33518: NonStuffedIcon
+GAMEOBJECT 34071: NonStuffedIcon
+GAMEOBJECT 34072: NonStuffedIcon
+GAMEOBJECT 34411: NonStuffedIcon
+GAMEOBJECT 34441: NonStuffedIcon
+GAMEOBJECT 34876: NonStuffedIcon
+GAMEOBJECT 34878: NonStuffedIcon
+GAMEOBJECT 35083: NonStuffedIcon
+GAMEOBJECT 35135: NonStuffedIcon
+GAMEOBJECT 35304: NonStuffedIcon
+GAMEOBJECT 35527: NonStuffedIcon
+GAMEOBJECT 35536: NonStuffedIcon
+GAMEOBJECT 35662: NonStuffedIcon
+GAMEOBJECT 35928: NonStuffedIcon
+GAMEOBJECT 36131: NonStuffedIcon
+GAMEOBJECT 36455: NonStuffedIcon
+GAMEOBJECT 36456: NonStuffedIcon
+GAMEOBJECT 36508: NonStuffedIcon
+GAMEOBJECT 36509: NonStuffedIcon
+GAMEOBJECT 36620: 2x2_stuffedNavalMine_LOD2
+GAMEOBJECT 36651: NonStuffedIcon
+GAMEOBJECT 36813: 1x1_slope_railStuffed_LOD2
+GAMEOBJECT 37103: NonStuffedIcon
+GAMEOBJECT 37498: NonStuffedIcon
+GAMEOBJECT 37513: 1x1_stuffedLandmine
+GAMEOBJECT 37518: NonStuffedIcon
+GAMEOBJECT 37930: NonStuffedIcon
+GAMEOBJECT 38374: 4x4_stuffedPetArena_LOD1
+GAMEOBJECT 38406: NonStuffedIcon
+GAMEOBJECT 38612: NonStuffedIcon
+GAMEOBJECT 38832: NonStuffedIcon
+GAMEOBJECT 39076: NonStuffedIcon
+GAMEOBJECT 39081: NonStuffedIcon
+GAMEOBJECT 39215: NonStuffedIcon
+GAMEOBJECT 39349: NonStuffedIcon
+GAMEOBJECT 39358: NonStuffedIcon
+GAMEOBJECT 39367: NonStuffedIcon
+GAMEOBJECT 39376: 80x80_forbidden_gyatt
+GAMEOBJECT 39411: NonStuffedIcon
+GAMEOBJECT 39932: NonStuffedIcon
+GAMEOBJECT 40069: NonStuffedIcon
+GAMEOBJECT 40131: NonStuffedIcon
+GAMEOBJECT 40255: NonStuffedIcon
+GAMEOBJECT 40346: 2x2x2_stuffedPumpkin
+GAMEOBJECT 40348: 1x1x2_recordPlayerStuffed_boomBox
+GAMEOBJECT 40818: NonStuffedIcon
+GAMEOBJECT 40819: NonStuffedIcon
+GAMEOBJECT 40936: NonStuffedIcon
+GAMEOBJECT 40937: NonStuffedIcon
+GAMEOBJECT 41096: NonStuffedIcon
+GAMEOBJECT 41113: NonStuffedIcon
+GAMEOBJECT 41177: NonStuffedIcon
+GAMEOBJECT 41229: NonStuffedIcon
+GAMEOBJECT 41275: NonStuffedIcon
+GAMEOBJECT 41295: NonStuffedIcon
+GAMEOBJECT 41296: NonStuffedIcon
+GAMEOBJECT 41648: NonStuffedIcon
+GAMEOBJECT 41736: 1x1_slope_railStuffed_LOD1
+GAMEOBJECT 41886: NonStuffedIcon
+GAMEOBJECT 41947: NonStuffedIcon
+GAMEOBJECT 42015: stuffedCopier_LOD0
+GAMEOBJECT 42060: NonStuffedIcon
+GAMEOBJECT 42363: NonStuffedIcon
+GAMEOBJECT 42364: NonStuffedIcon
+GAMEOBJECT 42623: NonStuffedIcon
+GAMEOBJECT 42624: NonStuffedIcon
+GAMEOBJECT 42643: NonStuffedIcon
+GAMEOBJECT 42682: NonStuffedIcon
+GAMEOBJECT 42804: 2x2x2_stuffedPresent
+GAMEOBJECT 42964: NonStuffedIcon
+GAMEOBJECT 43168: NonStuffedIcon
+GAMEOBJECT 43190: 1x2_stuffed
+GAMEOBJECT 43213: 4x4_stuffedPetArena_LOD2
+GAMEOBJECT 43459: NonStuffedIcon
+GAMEOBJECT 43788: NonStuffedIcon
+GAMEOBJECT 43789: NonStuffedIcon
+GAMEOBJECT 43980: NonStuffedIcon
+GAMEOBJECT 44193: NonStuffedIcon
+GAMEOBJECT 44295: NonStuffedIcon
+GAMEOBJECT 44490: NonStuffedIcon
+GAMEOBJECT 44567: NonStuffedIcon
+GAMEOBJECT 44684: NonStuffedIcon
+GAMEOBJECT 44741: NonStuffedIcon
+GAMEOBJECT 44742: NonStuffedIcon
+GAMEOBJECT 44744: NonStuffedIcon
+GAMEOBJECT 44745: NonStuffedIcon
+GAMEOBJECT 44915: stuffedDomino45
+GAMEOBJECT 44916: stuffedPlayingCard
+GAMEOBJECT 44917: stuffedDomino
+GAMEOBJECT 44918: 1x1_cheapStuffed
+GAMEOBJECT 44919: stuffedPlayingCard45
+GAMEOBJECT 45122: NonStuffedIcon
+GAMEOBJECT 45165: NonStuffedIcon
+GAMEOBJECT 45344: NonStuffedIcon
+GAMEOBJECT 45345: NonStuffedIcon
+GAMEOBJECT 45356: StuffedItemInputZone
+GAMEOBJECT 45467: NonStuffedIcon
+GAMEOBJECT 45600: NonStuffedIcon
+GAMEOBJECT 45647: 1x4_stuffed
+GAMEOBJECT 45773: 1x4x2_forbidden_textYeep
+GAMEOBJECT 45914: stuffedCopier
+GAMEOBJECT 45921: NonStuffedIcon
+GAMEOBJECT 45923: 1x1_forbidden_frogMusic
+GAMEOBJECT 45993: NonStuffedIcon
+GAMEOBJECT 46036: NonStuffedIcon
+GAMEOBJECT 46105: NonStuffedIcon
+GAMEOBJECT 46106: NonStuffedIcon
+GAMEOBJECT 46138: NonStuffedIcon
+GAMEOBJECT 46139: NonStuffedIcon
+GAMEOBJECT 46176: NonStuffedIcon
+GAMEOBJECT 46203: 1x1_forbidden_frog
+GAMEOBJECT 46204: stuffedItemInputZone
+GAMEOBJECT 46261: 4x4_stuffedPetArena
+GAMEOBJECT 46325: NonStuffedIcon
+GAMEOBJECT 46453: NonStuffedIcon
+GAMEOBJECT 47182: NonStuffedIcon
+GAMEOBJECT 47285: stuffedCopier_LOD2
+GAMEOBJECT 47535: NonStuffedIcon
+GAMEOBJECT 47702: 2x2x2_slope_stuffed
+GAMEOBJECT 47883: NonStuffedIcon
+GAMEOBJECT 47884: NonStuffedIcon
+GAMEOBJECT 47926: NonStuffedIcon
+GAMEOBJECT 48142: NonStuffedIcon
+GAMEOBJECT 48319: 4x4_stuffed
+GAMEOBJECT 48324: NonStuffedIcon
+GAMEOBJECT 48804: NonStuffedIcon
+GAMEOBJECT 48822: NonStuffedIcon
+GAMEOBJECT 49025: NonStuffedIcon
+GAMEOBJECT 49059: NonStuffedIcon
+GAMEOBJECT 49279: NonStuffedIcon
+GAMEOBJECT 49920: NonStuffedIcon
+GAMEOBJECT 49974: NonStuffedIcon
+GAMEOBJECT 50257: NonStuffedIcon
+GAMEOBJECT 50480: NonStuffedIcon
+GAMEOBJECT 50764: NonStuffedIcon
+GAMEOBJECT 50797: NonStuffedIcon
+GAMEOBJECT 50814: NonStuffedIcon
+GAMEOBJECT 50815: NonStuffedIcon
+GAMEOBJECT 51036: NonStuffedIcon
+GAMEOBJECT 51037: NonStuffedIcon
+GAMEOBJECT 51221: NonStuffedIcon
+GAMEOBJECT 51224: NonStuffedIcon
+GAMEOBJECT 51225: NonStuffedIcon
+GAMEOBJECT 51226: NonStuffedIcon
+GAMEOBJECT 51338: NonStuffedIcon
+GAMEOBJECT 51344: NonStuffedIcon
+GAMEOBJECT 51357: NonStuffedIcon
+GAMEOBJECT 51454: NonStuffedIcon
+GAMEOBJECT 51455: NonStuffedIcon
+GAMEOBJECT 51498: NonStuffedIcon
+GAMEOBJECT 51789: NonStuffedIcon
+GAMEOBJECT 51791: 2x4_stuffed
+GAMEOBJECT 51940: NonStuffedIcon
+GAMEOBJECT 51953: NonStuffedIcon
+GAMEOBJECT 52041: NonStuffedIcon
+GAMEOBJECT 52048: NonStuffedIcon
+GAMEOBJECT 52049: NonStuffedIcon
+GAMEOBJECT 52385: NonStuffedIcon
+GAMEOBJECT 52441: stuffedCopier_LOD1
+GAMEOBJECT 52550: NonStuffedIcon
+GAMEOBJECT 52561: NonStuffedIcon
+GAMEOBJECT 52882: NonStuffedIcon
+GAMEOBJECT 53521: NonStuffedIcon
+GAMEOBJECT 54010: NonStuffedIcon
+GAMEOBJECT 54011: NonStuffedIcon
+GAMEOBJECT 54057: NonStuffedIcon
+GAMEOBJECT 54222: NonStuffedIcon
+GAMEOBJECT 54230: NonStuffedIcon
+GAMEOBJECT 54271: 1x1_stuffedTrophie_superStar
+GAMEOBJECT 54693: NonStuffedIcon
+GAMEOBJECT 54721: NonStuffedIcon
+GAMEOBJECT 54764: NonStuffedIcon
+GAMEOBJECT 54766: NonStuffedIcon
+GAMEOBJECT 54951: NonStuffedIcon
+GAMEOBJECT 54985: NonStuffedIcon
+GAMEOBJECT 54990: NonStuffedIcon
+GAMEOBJECT 55154: NonStuffedIcon
+GAMEOBJECT 194939: 1x5x2_stuffedTextBlaze
+GAMEOBJECT 194949: 1x1_stuffedCucumberCat

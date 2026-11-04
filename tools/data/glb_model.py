@@ -111,13 +111,33 @@ def _load(path, size):
     lo=[min(p[i] for p in positions) for i in range(3)]; hi=[max(p[i] for p in positions) for i in range(3)]
     scale=min(.5*size[i]/(hi[i]-lo[i]) for i in range(3) if hi[i]>lo[i])
     positions=[tuple((p[i]-(lo[i]+hi[i])/2)*scale for i in range(3)) for p in positions]
-    mat=d['materials'][next(iter(used_materials))]
-    pbr=mat['pbrMetallicRoughness']; texinfo=pbr['baseColorTexture']
-    if texinfo.get('texCoord',0)!=0 or texinfo.get('extensions') or pbr.get('baseColorFactor',[1,1,1,1]) != [1,1,1,1]:
-        raise ValueError('Only unmodified base-color texture UV0 is supported')
-    texture=d['textures'][texinfo['index']]
-    sampler=d.get('samplers',[])[texture['sampler']] if 'sampler' in texture else {}
-    im=d['images'][texture['source']]
-    image=Image.open(io.BytesIO(view(im['bufferView'])[0])).convert('RGBA')
+    mat = d['materials'][next(iter(used_materials))]
+    pbr = mat.get('pbrMetallicRoughness', {})
+    factor = pbr.get('baseColorFactor', [1, 1, 1, 1])
+    texinfo = pbr.get('baseColorTexture')
+
+    if texinfo is None:
+        rgba = tuple(
+            max(0, min(255, round(float(c) * 255)))
+            for c in factor
+        )
+        image = Image.new('RGBA', (1, 1), rgba)
+        sampler = {}
+    else:
+        if (texinfo.get('texCoord', 0) != 0
+                or texinfo.get('extensions')
+                or factor != [1, 1, 1, 1]):
+            raise ValueError(
+                'Only unmodified base-color texture UV0 is supported'
+            )
+        texture = d['textures'][texinfo['index']]
+        sampler = (
+            d.get('samplers', [])[texture['sampler']]
+            if 'sampler' in texture else {}
+        )
+        im = d['images'][texture['source']]
+        image = Image.open(
+            io.BytesIO(view(im['bufferView'])[0])
+        ).convert('RGBA')
     return dict(positions=positions,normals=normals,uv=uvs,indices=indices,image=image,
                 material=mat,sampler=sampler,attribution=d.get('asset',{}).get('extras',{}))

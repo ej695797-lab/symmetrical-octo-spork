@@ -325,3 +325,55 @@ def serialize_blocks_spam(blocks) -> str:
     buf += _table(owners)
     buf += struct.pack("<i", len(records)) + bytes(records)
     return base64.b64encode(bytes(buf)).decode("ascii")
+
+
+# ---- SPAM v3 internal states (sign text, dispenser/teleporter config, wiring) ----
+# Format (little-endian, same as the client's own saves), from the 1.31 server's
+# _build_spam_states/_parse_spam_states:
+#   "SPAM" + u8 version 3 + i32 count, then per entry: i32 x,y,z + a .NET
+#   BinaryWriter string (7-bit varint length, then UTF-8). Empty = "U1BBTQMAAAAA".
+# x,y,z is the block's lowest-corner grid position (same as saveData); plain
+# signed i32 (no 16-bit negative fix). The entry carries no block type -- the
+# game matches it to whatever block sits at that position, so keep states and
+# blocks in sync. Sign text is "o_<owner>|<text>" (\n for newlines).
+EMPTY_SPAM_STATES = "U1BBTQMAAAAA"
+
+
+def build_spam_states(entries) -> str:
+    """entries = [((x, y, z), "text"), ...] -> base64 SPAM v3 internal-states."""
+    import base64 as _b64, struct as _st
+    buf = bytearray(b"SPAM") + bytes([3]) + _st.pack("<i", len(entries))
+    for (x, y, z), text in entries:
+        buf += _st.pack("<iii", int(x), int(y), int(z))
+        data = (text or "").encode("utf-8")
+        n = len(data)
+        while True:
+            seven = n & 0x7F
+            n >>= 7
+            buf.append(seven | (0x80 if n else 0))
+            if not n:
+                break
+        buf += data
+    return _b64.b64encode(bytes(buf)).decode("ascii")
+
+
+def parse_spam_states(raw) -> list:
+    """base64-decoded bytes -> [((x, y, z), text), ...]."""
+    import struct as _st
+    if isinstance(raw, str):
+        import base64 as _b64
+        raw = _b64.b64decode(raw)
+    if raw[:4] != b"SPAM" or len(raw) < 9:
+        return []
+    out, p = [], 9
+    for _ in range(_st.unpack_from("<i", raw, 5)[0]):
+        x, y, z = _st.unpack_from("<iii", raw, p); p += 12
+        n = shift = 0
+        while True:
+            byte = raw[p]; p += 1
+            n |= (byte & 0x7F) << shift
+            if not byte & 0x80:
+                break
+            shift += 7
+        out.append(((x, y, z), raw[p:p + n].decode("utf-8", "replace"))); p += n
+    return out

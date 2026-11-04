@@ -12,8 +12,6 @@ live Photon room other players see the locally-picked color until the player
 reloads (relog / room change) and the server-normalized value is re-read. A hard
 lock (clamp at apply / filter the picker) needs an APK hook. Tune via env
 ALLOWED_HAIR_COLORS / DEFAULT_HAIR_COLOR.
-UNRESTRICTED_COSMETIC_ACCOUNTS grants full palette access to explicitly listed
-account IDs without changing the policy for anyone else.
 """
 
 import os
@@ -44,12 +42,9 @@ def clamp_entry(entry):
     return f"{key}[{DEFAULT_HAIR_COLOR}]"
 
 
-def clamp_active_cosmetics(cosmetics, account_id=None):
-    """Apply the hair palette policy, except for explicitly allowlisted accounts.
-    Non-hair cosmetics and non-list input are returned untouched."""
-    unrestricted = set(filter(None, (os.getenv("UNRESTRICTED_COSMETIC_ACCOUNTS") or "").replace(" ", "").split(",")))
-    if account_id and account_id in unrestricted:
-        return cosmetics
+def clamp_active_cosmetics(cosmetics):
+    """Return activeCosmetics with every hair cosmetic's color clamped to the
+    allowed set. Non-hair cosmetics and non-list input are returned untouched."""
     if not isinstance(cosmetics, list):
         return cosmetics
     return [clamp_entry(c) for c in cosmetics]

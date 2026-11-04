@@ -11,7 +11,7 @@ async def handle_put_active_cosmetics(body: dict) -> dict:
     active_cosmetics = body.get("activeCosmetics", [])
 
     # Limit hair colors to the allowed set (brown/black) on save.
-    active_cosmetics = clamp_active_cosmetics(active_cosmetics, account_id)
+    active_cosmetics = clamp_active_cosmetics(active_cosmetics)
 
     if account_id:
         await accounts.update_one(

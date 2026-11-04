@@ -10,13 +10,17 @@ from services.db import room_maps
 
 
 async def handle_cw_get_can_enter(body: dict) -> dict:
-    # Community worlds are off in the self-host kit (the owner's server mirrored
-    # them live from real Yeeps). Every world name is refused.
-    return {"canEnter": 0, "reason": "Community worlds are off on this server."}
+    return {"canEnter": 1, "reason": ""}
 
 
 async def handle_cw_track_visit(body: dict) -> dict:
-    # Community worlds are off in the kit; nothing to record.
+    world_name = body.get("worldName", "")
+    if world_name:
+        version_key = f"c_{world_name}"
+        await room_maps.update_one(
+            {"versionKey": version_key},
+            {"$inc": {"cw_visits_total": 1}},
+        )
     return {"success": 1}
 
 
@@ -30,5 +34,12 @@ async def handle_cw_try_purchase_fuel(body: dict) -> dict:
 
 
 async def handle_cw_edit_permissions(body: dict) -> dict:
-    # Permissions are not stored: community worlds are read live from Yeeps (owner 2026-10-11).
+    world_name = body.get("worldName", "")
+    new_permissions = body.get("newPermissions", 0)
+    if world_name:
+        version_key = f"c_{world_name}"
+        await room_maps.update_one(
+            {"versionKey": version_key},
+            {"$set": {"cw_permissions": new_permissions}},
+        )
     return {"success": 1}
