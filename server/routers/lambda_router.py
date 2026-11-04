@@ -25,7 +25,6 @@ from handlers.cosmetics import handle_put_active_cosmetics
 from handlers.maps import handle_save_room_map, handle_fetch_map_data, handle_save_room_map_properties
 from handlers.currency import handle_dev_reset_currency
 from handlers.challenges import (
-    handle_redeem_challenge_reward,
     handle_fetch_global_rotation,
 )
 from handlers.misc import (
@@ -43,7 +42,9 @@ from handlers.misc import (
     handle_validate_text,
     handle_fetch_customized_items,
     handle_put_customized_item_allow_sharing,
+    handle_try_purchase_customized_item,
 )
+from handlers import cards as _cards
 from handlers.purchases import handle_purchase
 from services.property_defaults import default_for_property
 from handlers.misc import handle_generate_fish_bite
@@ -128,11 +129,15 @@ HANDLER_TABLE = [
     ("validatetext",            handle_validate_text),
     ("fetchcustomizeditems",    handle_fetch_customized_items),
     ("putcustomizeditemallowsharing", handle_put_customized_item_allow_sharing),
+    ("trypurchasecustomizeditem", handle_try_purchase_customized_item),
+    ("trypurchasetradingcardpack", _cards.handle_try_purchase_trading_card_pack),
+    ("redeemtradingcardreward", _cards.handle_redeem_trading_card_reward),
+    ("redeemchallengereward", _cards.handle_redeem_challenge_reward),
+    ("tryredeemcurrencystash", _cards.handle_try_redeem_currency_stash),
     ("cwgetcanenter",           handle_cw_get_can_enter),
     ("cwtrackvisit",            handle_cw_track_visit),
     ("cwtrypurchasefuel",       handle_cw_try_purchase_fuel),
     ("cweditpermissions",       handle_cw_edit_permissions),
-    ("redeemchallengereward",   handle_redeem_challenge_reward),
     ("putactivecosmetics",      handle_put_active_cosmetics),
     ("saveroommapcompressed",   handle_save_room_map),
     ("saveroommapproperties",   handle_save_room_map_properties),

@@ -90,16 +90,60 @@ async def handle_validate_text(body: dict) -> dict:
     return {"success": 1, "valid": True, "isValid": True}
 
 
+async def handle_try_purchase_customized_item(body: dict) -> dict:
+    """SAVE a reskin. Ported from vr-server."""
+    from datetime import datetime, timezone
+    from services.db import db as _dbh, accounts
+    acct = str(body.get("accountID") or "")
+    key = str(body.get("customItemKey") or "")
+    cfg = str(body.get("customItemConfig") or "")
+    if not acct or not key:
+        return {"success": 0}
+    coll = _dbh["customized_items"]
+    parts = cfg.split("|")
+    creator = parts[1] if len(parts) > 1 else acct
+    if creator and creator != acct:
+        orig = await coll.find_one({"owner": creator, "itemKey": key, "itemConfig": cfg}, {"_id": 0, "fullKey": 1})
+        if orig and orig.get("fullKey"):
+            full = orig["fullKey"]
+            await accounts.update_one({"accountID": acct}, {"$addToSet": {"customizedItemDatas": full}})
+            return {"success": 1, "cost": 0, "currencyValueIndex": 0, "newCurrency": 999999999,
+                    "customItemFullKey": full, "fullKey": full, "fullKeys": [full]}
+    mx = -1
+    async for _d in coll.find({"owner": acct}, {"fullKey": 1, "_id": 0}):
+        _sfx = (_d.get("fullKey") or "").split("$", 1)
+        if len(_sfx) == 2 and _sfx[1].isdigit():
+            mx = max(mx, int(_sfx[1]))
+    n = mx + 1
+    full = f"{acct}${n}"
+    while await coll.find_one({"fullKey": full}, {"_id": 0, "fullKey": 1}):
+        n += 1
+        full = f"{acct}${n}"
+    await coll.update_one({"fullKey": full},
+                          {"$set": {"fullKey": full, "owner": acct, "itemKey": key,
+                                    "itemConfig": cfg, "savedAt": datetime.now(timezone.utc).strftime("%Y %m/%d %H:%M:%S")}},
+                          upsert=True)
+    await accounts.update_one({"accountID": acct}, {"$addToSet": {"customizedItemDatas": full}})
+    print(f"[reskin] saved {full} itemKey={key}")
+    return {"success": 1, "cost": 0, "currencyValueIndex": 0, "newCurrency": 999999999,
+            "customItemFullKey": full, "fullKey": full, "fullKeys": [full]}
+
+
 async def handle_fetch_customized_items(body: dict) -> dict:
-    """Fetch customized items (reskins) for an account."""
-    account_id = str(body.get("accountID") or "")
-    try:
-        from services.db import accounts
-        doc = await accounts.find_one({"accountID": account_id}, {"_id": 0, "customizedItemDatas": 1})
-        items = (doc or {}).get("customizedItemDatas") or []
-    except Exception:
-        items = []
-    return {"customizedItems": items, "customizedItemDatas": items, "data": {"customizedItems": items}}
+    """LOAD reskins by fullKey. Local store first."""
+    from services.db import db as _dbh
+    keys = [k for k in (body.get("customItemFullKeys") or []) if isinstance(k, str)]
+    coll = _dbh["customized_items"]
+    out, missing = [], []
+    local = {}
+    if keys:
+        async for d in coll.find({"fullKey": {"$in": keys}}, {"_id": 0}):
+            local[d["fullKey"]] = d
+    for k in keys:
+        if k in local:
+            out.append({"fullKey": k, "itemKey": local[k].get("itemKey", ""),
+                        "itemConfig": local[k].get("itemConfig", "")})
+    return {"data": {"responses": out}}
 
 
 async def handle_put_customized_item_allow_sharing(body: dict) -> dict:
