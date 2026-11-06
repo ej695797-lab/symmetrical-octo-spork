@@ -1534,7 +1534,8 @@
       "zipperWishlist",
       "zipperYeepCoin",
       "zipperYeepSkull",
-      "zippers"
+      "zippers",
+      "npcSpawner_gnome_ninja_sensei"
     ]
   },
   {
@@ -3511,7 +3512,8 @@
         "zipperYeJ",
         "zipperYeepCoin",
         "zipperYeepSkull",
-        "zippers"
+        "zippers",
+        "npcSpawner_gnome_ninja_sensei"
       ],
       "activeCosmetics": [],
       "ownedBundles": [],
