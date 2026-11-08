@@ -6,10 +6,10 @@ from urllib.parse import urlsplit
 
 VERSION = "2.32.0-yeeper"
 OLD_PACKAGE = 'com.TrassGames.Yeeps'
-PACKAGE = 'com.TrashGames.Yeeps'
-APP_LABEL = 'Yeeps'
+PACKAGE = 'com.YeeperMods.Yeeps'
+APP_LABEL = 'Yeeps Modded'
 SOURCE_APK_SHA256 = "8dc2f6254a9db3abef19e52d883a1df1f49c48fb85540a18d41068a4d235cdcf"
-SOURCE_NATIVE_SHA256 = "6136806a91ddead4707e403804b8f1ae0c9dc724208e03c9b4b936287f58a2f8"
+SOURCE_NATIVE_SHA256 = "235da516efbb5ce7327d68477426eccccefb418717ad064c5c5fbaa5b3d65fe2"
 GUID = re.compile(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\Z")
 
 
@@ -362,7 +362,7 @@ def patch_unity(data: bytes, realtime: str, voice: str, region: str = '') -> byt
     pun_object.set_raw_data(bytes(pun))
     voice_object.set_raw_data(bytes(voice_data))
     settings = player.get_raw_data()
-    old_version = _unity_string('2.32.0')
+    old_version = _unity_string('2.32.0-yeeper')
     if settings[608:608 + len(old_version)] != old_version:
         raise ValueError("Unexpected Unity PlayerSettings version layout")
     player.set_raw_data(settings[:608] + _unity_string(VERSION) + settings[608 + len(old_version):])

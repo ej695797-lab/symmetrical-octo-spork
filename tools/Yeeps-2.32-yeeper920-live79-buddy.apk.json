@@ -1,0 +1,18 @@
+{
+  "version": "2.32.0-yeeper",
+  "package": "com.TrashGames.Yeeps",
+  "label": "Yeeps",
+  "source_sha256": "21e203194d07a20a68f37b4d34d74ab2c34e94077f38ae26d9caf90c8e37a905",
+  "sha256": "728e24b0473fdde3df064bbb9a740c33f8de8afeb2556881c7bbeeb32187cde5",
+  "data_only": false,
+  "server": "https://yeeper920-2-32-0.onrender.com",
+  "photon_region": "",
+  "static_verified": true,
+  "headset_verified": false,
+  "custom_data_sha256": {
+    "data.unity3d": "2849d37ecdabca48f506507391e66e1964087927d63e70b7ea97bedfb576f2b6",
+    "resources.resource": "32a2f02a39d26d442e790b835490134c79023da806e8be57d87c8920d4bf8cbf",
+    "sharedassets1.resource": "916c871595530d80a1ff2168766ca663c85e5e4fed3ac90c65bc4ab39aa16d06",
+    "sharedassets2.resource": "5da3fcddc1533ea881cbc5111496b9f8d2d76c4903d4a6287e698d0662c04315"
+  }
+}

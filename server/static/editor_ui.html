@@ -6,7 +6,7 @@
 <title>Yeeps Editor</title>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: dark; --bg:#1d1915; --bg2:#262019; --card:#2d2720; --field:#211c17; --ink:#f1e8d9; --muted:#a8997f; --line:#453c31; --purple:#8c7bc9; --red:#e26a6a; --green:#45a386; --maroon:#c05a5a; }
+  :root { color-scheme: dark; --bg:#1d1915; --bg2:#262019; --card:#2d2720; --field:#211c17; --ink:#f1e8d9; --muted:#a8997f; --line:#453c31; --purple:#8c7bc9; --red:#e26a6a; --green:#9b59b6; --maroon:#c05a5a; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Quicksand', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
          background: var(--bg); color: var(--ink); font-size: 14px; }
@@ -112,7 +112,7 @@
     <button data-t="online">Online</button>
     <button data-t="banned">Banned</button>
     <button data-t="maps">Maps</button>
-    <!--@cut photon-->    <button data-t="photon" id="tab-photon" style="display:none">Photon</button><!--@end photon-->
+    <button data-t="photon" id="tab-photon">Photon</button>
     <!--@cut talk-->    <button data-t="talk" id="tab-talk" style="display:none">Talk</button><!--@end talk-->
     <!--@cut liveview-->    <button data-t="liveview" id="tab-liveview" style="display:none">View</button><!--@end liveview-->
     <!--@cut roles-->    <button data-t="roles" id="tab-roles" style="display:none">Roles</button><!--@end roles-->
@@ -132,7 +132,7 @@ const view = document.getElementById("view");
 
 function toast(t, bad) {
   const m = document.getElementById("msg");
-  m.textContent = t; m.style.borderColor = bad ? "#a33" : "#2a4"; m.style.display = "block";
+  m.textContent = t; m.style.borderColor = bad ? "#a33" : "#9b59b6"; m.style.display = "block";
   clearTimeout(toast._t); toast._t = setTimeout(() => m.style.display = "none", 3500);
 }
 let IS_MOD = false;     // admins + moderators: ban / unban / block
@@ -1202,7 +1202,7 @@ const tabs = {
     load();
   },
 
-  /*@cut photon*/
+  
   // Photon bot control: hook the bot onto a player, then run games/effects.
   photon: async () => {
     const GROUPS = [
@@ -1256,7 +1256,7 @@ const tabs = {
         <button class="go" id="recstart">Start recording</button>
         <button class="del" id="recstop">Stop and save</button>
         <span class="muted" id="recst"></span></div>
-      <pre id="reclive" style="display:none;max-height:260px;overflow:auto;font-size:11px;background:#111;color:#cfc;padding:6px;border-radius:6px;white-space:pre-wrap"></pre>
+      <pre id="reclive" style="display:none;max-height:260px;overflow:auto;font-size:11px;background:#111;color:#d7bde2;padding:6px;border-radius:6px;white-space:pre-wrap"></pre>
       <div id="reclist" class="muted" style="font-size:12px"></div>
       ${GROUPS.map(([title, btns]) => `<div class="pgrp"><span class="muted">${esc(title)}</span>${
         btns.map(([label, cmd, off]) => `<button data-cmd="${esc(cmd)}"${off ? ' class="off"' : ""}>${esc(label)}</button>`).join("")}</div>`).join("")}
@@ -1382,7 +1382,7 @@ const tabs = {
     players(); status();
   },
 
-  /*@end photon*/
+  
   /*@cut talk*/
   // Live talk through the Photon bot: your mic plays at the hooked player's face,
   // and you hear everyone in their room. Drives the bot itself (/photon start+cmd).
@@ -1402,7 +1402,7 @@ const tabs = {
         <button id="tkptt" class="go" style="font-size:20px;padding:18px 30px;touch-action:none;user-select:none">Hold to talk</button>
         <label class="muted"><input type="checkbox" id="tkopen"> Mic always on</label>
         <span class="muted">(or hold Space)</span>
-        <span>Mic <span id="tkmeter" style="display:inline-block;width:140px;height:10px;background:#8883;vertical-align:middle;border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:0;background:#3c9"></i></span></span>
+        <span>Mic <span id="tkmeter" style="display:inline-block;width:140px;height:10px;background:#8883;vertical-align:middle;border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:0;background:#9b59b6"></i></span></span>
       </div>
       <div class="row"><label>Players' volume <input type="range" id="tkvol" min="0" max="4" step="0.1"></label>
         <span>Players <span id="tkin" style="display:inline-block;width:140px;height:10px;background:#8883;vertical-align:middle;border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:0;background:#39f"></i></span></span></div>
