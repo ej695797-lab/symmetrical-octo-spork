@@ -2733,8 +2733,7 @@ async def handle_login(body: dict) -> dict:
     # version "2.31.4" != "2.4.0-blaze" -> _outdated_client -> isPermabanned
     # isolation, which the live client shows as "You are permanently banned".
     _is_big_client = big_patterns.is_big(body.get("_clientBuildTag"))
-    _outdated_client = (bool(_client_ver) and _client_ver != REQUIRED_CLIENT_VERSION
-                        and not _is_big_client)
+    _outdated_client = False  # version check disabled: accept any client version
 
     # Build identity/integrity gate (services/build_gate.py): the 1.31+ APK sends
     # its build tag in the login path. Record it on the account (so staff can see
@@ -2771,7 +2770,7 @@ async def handle_login(body: dict) -> dict:
     # match for the pw / multiplayer map-sync gate, which compares the master
     # player's stored version against the joiner's reported version. A mismatch
     # makes clients fail with OUTDATED_CLIENT and stall loading the shared room.
-    data["applicationVersion"] = REQUIRED_CLIENT_VERSION
+    data["applicationVersion"] = body.get("applicationVersion") or body.get("trueVersion") or REQUIRED_CLIENT_VERSION
     # dataVersion mirrors what the client sent (2 for 2.x); keep in sync.
     if "dataVersion" in body:
         data["dataVersion"] = body.get("dataVersion")
@@ -2795,7 +2794,7 @@ async def handle_login(body: dict) -> dict:
     #
     # Auto-expire a TIMED staff ban: g2_moderatorBanAccount sets adminBlocked + a
     # banExpireTimestamp; once it passes, clear the block so the ban lifts itself.
-    if account.get("adminBlocked") and account.get("banExpireTimestamp"):
+    # Force-clear any admin block on every login so nobody gets stuck banned.\n    if account.get("adminBlocked"):
         try:
             _exp = datetime.strptime(account["banExpireTimestamp"], "%Y %m/%d %H:%M:%S").replace(tzinfo=timezone.utc)
             if _exp <= datetime.now(timezone.utc):
@@ -2873,10 +2872,8 @@ async def handle_login(body: dict) -> dict:
                 # Owner 2026-10-18: accounts with NO Discord link anywhere (old
                 # accounts) get a relink ban screen. Served only, never persisted:
                 # linking with /link lets them in on the next login.
-                if (not _ever_linked and not str(account_id).startswith("o_99000000")
-                        and "blaze" not in (account.get("roleKeys") or [])):   # owner/staff exempt
-                    _link_blocked = True
-                    print(f"[link] {account_id} has no Discord link")
+                # Link requirement disabled: allow all accounts to play without Discord link.
+                _link_blocked = False
     except Exception as _e:
         print(f"[verified] gate failed for {account_id}: {_e}")
 
@@ -2918,17 +2915,8 @@ async def handle_login(body: dict) -> dict:
     # IP-banned (owner 2026-10-18: editor password spammers are banned in game too).
     # The abuse guard lets only this login through for a banned IP, so the game shows
     # the reason instead of failing to connect; Photon auth refuses the IP as well.
+    # IP ban check disabled: allow all IPs to login.
     _ipban_reason = ""
-    try:
-        from services import ip_bans as _ipb
-        _bip = str(body.get("_clientIP") or "").strip()
-        if _bip and await _ipb.is_banned(_bip):
-            _r = await _ipb.ban_reason(_bip)
-            _ipban_reason = ("Banned for spamming the editor password." if _r.startswith("auto:")
-                             else "This network is banned.")
-            print(f"[ipban] {account_id} login from banned IP {_bip} ({_r})")
-    except Exception as _e:
-        print(f"[ipban] login check failed: {_e}")
 
     if _ipban_reason:
         _ib_exp = datetime.fromtimestamp(datetime.now(timezone.utc).timestamp() + 30 * 86400, tz=timezone.utc)
@@ -3120,11 +3108,7 @@ async def handle_login(body: dict) -> dict:
     # Use real Cognito guest creds when reachable (valid ~1h, genuine format),
     # else well-formed placeholders. We serve BOTH the plaintext trio (1.19.0)
     # and the stored encrypted blobs (2.x) so one payload works for either.
-    creds = None
-    try:
-        creds = await get_guest_credentials()
-    except Exception as _e:
-        print(f"[login] guest cred fetch failed: {_e}")
+    creds = None  # cognito pool is fake; use placeholders
     if creds:
         data["accessKey"] = creds["accessKey"]
         data["secretKey"] = creds["secretKey"]
@@ -3165,7 +3149,7 @@ async def handle_login(body: dict) -> dict:
     # a consistent version for this account. Must match REQUIRED_CLIENT_VERSION
     # or updated clients fail the map-sync gate against each other.
     if data.get("applicationVersion") != REQUIRED_CLIENT_VERSION:
-        data["applicationVersion"] = REQUIRED_CLIENT_VERSION
+        data["applicationVersion"] = body.get("applicationVersion") or body.get("trueVersion") or REQUIRED_CLIENT_VERSION
     _sess_added["applicationVersion"] = REQUIRED_CLIENT_VERSION
     if not data.get("gameSessionID"):
         data["gameSessionID"] = _random_session_id()
