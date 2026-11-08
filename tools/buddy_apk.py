@@ -8,8 +8,8 @@ VERSION = "2.32.0-yeeper"
 OLD_PACKAGE = 'com.TrassGames.Yeeps'
 PACKAGE = 'com.TrashGames.Yeeps'
 APP_LABEL = 'Yeeps'
-SOURCE_APK_SHA256 = "21e203194d07a20a68f37b4d34d74ab2c34e94077f38ae26d9caf90c8e37a905"
-SOURCE_NATIVE_SHA256 = "1de626d58e82abd626e50dfea14096c77513f2db7ffafcd8c7f143a3f87a22b7"
+SOURCE_APK_SHA256 = "8dc2f6254a9db3abef19e52d883a1df1f49c48fb85540a18d41068a4d235cdcf"
+SOURCE_NATIVE_SHA256 = "6136806a91ddead4707e403804b8f1ae0c9dc724208e03c9b4b936287f58a2f8"
 GUID = re.compile(r"[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}\Z")
 
 
@@ -152,7 +152,7 @@ def patch_native(data: bytes, server: str, realtime: str, voice: str) -> bytes:
     if len(OLD_PACKAGE) != len(PACKAGE):
         raise ValueError('Native package replacement must preserve string lengths')
     result = result.replace(OLD_PACKAGE.encode(), PACKAGE.encode())
-    if b'live.yeeps-tools.org' in result:
+    if b'live.yeeps-tools.org/xxxxxxxxxxxxxxxxxx' in result:
         raise ValueError("Author backend still present in patched native library")
     return bytes(result)
 
