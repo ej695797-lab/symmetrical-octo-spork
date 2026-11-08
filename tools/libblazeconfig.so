@@ -1,0 +1,5 @@
+# Yeeps 2.32.0 self-host settings
+server=https://yeeper920-2-32-0.onrender.com
+photon_app_id=a279e749-3e24-464c-9336-f3a412bdfdbc
+photon_voice_app_id=2d9a7f4b-96b8-4305-b87f-0ea0aa722d1f
+photon_region=
