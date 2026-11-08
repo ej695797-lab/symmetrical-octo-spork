@@ -3524,6 +3524,12 @@ async def _photon_ok(request) -> bool:
     return True
 
 
+
+
+async def _photon_guard(request: Request) -> None:
+    if not await _photon_ok(request):
+        raise HTTPException(status_code=404, detail="Not Found")
+
 async def _view_guard(request: Request) -> None:
     if not await _view_ok(request):
         raise HTTPException(status_code=404, detail="Not Found")
