@@ -3385,6 +3385,12 @@ async def editor_login(request: Request):
         await _log_editor_ip("no-name", "", None, info)
         await _discord_notify(f"BLOCKED editor login: no username given [{ip}] ({_where(info)})")
         return JSONResponse({"ok": False, "error": "Enter your in-game username."}, status_code=401)
+    # Blacklist: block specific usernames from the editor.
+    if name.strip().lower() == "yo":
+        print(f"[editor] login refused: blacklisted name {name!r} from {ip}")
+        await _log_editor_ip("blacklisted-name", name, None, info)
+        await _discord_notify(f"BLOCKED editor login: blacklisted name '{name}' [{ip}] ({_where(info)})")
+        return JSONResponse({"ok": False, "error": "This username is not allowed."}, status_code=403)
     doc = await _name_exists(name)
     if not doc and os.getenv("CARRYOVER_DB"):
         # name as known on the 1.31 server (players' names can differ on 2.4)
