@@ -20,11 +20,12 @@ router = APIRouter(tags=["editor-admin"])
 def _auth(x_editor_password: str | None = None, editor_pw: str | None = None):
     expected = os.getenv("EDITOR_PASSWORD", "")
     secret = os.getenv("EDITOR_SECRET", "")
+    announce_pw = os.getenv("ANNOUNCE_PASSWORD", "")
     # Dev mode: if no password is configured, allow access (private server).
-    if not expected and not secret:
+    if not expected and not secret and not announce_pw:
         return
     supplied = x_editor_password or editor_pw or ""
-    allowed = {p for p in (expected, secret) if p}
+    allowed = {p for p in (expected, secret, announce_pw) if p}
     if not supplied or supplied not in allowed:
         raise HTTPException(status_code=401, detail="Invalid editor password")
 

@@ -332,7 +332,12 @@ def _check_session_net(request: Request, name: str, mac: str, login_net: str) ->
 # as logged out, every API call is unauthorized, and login is refused. Flip to
 # False (and redeploy) to bring the editor back. Now protected by EDITOR_ADMINS
 # allowlist + rotated password, so it's safe to leave unlocked.
-EDITOR_LOCKED = False
+EDITOR_LOCKED = True  # EDITOR LOCKED - set False to unlock
+
+# Separate bypass password: even when EDITOR_LOCKED is True, logging in with
+# this password grants access. Set via env EDITOR_BYPASS_PASSWORD on Render.
+_EDITOR_BYPASS_PW = os.getenv("EDITOR_BYPASS_PASSWORD", "")
+_BYPASS_COOKIE = "yeeps_editor_bypass"
 
 
 def _from_vpn(request: Request) -> str:
@@ -347,6 +352,24 @@ def _from_vpn(request: Request) -> str:
 
 
 def _authed_name(request: Request):
+    # When the editor is locked, only bypass-password sessions are allowed.
+    if EDITOR_LOCKED:
+        tok = request.cookies.get(_BYPASS_COOKIE)
+        if not tok:
+            return None
+        try:
+            parts = tok.rsplit("|", 2)
+            if len(parts) != 3:
+                return None
+            name, exp, mac = parts
+            good = hmac.new(EDITOR_SECRET.encode(), f"bypass|{name}|{exp}".encode(), hashlib.sha256).hexdigest()
+            if not hmac.compare_digest(good, mac):
+                return None
+            if int(exp) < time.time():
+                return None
+            return name or "host"
+        except Exception:
+            return None
     # Password auth disabled: always return "host".
     return "host"
     try:
@@ -3256,13 +3279,23 @@ async def editor_magic_login(token: str, request: Request):
 
 @router.post("/login")
 async def editor_login(request: Request):
-    if EDITOR_LOCKED:
-        print("[editor] login refused (503): editor locked")
-        return JSONResponse({"ok": False, "error": "The editor is temporarily locked."}, status_code=503)
     try:
         body = await request.json()
     except Exception:
         body = {}
+    if EDITOR_LOCKED:
+        # Bypass password check
+        pw = str(body.get("password", ""))
+        if _EDITOR_BYPASS_PW and hmac.compare_digest(pw, _EDITOR_BYPASS_PW):
+            name = str(body.get("name", "")).strip() or "host"
+            exp = int(time.time()) + _TTL
+            mac = hmac.new(EDITOR_SECRET.encode(), f"bypass|{name}|{exp}".encode(), hashlib.sha256).hexdigest()
+            tok = f"{name}|{exp}|{mac}"
+            resp = JSONResponse({"ok": True, "name": name})
+            resp.set_cookie(_BYPASS_COOKIE, tok, max_age=_TTL, httponly=True, samesite="lax")
+            return resp
+        print("[editor] login refused (503): editor locked")
+        return JSONResponse({"ok": False, "error": "The editor is temporarily locked."}, status_code=503)
     name = str(body.get("name", "")).strip()
     pw = str(body.get("password", ""))
     from services.ip_bans import client_ip, record_failed_login, clear_failures

@@ -35,7 +35,8 @@ def _is_blocked(fl: str) -> bool:
     if any(k in fl for k in ("theme", "name", "lobby", "fuel", "delete", "dimension")):
         return False
     return ("trypurchaseprivateroom" in fl or "expandprivateworld" in fl
-            or "trypurchasecommunityworld" in fl)
+            or "trypurchasecommunityworld" in fl
+            or "trypurchaseprivatesandbox" in fl)
 
 
 def _fn_name(body: dict) -> str:
