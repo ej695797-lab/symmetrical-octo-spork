@@ -2245,6 +2245,9 @@ DEFAULT_ACCOUNT = {
 # into the adminBlocked state below -> served permabanned + isolated, so the
 # client refuses to join any room. Add new raider names here.
 # ("banned_player" removed 2026-10-10 at the owner's request - they made up.)
+# Exact-match banned names (case-insensitive, non-alphanumerics stripped).
+BANNED_NAME_EXACT: set = {"yo"}
+# Substring banned names (kept for backward compat; empty by default).
 BANNED_NAME_KEYS: set = set()
 
 # The current, telemetry-free player build (single source of truth in config).
@@ -2262,6 +2265,8 @@ def _name_key(name: str) -> str:
 def _is_banned_name(*names: str) -> bool:
     for n in names:
         k = _name_key(n)
+        if k and k in BANNED_NAME_EXACT:
+            return True
         if k and any(b in k for b in BANNED_NAME_KEYS):
             return True
     return False
