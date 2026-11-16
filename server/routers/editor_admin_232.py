@@ -20,14 +20,24 @@ router = APIRouter(tags=["editor-admin"])
 def _auth(x_editor_password: str | None = None, editor_pw: str | None = None):
     expected = os.getenv("EDITOR_PASSWORD", "")
     secret = os.getenv("EDITOR_SECRET", "")
-    announce_pw = os.getenv("ANNOUNCE_PASSWORD", "")
     # Dev mode: if no password is configured, allow access (private server).
-    if not expected and not secret and not announce_pw:
+    if not expected and not secret:
         return
     supplied = x_editor_password or editor_pw or ""
-    allowed = {p for p in (expected, secret, announce_pw) if p}
+    allowed = {p for p in (expected, secret) if p}
     if not supplied or supplied not in allowed:
         raise HTTPException(status_code=401, detail="Invalid editor password")
+
+
+def _announce_auth(x_editor_password: str | None = None, editor_pw: str | None = None):
+    """Separate auth for announcement endpoints: ONLY accepts ANNOUNCE_PASSWORD."""
+    announce_pw = os.getenv("ANNOUNCE_PASSWORD", "")
+    # Dev mode: if no announce password configured, fall back to editor password.
+    if not announce_pw:
+        return _auth(x_editor_password, editor_pw)
+    supplied = x_editor_password or editor_pw or ""
+    if not supplied or supplied != announce_pw:
+        raise HTTPException(status_code=401, detail="Invalid announce password")
 
 def _clean(doc: Any):
     if doc is None:
@@ -408,7 +418,7 @@ def _is_current(doc: dict, now: datetime):
 async def upload_announcement_video(file: UploadFile = File(...), x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
     """Upload an actual video file into MongoDB GridFS so it survives app restarts."""
-    _auth(x_editor_password, editor_pw)
+    _announce_auth(x_editor_password, editor_pw)
     from pathlib import Path
     allowed = {".mp4": "video/mp4", ".webm": "video/webm", ".mov": "video/quicktime", ".m4v": "video/x-m4v"}
     filename = Path(file.filename or "video.mp4").name
@@ -482,7 +492,7 @@ async def public_announcements():
 @router.get("/announcements")
 async def list_announcements(x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None), limit: int = Query(default=500, ge=1, le=1000)):
-    _auth(x_editor_password, editor_pw)
+    _announce_auth(x_editor_password, editor_pw)
     out = []
     async for doc in announcements.find({}).limit(limit):
         out.append(_announcement_public(doc))
@@ -492,7 +502,7 @@ async def list_announcements(x_editor_password: str | None = Header(default=None
 @router.post("/announcements", status_code=201)
 async def create_announcement(payload: Any = Body(...), x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
-    _auth(x_editor_password, editor_pw)
+    _announce_auth(x_editor_password, editor_pw)
     clean = _validate_announcement(payload)
     now = _utcnow()
     doc = {"id": uuid.uuid4().hex, **clean, "createdAt": now, "updatedAt": now}
@@ -515,7 +525,7 @@ async def update_announcement(announcement_id: str, payload: Any = Body(...), x_
 @router.delete("/announcements/{announcement_id}")
 async def delete_announcement(announcement_id: str, x_editor_password: str | None = Header(default=None),
                        editor_pw: str | None = Cookie(default=None)):
-    _auth(x_editor_password, editor_pw)
+    _announce_auth(x_editor_password, editor_pw)
     result = await announcements.delete_one({"id": announcement_id})
     if not result.deleted_count:
         raise HTTPException(status_code=404, detail="Announcement not found")
