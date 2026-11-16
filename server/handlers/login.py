@@ -2625,6 +2625,8 @@ async def handle_login(body: dict) -> dict:
         _op = data.setdefault("ownedPatterns", [])
         if "1x1_stuffedCucumberCat" not in _op:
             _op.append("1x1_stuffedCucumberCat")
+        if "cosmetic_hat_920" not in _op:
+            _op.append("cosmetic_hat_920")
         # Role-locked custom blocks (BLAZE Pillow, BLAZE Screen = the "staff member a
         # screen") go ONLY to holders of their role. The full-catalog grant above
         # contains them for everyone (big_valid_patterns lists them), so strip them
@@ -2654,6 +2656,8 @@ async def handle_login(body: dict) -> dict:
     elif big_patterns.is_big(body.get("_clientBuildTag")):
         _have = set(data["ownedPatterns"])
         data["ownedPatterns"] = list(data["ownedPatterns"]) + [p for p in big_patterns.extra_owned() if p not in _have]
+        if "cosmetic_hat_920" not in data["ownedPatterns"]:
+            data["ownedPatterns"].append("cosmetic_hat_920")
         _valid = big_patterns.valid_keys()
         if _valid:   # only keys this build has (the rest just log "does not exist")
             data["ownedPatterns"] = [p for p in data["ownedPatterns"] if p in _valid]
