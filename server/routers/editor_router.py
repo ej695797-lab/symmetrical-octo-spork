@@ -1829,24 +1829,14 @@ async def list_announcements():
 
 
 def _announce_auth(request: Request) -> bool:
-    """Check if request has valid announce password (works even when editor is locked)."""
-    import os, hmac
+    """Check if request has valid announce password. ONLY accepts ANNOUNCE_PASSWORD."""
+    import os
     announce_pw = os.getenv("ANNOUNCE_PASSWORD", "")
-    bypass_pw = os.getenv("EDITOR_BYPASS_PASSWORD", "")
-    master_pw = os.getenv("EDITOR_PW", "") or os.getenv("EDITOR_PASSWORD", "")
-    # Also accept editor bypass password and master password
-    allowed = {p for p in (announce_pw, bypass_pw, master_pw) if p}
-    if not allowed:
+    if not announce_pw:
         return True  # dev mode: no password configured
-    # Check header
-    supplied = request.headers.get("x-announce-password", "") or request.headers.get("x-editor-password", "")
-    if supplied and supplied in allowed:
-        return True
-    # Check cookie
-    tok = request.cookies.get("yeeps_editor_bypass") or request.cookies.get("yeeps_editor")
-    if tok:
-        return True  # valid editor session
-    return False
+    # Check header only - no cookies, no editor password
+    supplied = request.headers.get("x-announce-password", "")
+    return supplied == announce_pw
 
 
 @router.post("/api/announce")
