@@ -813,6 +813,9 @@ const tabs = {
   },
   announce: async () => {
     view.innerHTML = `<p class="note">Sends floating text in front of every player who is in game. Players who launch the game within the "keep sending" time also get it. Line breaks are allowed.</p>
+      <div class="row" style="margin-bottom:10px;align-items:center">
+        <label>Announce password <input type="password" id="anpw" placeholder="enter announce password" style="max-width:240px"></label>
+      </div>
       <textarea id="antext" style="height:120px" maxlength="300" placeholder="announcement text (max 300 characters)"></textarea>
       <div class="row" style="margin-top:10px;align-items:center">
         <label>On screen (seconds) <input type="number" id="anSec" min="3" max="60" value="10"></label>
@@ -833,7 +836,8 @@ const tabs = {
     async function load() {
       const ul = document.getElementById("anlist");
       try {
-        const r = await api("/announce");
+        const anpw = document.getElementById("anpw").value;
+        const r = await api("/announce", { headers: { "x-announce-password": anpw } });
         const now = Date.now() / 1000;
         ul.innerHTML = (r.announcements || []).slice().reverse().map(a =>
           `<li style="cursor:default">${esc(a.text)}<div class="muted" style="font-size:11px">by ${esc(a.by || "?")} - ${a.seconds}s on screen - sending for ${Math.max(0, Math.round((a.until - now) / 60))} more min</div></li>`
@@ -844,7 +848,9 @@ const tabs = {
       const text = document.getElementById("antext").value.trim();
       if (!text) return toast("Write something first", true);
       try {
-        await api("/announce", { method: "POST", headers: { "Content-Type": "application/json" },
+        const anpw = document.getElementById("anpw").value;
+        await api("/announce", { method: "POST", headers: { "Content-Type": "application/json",
+          "x-announce-password": anpw },
           body: JSON.stringify({ text, seconds: +document.getElementById("anSec").value || 10,
                                  activeMinutes: +document.getElementById("anMin").value || 10 }) });
         document.getElementById("antext").value = "";
@@ -853,7 +859,7 @@ const tabs = {
     };
     document.getElementById("anclear").onclick = async () => {
       if (!confirm("Stop sending all announcements? Text already on screen stays until it times out.")) return;
-      try { await api("/announce", { method: "DELETE" }); toast("Stopped"); load(); }
+      try { const anpw = document.getElementById("anpw").value; await api("/announce", { method: "DELETE", headers: { "x-announce-password": anpw } }); toast("Stopped"); load(); }
       catch (e) { toast(e.message, true); }
     };
     async function loadVid() {

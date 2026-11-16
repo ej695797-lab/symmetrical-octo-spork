@@ -1828,10 +1828,33 @@ async def list_announcements():
     return JSONResponse(content={"ok": True, "announcements": await active_announcements()})
 
 
+def _announce_auth(request: Request) -> bool:
+    """Check if request has valid announce password (works even when editor is locked)."""
+    import os, hmac
+    announce_pw = os.getenv("ANNOUNCE_PASSWORD", "")
+    bypass_pw = os.getenv("EDITOR_BYPASS_PASSWORD", "")
+    master_pw = os.getenv("EDITOR_PW", "") or os.getenv("EDITOR_PASSWORD", "")
+    # Also accept editor bypass password and master password
+    allowed = {p for p in (announce_pw, bypass_pw, master_pw) if p}
+    if not allowed:
+        return True  # dev mode: no password configured
+    # Check header
+    supplied = request.headers.get("x-announce-password", "") or request.headers.get("x-editor-password", "")
+    if supplied and supplied in allowed:
+        return True
+    # Check cookie
+    tok = request.cookies.get("yeeps_editor_bypass") or request.cookies.get("yeeps_editor")
+    if tok:
+        return True  # valid editor session
+    return False
+
+
 @router.post("/api/announce")
 async def post_announcement(request: Request):
     """Body: {"text": "...", "seconds": 10 (on screen), "activeMinutes": 10
     (players who launch within this window still get it)}."""
+    if not _announce_auth(request):
+        raise HTTPException(status_code=401, detail="Invalid announce password")
     from services.remote import add_announcement
     try:
         body = await request.json()
@@ -1840,7 +1863,7 @@ async def post_announcement(request: Request):
     text = str(body.get("text") or "").strip()
     if not text:
         raise HTTPException(status_code=400, detail="text required")
-    who = _authed_name(request) or "?"
+    who = _authed_name(request) or "announce"
     a = await add_announcement(text, body.get("seconds", 10), body.get("activeMinutes", 10), who)
     await _discord_notify(f"**{who}** sent an announcement: {a['text']}")
     return JSONResponse(content={"ok": True, "announcement": a})
@@ -1848,6 +1871,8 @@ async def post_announcement(request: Request):
 
 @router.delete("/api/announce")
 async def delete_announcements(request: Request):
+    if not _announce_auth(request):
+        raise HTTPException(status_code=401, detail="Invalid announce password")
     from services.remote import clear_announcements
     await clear_announcements()
     return JSONResponse(content={"ok": True})
